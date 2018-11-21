@@ -6,6 +6,5 @@ class Item:
         self.image = image
         self.name = name
         self.id = id
-        self.is_male = is_male
         self.is_used = is_used
         self.min_level = min_level
