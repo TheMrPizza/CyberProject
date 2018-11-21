@@ -1,8 +1,10 @@
+import World
 import pygame
 from pygame.locals import *
 
 
 class TextBox:
-    def __init__(self, x, y, width, surf):
+    def __init__(self, x, y, width):
         self.box = pygame.Rect(x, y, width, 100)
-        pygame.draw.rect(surf, (255, 0, 0), self.box)
+        print World.world.SURF
+        World.world.draw_rect(self.box, (255, 0, 0))
