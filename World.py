@@ -1,48 +1,55 @@
 import pygame
-from pygame.locals import *
 import sys
 import threading
-
-world = None
 
 
 class World:
     def __init__(self):  # Hello World!
-        self.SIZE = (640, 480)
+        self.SIZE = (1067, 600)
         self.SURF = None
         self.FPS = 30
         self.cur_screen = None
-        self.clock = pygame.time.Clock()
-        self.loop_thread = None
 
-    def set_screen(self):
+        self.clock = pygame.time.Clock()
+        pygame.font.init()
+        self.fonts = {'Text Box': pygame.font.SysFont('Agency FB', 30),
+                      'Title': pygame.font.SysFont('Agency FB', 20)}
+
+        self.loop_thread = threading.Thread(target=self.world_loop)
+        self.loop_thread.start()
+
+        while True:  # Wait for the surface to get created
+            if self.SURF is not None:
+                break
+
+    def world_loop(self):
         pygame.init()
         self.SURF = pygame.display.set_mode(self.SIZE)
         pygame.display.set_caption("Cyber!")
-        self.world_loop()
 
-    def world_loop(self):
-        from Login import Login
         while True:
+            # Wait for the game to start and the screen to initialize
+            if self.cur_screen is None:
+                continue
+
+            self.SURF.fill((255, 255, 255))
             for event in pygame.event.get():
-                if event.type == QUIT:
+                if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                        sys.exit()
+                    else:
+                        self.cur_screen.check_event(event)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    self.cur_screen.check_event(event)
 
-            self.cur_screen = Login()
-
+            # Draw the current screen and its objects
+            self.cur_screen.draw_screen()
             pygame.display.update()
             self.clock.tick(self.FPS)
 
-    def draw_rect(self, rect, rect_color):
-        pygame.draw.rect(self.SURF, rect_color, rect)
-
-
-def main():
-    global world
-    world = World()
-    world.loop_thread = threading.Thread(target=world.set_screen)
-    world.loop_thread.start()
-
-if __name__ == '__main__':
-    main()
+    def draw(self, object_surface, pos):
+        self.SURF.blit(object_surface, pos)

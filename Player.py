@@ -1,6 +1,3 @@
-from World import World
-
-
 class Player:
     def __init__(self, username, is_male, items, level, join_date, is_admin, room_id, room_pos):
         self.username = username
