@@ -1,18 +1,46 @@
-""" Class for all of the objects on the map.
-Inherited classes should override some of the functions,
-otherwise NotImplementedError will be raised."""
+""" Class for all of the objects on the map. """
 import pygame
 
 
 class MapObject:
-    def __init__(self, world, x, y, surface):
+    def __init__(self, world, pos, surface=None, image=None, size=None, middle=None, is_transparent=False, layer=2):
         self.world = world
-        self.x = x
-        self.y = y
-        self.surface = surface
+        if surface is None:
+            if image is not None:
+                self.surface = MapObject.load_image(self.world, image, size)
+            else:
+                print 'No surface or image!'
+        else:
+            self.surface = surface
+
+        self.pos = pos
+        if None in self.pos:
+            if middle is None:
+                print 'No pos or middle!'
+            middle = MapObject.find_middle(self.surface, middle)
+            if pos[0] is None:
+                if pos[1] is None:
+                    self.pos = middle
+                else:
+                    self.pos[0] = middle[0]
+            else:
+                self.pos[1] = middle[1]
+
         self.width = self.surface.get_size()[0]
         self.height = self.surface.get_size()[1]
+        self.is_transparent = is_transparent
+        self.layer = layer
         self.is_focus = False
+
+    def check_collision(self, pos):
+        if self.pos[0] <= pos[0] < self.pos[0] + self.width:
+            if self.pos[1] <= pos[1] < self.pos[1] + self.height:
+                return True
+        return False
+
+    def draw_object(self):
+        if not self.is_transparent:
+            self.world.draw(self.surface, self.pos)
 
     @staticmethod
     def merge_surfaces_horizontal(surfaces):
@@ -25,27 +53,19 @@ class MapObject:
         return merged
 
     @staticmethod
-    def find_middle(map_object, surface, is_x, is_y):
-        x = map_object.x + map_object.width / 2 - surface.get_size()[0] / 2
-        y = map_object.y + map_object.height / 2 - surface.get_size()[1] / 2
-        if is_x and is_y:
-            return x, y
-        if is_x:
-            return x
-        if is_y:
-            return y
+    def find_middle(surface, map_object):
+        x = map_object.pos[0] + map_object.width / 2 - surface.get_size()[0] / 2
+        y = map_object.pos[1] + map_object.height / 2 - surface.get_size()[1] / 2
+        return [x, y]
 
-    def check_collision(self, pos):
-        if self.x <= pos[0] < self.x + self.width:
-            if self.y <= pos[1] < self.y + self.height:
-                return True
-        return False
-
-    def on_click(self):
-        raise NotImplementedError
-
-    def on_type(self, event):
-        raise NotImplementedError
-
-    def draw_object(self):
-        raise NotImplementedError
+    @staticmethod
+    def load_image(world, image, size=None):
+        if size is None:
+            size = [None, None]
+        surface = pygame.image.load(image)
+        ratio = float(world.GUI_SIZE[0]) / world.SIZE[0], float(world.GUI_SIZE[1]) / world.SIZE[1]
+        if size[0] is None:
+            size[0] = int(surface.get_size()[0] / ratio[0])
+        if size[1] is None:
+            size[1] = int(surface.get_size()[1] / ratio[1])
+        return pygame.transform.scale(surface, size)

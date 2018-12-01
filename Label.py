@@ -2,9 +2,9 @@ from MapObject import MapObject
 
 
 class Label(MapObject):
-    def __init__(self, world, x, y, text, font):
+    def __init__(self, world, pos, text, font):
         self.text_surface = world.fonts[font].render(text, False, (0, 0, 0))
-        MapObject.__init__(self, world, x, y, self.text_surface)
+        MapObject.__init__(self, world, pos, self.text_surface)
         self.text = text
         self.font = font
 
@@ -18,4 +18,4 @@ class Label(MapObject):
         return False
 
     def draw_object(self):
-        self.world.draw(self.text_surface, (self.x, self.y))
+        self.world.draw(self.text_surface, self.pos)

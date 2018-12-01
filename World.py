@@ -8,6 +8,7 @@ class World:
         self.SIZE = (1067, 600)
         self.SURF = None
         self.FPS = 30
+        self.GUI_SIZE = (3200, 1800)
         self.cur_screen = None
 
         self.clock = pygame.time.Clock()
@@ -47,6 +48,7 @@ class World:
                     self.cur_screen.check_event(event)
 
             # Draw the current screen and its objects
+            self.cur_screen.execute()
             self.cur_screen.draw_screen()
             pygame.display.update()
             self.clock.tick(self.FPS)
