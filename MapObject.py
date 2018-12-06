@@ -1,4 +1,5 @@
 """ Class for all of the objects on the map. """
+
 import pygame
 
 
