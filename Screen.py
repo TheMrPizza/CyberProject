@@ -2,7 +2,7 @@ import pygame
 from MapObject import MapObject
 
 
-class Screen:
+class Screen(object):
     def __init__(self, world, screen_id, bg_image):
         self.world = world
         self.screen_id = screen_id

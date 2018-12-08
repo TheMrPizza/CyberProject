@@ -3,7 +3,7 @@ import sys
 import threading
 
 
-class World:
+class World(object):
     def __init__(self):  # Hello World!
         self.SIZE = (1067, 600)
         self.SURF = None
@@ -14,7 +14,8 @@ class World:
         self.clock = pygame.time.Clock()
         pygame.font.init()
         self.fonts = {'Text Box': pygame.font.SysFont('Agency FB', 30),
-                      'Title': pygame.font.SysFont('Agency FB', 20)}
+                      'Title': pygame.font.SysFont('Agency FB', 20),
+                      'Speech Balloon': pygame.font.SysFont('Agency FB', 18)}
 
         self.loop_thread = threading.Thread(target=self.world_loop)
         self.loop_thread.start()

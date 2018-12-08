@@ -1,4 +1,5 @@
 from MapObject import MapObject
+from SpeechBalloon import SpeechBalloon
 
 
 class Player(MapObject):
@@ -11,13 +12,27 @@ class Player(MapObject):
         self.join_date = join_date
         self.is_admin = is_admin
         self.room_id = room_id
-        self.path = []
+        self.walking_path = []
+        self.msg = None
+        self.balloon = None
 
     def walk(self):
-        if self.path:
-            pos = self.path.pop()
+        if self.walking_path:
+            pos = self.walking_path.pop()
             self.pos = pos[0] - self.width / 2, pos[1] - self.height / 2
             self.world.cur_screen.layer_reorder()
+
+    def check_message(self):
+        if self.balloon:
+            self.balloon.update([self.pos[0] - 60, self.pos[1] - 80], self.msg)
+        else:
+            if self.msg:
+                self.balloon = SpeechBalloon(self.world, [self.pos[0] - 60, self.pos[1] - 80], self.msg)
+
+    def draw_object(self):
+        self.world.draw(self.surface, self.pos)
+        if self.balloon:
+            self.balloon.draw_object()
 
     def on_type(self, event):
         pass

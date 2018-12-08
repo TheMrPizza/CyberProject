@@ -1,4 +1,4 @@
-class Item:
+class Item(object):
     def __init__(self, image, name, item_id, is_male, is_used, min_level):
         self.image = image
         self.name = name

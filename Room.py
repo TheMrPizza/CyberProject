@@ -11,6 +11,7 @@ class Room(Screen):
 
     def execute(self):
         for i in self.players:
+            i.check_message()
             i.walk()
 
     def check_event(self, event, objects=None):

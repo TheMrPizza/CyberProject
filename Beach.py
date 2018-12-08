@@ -28,7 +28,7 @@ class Beach(Room):
                 path = search_path(self.world, (self.players[0].pos[0] + self.players[0].width / 2,
                                                 self.players[0].pos[1] + self.players[0].height / 2), event.pos)
                 if path:
-                    self.players[0].path = path
+                    self.players[0].walking_path = path
 
     def layer_reorder(self):
         for i in self.players:

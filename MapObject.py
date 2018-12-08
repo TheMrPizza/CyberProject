@@ -3,7 +3,7 @@
 import pygame
 
 
-class MapObject:
+class MapObject(object):
     def __init__(self, world, pos, surface=None, image=None, size=None, middle=None, is_transparent=False, layer=2):
         self.world = world
         if surface is None:
@@ -54,10 +54,17 @@ class MapObject:
         return merged
 
     @staticmethod
-    def find_middle(surface, map_object):
-        x = map_object.pos[0] + map_object.width / 2 - surface.get_size()[0] / 2
-        y = map_object.pos[1] + map_object.height / 2 - surface.get_size()[1] / 2
-        return [x, y]
+    def find_middle(surface, parent):
+        if type(parent) is MapObject:
+            x = parent.pos[0] + parent.width / 2 - surface.get_size()[0] / 2
+            y = parent.pos[1] + parent.height / 2 - surface.get_size()[1] / 2
+            return [x, y]
+        elif type(parent) is pygame.Rect:
+            x = parent.x + parent.width / 2 - surface.get_size()[0] / 2
+            y = parent.y + parent.height / 2 - surface.get_size()[1] / 2
+            return [x, y]
+        else:
+            print 'No!'
 
     @staticmethod
     def load_image(world, image, size=None):
@@ -69,4 +76,4 @@ class MapObject:
             size[0] = int(surface.get_size()[0] / ratio[0])
         if size[1] is None:
             size[1] = int(surface.get_size()[1] / ratio[1])
-        return pygame.transform.scale(surface, size)
+        return pygame.transform.smoothscale(surface, size)
