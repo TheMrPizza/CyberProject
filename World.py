@@ -15,7 +15,7 @@ class World(object):
         pygame.font.init()
         self.fonts = {'Text Box': pygame.font.SysFont('Agency FB', 30),
                       'Title': pygame.font.SysFont('Agency FB', 20),
-                      'Speech Balloon': pygame.font.SysFont('Agency FB', 18)}
+                      'Speech Balloon': pygame.font.SysFont('Arial', 18)}
 
         self.loop_thread = threading.Thread(target=self.world_loop)
         self.loop_thread.start()

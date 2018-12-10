@@ -23,11 +23,13 @@ class Player(MapObject):
             self.world.cur_screen.layer_reorder()
 
     def check_message(self):
-        if self.balloon:
-            self.balloon.update([self.pos[0] - 60, self.pos[1] - 80], self.msg)
-        else:
-            if self.msg:
-                self.balloon = SpeechBalloon(self.world, [self.pos[0] - 60, self.pos[1] - 80], self.msg)
+        if self.msg:
+            self.balloon = SpeechBalloon(self.world, [self.pos[0] + 40, self.pos[1] - 60], self.msg)
+            self.msg = None
+        elif self.balloon:
+            self.balloon.update([self.pos[0] + 40, self.pos[1] - 60])
+            if not self.balloon.is_alive:
+                self.balloon = None
 
     def draw_object(self):
         self.world.draw(self.surface, self.pos)
