@@ -2,6 +2,7 @@ from Room import Room
 from MapObject import MapObject
 from AStar.Search import search_path
 from TextBox import TextBox
+import pygame
 
 
 class Beach(Room):

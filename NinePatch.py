@@ -15,8 +15,7 @@ class NinePatch(MapObject):
             if text_size:
                 image_size = NinePatch.calc_image_size(image, text_size)
             else:
-                # TODO: Raise exception
-                pass
+                raise SizeError('No image_size or text_size found!')
         self.surface, self.text_rect = NinePatch.create(pygame.image.load(image), image_size)
 
         MapObject.__init__(self, world, pos, surface=self.surface, **kwargs)

@@ -12,7 +12,7 @@ class SpeechBalloon(NinePatch):
 
         text = SpeechBalloon.size_adjustment(text, self.FONT, self.MAX_WIDTH)
         NinePatch.__init__(self, world, pos, 'images/test_speech_balloon.9.png', text_size=SpeechBalloon.calc_text_size(text, self.FONT), layer=4, **kwargs)
-        self.lines = SpeechBalloon.create_lines(world, self.pos, text, self.FONT, self.text_rect)
+        self.lines = SpeechBalloon.create_lines(world, [self.text_rect.x, self.text_rect.y], text, self.FONT, self.text_rect)
 
         self.start_time = pygame.time.get_ticks()
 
@@ -22,10 +22,10 @@ class SpeechBalloon(NinePatch):
         text = []
         last = 0
         for i in xrange(len(words)):
-            if font.size(' '.join(words[last:i+1]))[0] > max_width:
+            if font.size(' '.join(words[last:i+1]))[0] > max_width and last != i:
                 text.append(' '.join(words[last:i]))
                 last = i
-            elif i == len(words)-1:
+            if i == len(words)-1:
                 text.append(' '.join(words[last:i+1]))
                 last = i
         return text

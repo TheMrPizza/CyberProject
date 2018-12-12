@@ -13,7 +13,7 @@ class World(object):
 
         self.clock = pygame.time.Clock()
         pygame.font.init()
-        self.fonts = {'Text Box': pygame.font.SysFont('Agency FB', 30),
+        self.fonts = {'Text Box': pygame.font.SysFont('Agency FB', 25),
                       'Title': pygame.font.SysFont('Agency FB', 20),
                       'Speech Balloon': pygame.font.SysFont('Arial', 18)}
 

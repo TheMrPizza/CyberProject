@@ -6,8 +6,8 @@ import pygame
 class MapObject(object):
     def __init__(self, world, pos, surface=None, image=None, size=None, middle=None, is_transparent=False, layer=2):
         self.world = world
-        if surface is None:
-            if image is not None:
+        if not surface:
+            if image:
                 self.surface = MapObject.load_image(self.world, image, size)
             else:
                 print 'No surface or image!'
@@ -16,11 +16,11 @@ class MapObject(object):
 
         self.pos = pos
         if None in self.pos:
-            if middle is None:
+            if not middle:
                 print 'No pos or middle!'
             middle = MapObject.find_middle(self.surface, middle)
-            if pos[0] is None:
-                if pos[1] is None:
+            if not pos[0]:
+                if not pos[1]:
                     self.pos = middle
                 else:
                     self.pos[0] = middle[0]
@@ -68,12 +68,12 @@ class MapObject(object):
 
     @staticmethod
     def load_image(world, image, size=None):
-        if size is None:
+        if not size:
             size = [None, None]
         surface = pygame.image.load(image)
         ratio = float(world.GUI_SIZE[0]) / world.SIZE[0], float(world.GUI_SIZE[1]) / world.SIZE[1]
-        if size[0] is None:
+        if not size[0]:
             size[0] = int(surface.get_size()[0] / ratio[0])
-        if size[1] is None:
+        if not size[1]:
             size[1] = int(surface.get_size()[1] / ratio[1])
         return pygame.transform.smoothscale(surface, size)
