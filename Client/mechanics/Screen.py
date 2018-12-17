@@ -1,5 +1,5 @@
 import pygame
-from MapObject import MapObject
+from Client.mechanics.MapObject import MapObject
 
 
 class Screen(object):

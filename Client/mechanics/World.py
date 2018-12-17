@@ -4,11 +4,12 @@ import threading
 
 
 class World(object):
-    def __init__(self):  # Hello World!
+    def __init__(self, images_path):  # Hello World!
         self.SIZE = (1067, 600)
         self.SURF = None
         self.FPS = 30
         self.GUI_SIZE = (3200, 1800)
+        self.IMAGES_PATH = images_path
         self.cur_screen = None
 
         self.clock = pygame.time.Clock()
