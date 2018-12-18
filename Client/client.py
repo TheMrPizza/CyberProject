@@ -13,7 +13,7 @@ from firebase_admin import storage
 
 def main():
     # Initialize
-    cred = credentials.Certificate(r'JSON-FILE-PATH')
+    cred = credentials.Certificate(r'C:\Users\USER\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
     firebase_admin.initialize_app(cred, {'databaseURL': 'https://cyberproject-ec385.firebaseio.com',
                                          'storageBucket': 'cyberproject-ec385.appspot.com'})
 
