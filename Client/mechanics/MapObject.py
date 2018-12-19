@@ -68,7 +68,8 @@ class MapObject(object):
 
     @staticmethod
     def load_image(world, image, size=None):
-        surface = pygame.image.load(world.IMAGES_PATH + image)
+        world.client.get_from_storage(image)
+        surface = pygame.image.load(world.PATH + image)
         if image.endswith('.9.png'):  # No resize
             return surface
         if not size:

@@ -11,7 +11,7 @@ class SpeechBalloon(NinePatch):
         self.is_alive = True
 
         text = SpeechBalloon.size_adjustment(text, self.FONT, self.MAX_WIDTH)
-        NinePatch.__init__(self, world, pos, 'test_speech_balloon.9.png', text_size=SpeechBalloon.calc_text_size(text, self.FONT), layer=4, **kwargs)
+        NinePatch.__init__(self, world, pos, 'images/test_speech_balloon.9.png', text_size=SpeechBalloon.calc_text_size(text, self.FONT), layer=4, **kwargs)
         self.lines = SpeechBalloon.create_lines(world, [self.text_rect.x, self.text_rect.y], text, self.FONT, self.text_rect)
 
         self.start_time = pygame.time.get_ticks()

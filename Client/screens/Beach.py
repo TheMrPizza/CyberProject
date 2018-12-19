@@ -7,10 +7,10 @@ from Client.mechanics.TextBox import TextBox
 
 class Beach(Room):
     def __init__(self, world):
-        Room.__init__(self, world, 201, 'test_map.png', 'test_path.png', [])
-        self.bush = MapObject(self.world, [606, 192], image='test_bush.png', layer=3)
+        Room.__init__(self, world, 201, 'images/test_map.png', 'images/test_path.png', [])
+        self.bush = MapObject(self.world, [606, 192], image='images/test_bush.png', layer=3)
         self.bush_shadow = MapObject(self.world, [self.bush.pos[0], self.bush.pos[1] + 42],
-                                     image='test_bush_shadow.png', layer=1)
+                                     image='images/test_bush_shadow.png', layer=1)
         self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image)
 
     def check_event(self, event, objects=None):

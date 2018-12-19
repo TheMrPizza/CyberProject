@@ -5,7 +5,7 @@ import pygame
 
 class TextBox(NinePatch):
     def __init__(self, world, pos, width, middle=None):
-        NinePatch.__init__(self, world, pos, 'test_text_box.9.png', [width, 50], middle=middle, layer=4)
+        NinePatch.__init__(self, world, pos, 'images/test_text_box.9.png', [width, 50], middle=middle, layer=4)
         self.text = ''
         self.text_object = MapObject(world, (self.text_rect.x, self.text_rect.y), self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0)), layer=5)
 

@@ -5,7 +5,7 @@ from SpeechBalloon import SpeechBalloon
 
 class Player(MapObject):
     def __init__(self, world, username, is_male, items, level, join_date, is_admin, room_id, pos):
-        MapObject.__init__(self, world, pos, image='player.png')
+        MapObject.__init__(self, world, pos, image='images/player.png')
         self.username = username
         self.is_male = is_male
         self.items = items
