@@ -21,6 +21,7 @@ class Player(MapObject):
         if self.walking_path:
             pos = self.walking_path.pop()
             self.pos = pos[0] - self.width / 2, pos[1] - self.height / 2
+            self.world.client.update_player_pos(self.username, self.pos)
             self.world.cur_screen.layer_reorder()
 
     def check_message(self):
