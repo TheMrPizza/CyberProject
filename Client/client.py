@@ -71,6 +71,10 @@ class Client:
             item_file.write(data)
             item_file.close()
 
+    def find_players(self, room_id):
+        # Add self.send_message('ROOM PLAYERS')
+        pass
+
     def update_player_pos(self, username, pos):
         self.send_message('POS', {'Username': username, 'Pos': str(pos[0]) + ' ' + str(pos[1])})
 

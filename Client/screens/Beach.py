@@ -30,6 +30,7 @@ class Beach(Room):
                                                 self.players[0].pos[1] + self.players[0].height / 2), event.pos)
                 if path:
                     self.players[0].walking_path = path
+                    self.world.client.update_player_pos(self.players[0].username, event.pos)
 
     def layer_reorder(self):
         for i in self.players:
