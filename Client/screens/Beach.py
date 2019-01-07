@@ -1,4 +1,5 @@
 from Client.mechanics.MapObject import MapObject
+from Client.mechanics.Player import Player
 
 from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
@@ -12,6 +13,9 @@ class Beach(Room):
         self.bush_shadow = MapObject(self.world, [self.bush.pos[0], self.bush.pos[1] + 42],
                                      image='images/test_bush_shadow.png', layer=1)
         self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image)
+        for i in self.world.client.find_players('201'):
+            info = self.world.client.player_info(i)
+            self.players.append(Player(world, data=info))
 
     def check_event(self, event, objects=None):
         if objects is None:
@@ -26,10 +30,10 @@ class Beach(Room):
     def on_click(self, map_object, event):
         if map_object is self.path:
             if self.path.surface.get_at(event.pos).a != 0:
-                path = search_path(self.world, (self.players[0].pos[0] + self.players[0].width / 2,
-                                                self.players[0].pos[1] + self.players[0].height / 2), event.pos)
+                path = search_path(self.world, (self.world.cur_player.pos[0] + self.world.cur_player.width / 2,
+                                                self.world.cur_player.pos[1] + self.world.cur_player.height / 2), event.pos)
                 if path:
-                    self.players[0].walking_path = path
+                    self.world.cur_player.walking_path = path
                     self.world.client.update_player_pos(self.players[0].username, event.pos)
 
     def layer_reorder(self):
@@ -43,4 +47,5 @@ class Beach(Room):
 
     def on_type(self, map_object, event):
         if map_object is self.chat_box:
-            map_object.on_type(event)
+            if map_object.on_type(event):
+                map_object.on_send()

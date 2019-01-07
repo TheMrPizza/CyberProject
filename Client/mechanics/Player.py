@@ -4,18 +4,34 @@ from SpeechBalloon import SpeechBalloon
 
 
 class Player(MapObject):
-    def __init__(self, world, username, is_male, items, level, join_date, is_admin, room_id, pos):
-        MapObject.__init__(self, world, pos, image='images/player.png')
-        self.username = username
-        self.is_male = is_male
-        self.items = items
-        self.level = level
-        self.join_date = join_date
-        self.is_admin = is_admin
-        self.room_id = room_id
-        self.walking_path = []
-        self.msg = None
-        self.balloon = None
+    def __init__(self, world, username='', is_male=True, items=None, level=1, join_date='1.1.1970', is_admin=False, room_id=0, pos=None, data=None):
+        if data:
+            # Another player. Data sent from the server
+            MapObject.__init__(self, world, data['pos'], image='images/player.png')
+            self.username = data['username']
+            self.is_male = data['is_male']
+            self.items = data['items']
+            self.level = data['level']
+            self.join_date = data['join_date']
+            self.is_admin = data['is_admin']
+            self.room_id = data['room_id']
+            self.walking_path = []
+            self.msg = None
+            self.balloon = None
+        else:
+            # It's me!
+            MapObject.__init__(self, world, pos, image='images/player.png')
+            self.username = username
+            self.is_male = is_male
+            self.items = items
+            self.level = level
+            self.join_date = join_date
+            self.is_admin = is_admin
+            self.room_id = room_id
+            self.walking_path = []
+            self.msg = None
+            self.balloon = None
+            self.world.client.create_player(self)
 
     def walk(self):
         if self.walking_path:

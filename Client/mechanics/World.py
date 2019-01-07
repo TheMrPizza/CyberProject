@@ -12,6 +12,7 @@ class World(object):
         self.PATH = path
         self.client = client
         self.cur_screen = None
+        self.cur_player = None
 
         self.clock = pygame.time.Clock()
         pygame.font.init()

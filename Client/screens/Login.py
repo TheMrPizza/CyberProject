@@ -1,6 +1,8 @@
 from Client.mechanics.Screen import Screen
 from Client.mechanics.TextBox import TextBox
 from Client.mechanics.Label import Label
+from Client.mechanics.Player import Player
+from Client.screens.Beach import Beach
 
 
 class Login(Screen):
@@ -28,4 +30,9 @@ class Login(Screen):
         print map_object
 
     def on_type(self, map_object, event):
-        map_object.on_type(event)
+        if map_object in self.buttons[:2]:
+            data = map_object.on_type(event)
+            if data:
+                info = self.world.client.player_info(data)
+                self.world.cur_player = Player(self.world, data=info)
+                self.world.cur_screen = Beach(self.world)

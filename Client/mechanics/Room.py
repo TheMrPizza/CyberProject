@@ -1,4 +1,5 @@
 from MapObject import MapObject
+from Player import Player
 
 from Screen import Screen
 
@@ -12,8 +13,12 @@ class Room(Screen):
 
     def execute(self):
         for i in self.players:
+            i = Player(self.world, data=self.world.client.player_info(i.username))
             i.check_message()
             i.walk()
+        self.world.cur_player = Player(self.world, data=self.world.client.player_info(self.world.cur_player.username))
+        self.world.cur_player.check_message()
+        self.world.cur_player.walk()
 
     def check_event(self, event, objects=None):
         if objects is None:

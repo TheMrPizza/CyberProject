@@ -16,8 +16,9 @@ class TextBox(NinePatch):
         if event.key == pygame.K_BACKSPACE:
             self.text = self.text[:-1]
         elif event.key == pygame.K_RETURN and self.text != '':
-            self.on_send()
+            data = self.text
             self.text = ''
+            return data
         elif self.world.fonts['Text Box'].size(self.text + event.unicode)[0] <= self.text_rect.width:
             self.text += event.unicode
         self.text_object.surface = self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0))
