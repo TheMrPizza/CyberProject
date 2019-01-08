@@ -31,6 +31,8 @@ class World(object):
         pygame.init()
         self.SURF = pygame.display.set_mode(self.SIZE)
         pygame.display.set_caption("Cyber!")
+        execute_thread = threading.Thread(target=self.execute_loop)
+        execute_thread.start()
 
         while True:
             # Wait for the game to start and the screen to initialize
@@ -52,10 +54,15 @@ class World(object):
                     self.cur_screen.check_event(event)
 
             # Draw the current screen and its objects
-            self.cur_screen.execute()
             self.cur_screen.draw_screen()
             pygame.display.update()
             self.clock.tick(self.FPS)
+
+    def execute_loop(self):
+        while True:
+            if self.cur_screen is None:
+                continue
+            self.cur_screen.execute()
 
     def draw(self, object_surface, pos):
         self.SURF.blit(object_surface, pos)

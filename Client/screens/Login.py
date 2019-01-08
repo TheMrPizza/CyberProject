@@ -34,5 +34,5 @@ class Login(Screen):
             data = map_object.on_type(event)
             if data:
                 info = self.world.client.player_info(data)
-                self.world.cur_player = Player(self.world, data=info)
+                self.world.cur_player = Player(self.world, info)
                 self.world.cur_screen = Beach(self.world)

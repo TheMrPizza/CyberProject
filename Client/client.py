@@ -13,7 +13,7 @@ SERVER_ADDRESS = ('127.0.0.1', 1943)
 KB = 1024
 
 
-class Client:
+class Client(object):
     def __init__(self):
         self.FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
         self.socket = socket.socket()
@@ -33,6 +33,7 @@ class Client:
 
     def receive_message(self):
         msg = self.socket.recv(KB)
+        print msg
         lines = msg.split('\r\n')
         code = lines[0]
         headers = {}

@@ -16,6 +16,7 @@ class Beach(Room):
         for i in self.world.client.find_players('201'):
             info = self.world.client.player_info(i)
             self.players.append(Player(world, data=info))
+        self.players.append(self.world.cur_player)
 
     def check_event(self, event, objects=None):
         if objects is None:
