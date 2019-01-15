@@ -13,10 +13,6 @@ class Beach(Room):
         self.bush_shadow = MapObject(self.world, [self.bush.pos[0], self.bush.pos[1] + 42],
                                      image='images/test_bush_shadow.png', layer=1)
         self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image)
-        for i in self.world.client.find_players('201'):
-            info = self.world.client.player_info(i)
-            self.players.append(Player(world, data=info))
-        self.players.append(self.world.cur_player)
 
     def check_event(self, event, objects=None):
         if objects is None:

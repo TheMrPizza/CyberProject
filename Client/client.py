@@ -21,6 +21,7 @@ class Client(object):
 
     def send_message(self, command, headers, data=''):
         # Protocol
+        print command, headers, data
         headers['length'] = len(data)
         request = Client.message_format(command, headers, data)
         while request != '':
@@ -33,7 +34,6 @@ class Client(object):
 
     def receive_message(self):
         msg = self.socket.recv(KB)
-        print msg
         lines = msg.split('\r\n')
         code = lines[0]
         headers = {}

@@ -1,6 +1,7 @@
 """ Class for all of the objects on the map. """
 
 import pygame
+import os
 
 
 class MapObject(object):
@@ -68,7 +69,8 @@ class MapObject(object):
 
     @staticmethod
     def load_image(world, image, size=None):
-        world.client.get_from_storage(image)
+        if not os.path.exists(world.PATH + image):
+            world.client.get_from_storage(image)
         surface = pygame.image.load(world.PATH + image)
         if image.endswith('.9.png'):  # No resize
             return surface
