@@ -1,6 +1,4 @@
 from Client.mechanics.MapObject import MapObject
-from Client.mechanics.Player import Player
-
 from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
 from Client.mechanics.TextBox import TextBox

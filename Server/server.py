@@ -72,12 +72,14 @@ class Server(object):
 
         if command == 'STORAGE':
             blob = self.bucket.get_blob(headers['item'])
-            self.add_message(client_socket, 'OK', {'time-created': blob.time_created}, blob.download_as_string())
+            self.add_message(client_socket, 'OK', {'time-created': blob.time_created, 'command': command}, blob.download_as_string())
         elif command == 'POS':
             ref = db.reference('users/' + headers['username'])
             pos = headers['pos'].split(' ')
             ref.update({'pos': [int(pos[0]), int(pos[1])]})
             self.add_message(client_socket, 'OK', {})
+            for i in self.client_sockets:
+                self.add_message(i, 'UPDATE', {'username': headers['username'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
             print headers['username']
@@ -90,11 +92,11 @@ class Server(object):
                 'room_id': int(headers['room_id']),
                 'pos': map(lambda p: int(p), headers['pos'][1:-1].split(', '))
             })
-            self.add_message(client_socket, 'OK', {})
+            self.add_message(client_socket, 'OK', {'command': command})
         elif command == 'ADD PLAYER':
             ref = db.reference('rooms/' + headers['room_id'] + '/players')
             ref.child(headers['username']).set(True)
-            self.add_message(client_socket, 'OK', {})
+            self.add_message(client_socket, 'OK', {'command': command})
         elif command == 'PLAYER INFO':
             ref = db.reference('users/' + headers['username']).get()
             info = {'username': headers['username']}
@@ -104,10 +106,10 @@ class Server(object):
                 if type(value) is unicode:
                     value = str(value)
                 info[key] = value
-            self.add_message(client_socket, 'OK', {}, str(info))
+            self.add_message(client_socket, 'OK', {'command': command}, str(info))
         elif command == 'ROOM PLAYERS':
             ref = db.reference('rooms/' + headers['room_id'] + '/players').get()
-            self.add_message(client_socket, 'OK', {}, ' '.join(ref))
+            self.add_message(client_socket, 'OK', {'command': command}, ' '.join(ref))
 
     @staticmethod
     def message_format(command, headers, data):

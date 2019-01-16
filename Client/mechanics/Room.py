@@ -15,13 +15,14 @@ class Room(Screen):
             self.players.append(Player(world, data=self.world.client.player_info(i)))
 
     def execute(self):
-        print self.players
-        for i in self.players:
-            update = Player(self.world, data=self.world.client.player_info(i.username))
-            if len(i.walking_path) != 0:
-                path = search_path(self.world, (i.pos[0] + i.width / 2, i.pos[1] + i.height / 2), update.pos)
-                if path:
-                    i.walking_path = path
+        update = self.world.client.updates
+        if not update or not update['headers'] or not update['headers']['username']:
+            return
+        print update
+        for i in update['headers']['username']:
+            for j in self.players:
+                if i == j.username:
+                    j.pos = update['data']['pos']
             i.check_message()
             i.walk()
 

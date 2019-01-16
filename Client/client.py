@@ -8,6 +8,7 @@ import time
 from datetime import datetime
 import socket
 import ast
+import threading
 
 SERVER_ADDRESS = ('127.0.0.1', 1943)
 KB = 1024
@@ -18,6 +19,9 @@ class Client(object):
         self.FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
         self.socket = socket.socket()
         self.socket.connect(SERVER_ADDRESS)
+        self.updates = []
+        self.thread = threading.Thread(target=self.receive_message)
+        self.thread.start()
 
     def send_message(self, command, headers, data=''):
         # Protocol
@@ -28,9 +32,13 @@ class Client(object):
             self.socket.send(request[:KB])
             request = request[KB:]
 
-        code, headers, data = self.receive_message()
-        if code == 'OK':
-            return headers, data
+        while True:
+            for i in self.updates:
+                if i['headers']['command'] == command:
+                    code, headers, data = i['code'], i['headers'], i['data']
+                    self.updates.remove(i)
+                    if code == 'OK':
+                        return headers, data
 
     def receive_message(self):
         msg = self.socket.recv(KB)
@@ -47,7 +55,8 @@ class Client(object):
 
         while int(headers['length']) != len(data):
             data += self.socket.recv(KB)
-        return code, headers, data
+
+        self.updates = {'code': code, 'headers': headers, 'data': data}
 
     @staticmethod
     def message_format(command, headers, data):
