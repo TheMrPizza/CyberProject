@@ -29,7 +29,7 @@ class Beach(Room):
                                                 self.world.cur_player.pos[1] + self.world.cur_player.height / 2), event.pos)
                 if path:
                     self.world.cur_player.walking_path = path
-                    self.world.client.update_player_pos(self.players[0].username, event.pos)
+                    self.world.client.update_player_pos(self.world.cur_player.username, event.pos)
 
     def layer_reorder(self):
         for i in self.players:
@@ -42,5 +42,6 @@ class Beach(Room):
 
     def on_type(self, map_object, event):
         if map_object is self.chat_box:
-            if map_object.on_type(event):
-                map_object.on_send()
+            data = map_object.on_type(event)
+            if data:
+                map_object.on_send(data)

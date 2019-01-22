@@ -42,6 +42,7 @@ class World(object):
             self.SURF.fill((255, 255, 255))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.client.quit(self.cur_player.username, self.cur_player.room_id)
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:

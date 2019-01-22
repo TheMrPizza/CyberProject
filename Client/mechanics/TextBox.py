@@ -18,13 +18,14 @@ class TextBox(NinePatch):
         elif event.key == pygame.K_RETURN and self.text != '':
             data = self.text
             self.text = ''
+            self.text_object.surface = self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0))
             return data
         elif self.world.fonts['Text Box'].size(self.text + event.unicode)[0] <= self.text_rect.width:
             self.text += event.unicode
         self.text_object.surface = self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0))
 
-    def on_send(self):
-        self.world.cur_screen.players[0].msg = self.text  # TODO: Send message to Server
+    def on_send(self, data):
+        self.world.cur_player.msg = data  # TODO: Send message to Server
 
     def draw_object(self):
         self.world.draw(self.surface, self.pos)

@@ -77,9 +77,9 @@ class Server(object):
             ref = db.reference('users/' + headers['username'])
             pos = headers['pos'].split(' ')
             ref.update({'pos': [int(pos[0]), int(pos[1])]})
-            self.add_message(client_socket, 'OK', {})
+            self.add_message(client_socket, 'OK', {'command': command})
             for i in self.client_sockets:
-                self.add_message(i, 'UPDATE', {'username': headers['username'], 'command': command}, headers['pos'])
+                self.add_message(i, 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
             print headers['username']
@@ -110,6 +110,21 @@ class Server(object):
         elif command == 'ROOM PLAYERS':
             ref = db.reference('rooms/' + headers['room_id'] + '/players').get()
             self.add_message(client_socket, 'OK', {'command': command}, ' '.join(ref))
+        elif command == 'CONNECT':
+            room_id = db.reference('users/' + headers['username'] + '/room_id').get()
+            ref = db.reference('rooms/' + str(room_id) + '/players')
+            ref.child(headers['username']).set(True)
+            for i in self.client_sockets:
+                if i == client_socket:
+                    self.add_message(client_socket, 'OK', {'command': command})
+                else:
+                    self.add_message(i, 'CONNECT', {'username': headers['username'], 'command': command})
+        elif command == 'QUIT':
+            ref = db.reference('rooms/' + headers['room_id'] + '/players/' + headers['username'])
+            ref.delete()
+            for i in self.client_sockets:
+                self.add_message(i, 'QUIT', {'username': headers['username'], 'command': command})
+            self.add_message(client_socket, 'OK', {'command': command})
 
     @staticmethod
     def message_format(command, headers, data):

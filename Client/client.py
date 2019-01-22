@@ -41,22 +41,23 @@ class Client(object):
                         return headers, data
 
     def receive_message(self):
-        msg = self.socket.recv(KB)
-        lines = msg.split('\r\n')
-        code = lines[0]
-        headers = {}
-        data = ''
-        for i in xrange(1, len(lines) - 1):
-            if lines[i] == '':
-                data = '\r\n'.join(lines[i + 1:])
-                break
-            parts = lines[i].split(': ')
-            headers[parts[0]] = parts[1]
+        while True:
+            msg = self.socket.recv(KB)
+            lines = msg.split('\r\n')
+            code = lines[0]
+            headers = {}
+            data = ''
+            for i in xrange(1, len(lines) - 1):
+                if lines[i] == '':
+                    data = '\r\n'.join(lines[i + 1:])
+                    break
+                parts = lines[i].split(': ')
+                headers[parts[0]] = parts[1]
 
-        while int(headers['length']) != len(data):
-            data += self.socket.recv(KB)
+            while int(headers['length']) != len(data):
+                data += self.socket.recv(KB)
 
-        self.updates = {'code': code, 'headers': headers, 'data': data}
+            self.updates.append({'code': code, 'headers': headers, 'data': data})
 
     @staticmethod
     def message_format(command, headers, data):
@@ -101,16 +102,17 @@ class Client(object):
     def update_player_pos(self, username, pos):
         self.send_message('POS', {'username': username, 'pos': str(pos[0]) + ' ' + str(pos[1])})
 
+    def connect(self, username):
+        self.send_message('CONNECT', {'username': username})
+
+    def quit(self, username, room_id):
+        self.send_message('QUIT', {'username': username, 'room_id': room_id})
+
 
 def main():
     client = Client()
     world = World(client.FILE_PATH, client)
     world.cur_screen = Login(world)
-    #b = Beach(world)
-    #b.players = [Player(world, 'guy2guy2', True, [], 15, '23.11.18', True, 201, [400, 200])]
-    #world.cur_screen = b
-
 
 if __name__ == '__main__':
     main()
-

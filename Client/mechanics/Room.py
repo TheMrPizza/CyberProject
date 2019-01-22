@@ -1,7 +1,6 @@
 from MapObject import MapObject
 from Player import Player
 from Client.mechanics.AStar.Search import search_path
-
 from Screen import Screen
 
 
@@ -16,15 +15,25 @@ class Room(Screen):
 
     def execute(self):
         update = self.world.client.updates
-        if not update or not update['headers'] or not update['headers']['username']:
-            return
-        print update
-        for i in update['headers']['username']:
-            for j in self.players:
-                if i == j.username:
-                    j.pos = update['data']['pos']
-            i.check_message()
-            i.walk()
+        for i in update:
+            if i['code'] == 'POS':
+                for j in self.players:
+                    if i['headers']['username'] == j.username:
+                        pos = [int(i['data'].split(' ')[0]), int(i['data'].split(' ')[1])]
+                        path = search_path(self.world, (j.pos[0] + j.width / 2, j.pos[1] + j.height / 2), pos)
+                        j.walking_path = path
+                        update.remove(i)
+                        break
+            elif i['code'] == 'CONNECT':
+                info = self.world.client.player_info(i['headers']['username'])
+                self.players.append(Player(self.world, info))
+                update.remove(i)
+            elif i['code'] == 'QUIT':
+                for j in self.players:
+                    if i['headers']['username'] == j.username:
+                        self.players.remove(j)
+                        update.remove(i)
+                        break
 
     def check_event(self, event, objects=None):
         if objects is None:
@@ -32,6 +41,10 @@ class Room(Screen):
         Screen.check_event(self, event, [self.path] + self.players + objects)
 
     def draw_screen(self, objects=None):
+        for i in self.players:
+            i.check_message()
+            i.walk()
+
         if objects is None:
             objects = []
         Screen.draw_screen(self, [self.path] + self.players + objects)

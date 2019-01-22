@@ -33,6 +33,7 @@ class Login(Screen):
         if map_object in self.buttons[:2]:
             data = map_object.on_type(event)
             if data:
+                self.world.client.connect(data)
                 info = self.world.client.player_info(data)
                 self.world.cur_player = Player(self.world, info)
                 self.world.cur_screen = Beach(self.world)
