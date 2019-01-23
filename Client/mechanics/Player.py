@@ -18,24 +18,33 @@ class Player(MapObject):
             self.walking_path = []
             self.msg = None
             self.balloon = None
+            self.text_object = MapObject(world, [None, self.pos[1] + 75],
+                                         self.world.fonts['Username'].render(self.username, False, (0, 0, 0)), middle=self, layer=6)
 
     def walk(self):
         if self.walking_path:
             pos = self.walking_path.pop()
-            self.pos = pos[0] - self.width / 2, pos[1] - self.height / 2
+            pos = [pos[0] - self.width / 2, pos[1] - self.height / 2]
+            self.update_pos(pos)
             self.world.cur_screen.layer_reorder()
+
+    def update_pos(self, pos):
+        self.text_object.pos[0] += pos[0] - self.pos[0]
+        self.text_object.pos[1] += pos[1] - self.pos[1]
+        self.pos = pos
+        if self.balloon:
+            self.balloon.update(pos)
 
     def check_message(self):
         if self.msg:
-            self.balloon = SpeechBalloon(self.world, [self.pos[0] + 40, self.pos[1] - 60], self.msg)
+            self.balloon = SpeechBalloon(self.world, self.pos, self.msg)
             self.msg = None
-        elif self.balloon:
-            self.balloon.update([self.pos[0] + 40, self.pos[1] - 60])
-            if not self.balloon.is_alive:
-                self.balloon = None
+        elif self.balloon and not self.balloon.is_alive:
+            self.balloon = None
 
     def draw_object(self):
         self.world.draw(self.surface, self.pos)
+        self.world.draw(self.text_object.surface, self.text_object.pos)
         if self.balloon:
             self.balloon.draw_object()
 

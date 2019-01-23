@@ -56,11 +56,11 @@ class MapObject(object):
 
     @staticmethod
     def find_middle(surface, parent):
-        if type(parent) is MapObject:
+        if isinstance(parent, MapObject):
             x = parent.pos[0] + parent.width / 2 - surface.get_size()[0] / 2
             y = parent.pos[1] + parent.height / 2 - surface.get_size()[1] / 2
             return [x, y]
-        elif type(parent) is pygame.Rect:
+        elif isinstance(parent, pygame.Rect):
             x = parent.x + parent.width / 2 - surface.get_size()[0] / 2
             y = parent.y + parent.height / 2 - surface.get_size()[1] / 2
             return [x, y]

@@ -9,9 +9,10 @@ class Room(Screen):
         Screen.__init__(self, world, room_id, bg_image)
         self.path = MapObject(self.world, [0, 0], image=path, size=world.SIZE, is_transparent=True)
         self.out = out
-        self.players = []
+        self.players = [self.world.cur_player]
         for i in self.world.client.find_players(room_id):
-            self.players.append(Player(world, data=self.world.client.player_info(i)))
+            if i != self.world.cur_player.username:
+                self.players.append(Player(world, data=self.world.client.player_info(i)))
 
     def execute(self):
         update = self.world.client.updates
@@ -34,6 +35,12 @@ class Room(Screen):
                         self.players.remove(j)
                         update.remove(i)
                         break
+            elif i['code'] == 'CHAT':
+                for j in self.players:
+                    if i['headers']['username'] == j.username:
+                        j.msg = i['headers']['message']
+                        update.remove(i)
+                        break
 
     def check_event(self, event, objects=None):
         if objects is None:
@@ -42,8 +49,8 @@ class Room(Screen):
 
     def draw_screen(self, objects=None):
         for i in self.players:
-            i.check_message()
             i.walk()
+            i.check_message()
 
         if objects is None:
             objects = []

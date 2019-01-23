@@ -25,7 +25,8 @@ class TextBox(NinePatch):
         self.text_object.surface = self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0))
 
     def on_send(self, data):
-        self.world.cur_player.msg = data  # TODO: Send message to Server
+        self.world.cur_player.msg = data
+        self.world.client.chat(self.world.cur_player.username, data)
 
     def draw_object(self):
         self.world.draw(self.surface, self.pos)

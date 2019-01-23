@@ -9,6 +9,7 @@ from datetime import datetime
 import socket
 import ast
 import threading
+import sys
 
 SERVER_ADDRESS = ('127.0.0.1', 1943)
 KB = 1024
@@ -18,7 +19,11 @@ class Client(object):
     def __init__(self):
         self.FILE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
         self.socket = socket.socket()
-        self.socket.connect(SERVER_ADDRESS)
+        try:
+            self.socket.connect(SERVER_ADDRESS)
+        except socket.error:
+            print 'Error: No server communication!'
+            sys.exit()
         self.updates = []
         self.thread = threading.Thread(target=self.receive_message)
         self.thread.start()
@@ -29,7 +34,11 @@ class Client(object):
         headers['length'] = len(data)
         request = Client.message_format(command, headers, data)
         while request != '':
-            self.socket.send(request[:KB])
+            try:
+                self.socket.send(request[:KB])
+            except socket.error:
+                print 'Error: No server communication!'
+                sys.exit()
             request = request[KB:]
 
         while True:
@@ -42,7 +51,11 @@ class Client(object):
 
     def receive_message(self):
         while True:
-            msg = self.socket.recv(KB)
+            try:
+                msg = self.socket.recv(KB)
+            except socket.error:
+                print 'Error: No server communication!'
+                sys.exit()
             lines = msg.split('\r\n')
             code = lines[0]
             headers = {}
@@ -55,7 +68,11 @@ class Client(object):
                 headers[parts[0]] = parts[1]
 
             while int(headers['length']) != len(data):
-                data += self.socket.recv(KB)
+                try:
+                    data += self.socket.recv(KB)
+                except socket.error:
+                    print 'Error: No server communication!'
+                    sys.exit()
 
             self.updates.append({'code': code, 'headers': headers, 'data': data})
 
@@ -107,6 +124,9 @@ class Client(object):
 
     def quit(self, username, room_id):
         self.send_message('QUIT', {'username': username, 'room_id': room_id})
+
+    def chat(self, username, message):
+        self.send_message('CHAT', {'username': username, 'message': message})
 
 
 def main():

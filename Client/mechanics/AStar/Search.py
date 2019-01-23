@@ -39,7 +39,7 @@ def search_path(world, start, goal):
         if cur_node.equals(goal_node):  # Goal has reached! Creating the path that was found
             path = []
             while cur_node.parent:
-                for i in xrange(2):
+                for i in xrange(2):  # Adding mid-points to control walking speed
                     x = cur_node.pos[0] + (cur_node.parent.pos[0] - cur_node.pos[0]) / 2 * i
                     y = cur_node.pos[1] + (cur_node.parent.pos[1] - cur_node.pos[1]) / 2 * i
                     path.append((x, y))

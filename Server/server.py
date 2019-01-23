@@ -46,7 +46,12 @@ class Server(object):
         headers['length'] = len(data)
         response = Server.message_format(code, headers, data)
         while response != '':
-            client_socket.send(response[:KB])
+            try:
+                client_socket.send(response[:KB])
+            except socket.error:
+                print 'Error: No client communication!'
+                self.client_sockets.remove(client_socket)
+                return
             response = response[KB:]
 
     def receive_message(self, client_socket):
@@ -68,8 +73,12 @@ class Server(object):
             headers[parts[0]] = parts[1]
 
         while int(headers['length']) != len(data):
-            data += client_socket.recv(KB)
-
+            try:
+                data += client_socket.recv(KB)
+            except socket.error:
+                print 'Error: No client communication!'
+                self.client_sockets.remove(client_socket)
+                return
         if command == 'STORAGE':
             blob = self.bucket.get_blob(headers['item'])
             self.add_message(client_socket, 'OK', {'time-created': blob.time_created, 'command': command}, blob.download_as_string())
@@ -77,9 +86,11 @@ class Server(object):
             ref = db.reference('users/' + headers['username'])
             pos = headers['pos'].split(' ')
             ref.update({'pos': [int(pos[0]), int(pos[1])]})
-            self.add_message(client_socket, 'OK', {'command': command})
             for i in self.client_sockets:
-                self.add_message(i, 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
+                if i == client_socket:
+                    self.add_message(client_socket, 'OK', {'command': command})
+                else:
+                    self.add_message(i, 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
             print headers['username']
@@ -125,6 +136,12 @@ class Server(object):
             for i in self.client_sockets:
                 self.add_message(i, 'QUIT', {'username': headers['username'], 'command': command})
             self.add_message(client_socket, 'OK', {'command': command})
+        elif command == 'CHAT':
+            for i in self.client_sockets:
+                if i == client_socket:
+                    self.add_message(client_socket, 'OK', {'command': command})
+                else:
+                    self.add_message(i, 'CHAT', {'username': headers['username'], 'message': headers['message'], 'command': command})
 
     @staticmethod
     def message_format(command, headers, data):

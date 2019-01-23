@@ -29,16 +29,14 @@ class Beach(Room):
                                                 self.world.cur_player.pos[1] + self.world.cur_player.height / 2), event.pos)
                 if path:
                     self.world.cur_player.walking_path = path
-                    self.world.client.update_player_pos(self.world.cur_player.username, event.pos)
+                    self.world.client.update_player_pos(self.world.cur_player.username, [event.pos[0] - self.world.cur_player.width/2,
+                                                                                         event.pos[1] - self.world.cur_player.height/2])
 
     def layer_reorder(self):
-        for i in self.players:
-            if self.bush.pos[1] + self.bush.height < i.pos[1] + i.height:
-                self.bush.layer = 2
-                i.layer = 3
-            else:
-                i.layer = 2
-                self.bush.layer = 3
+        objects = self.players + [self.bush]
+        objects = sorted(objects, key=lambda o: o.pos[1] + o.height)
+        for i in xrange(len(objects)):
+            objects[i].layer = i+2
 
     def on_type(self, map_object, event):
         if map_object is self.chat_box:
