@@ -114,7 +114,9 @@ class Client(object):
 
     def find_players(self, room_id):
         headers, data = self.send_message('ROOM PLAYERS', {'room_id': room_id})
-        return data.split(' ')
+        if data:
+            return data.split(' ')
+        return []
 
     def update_player_pos(self, username, pos):
         self.send_message('POS', {'username': username, 'pos': str(pos[0]) + ' ' + str(pos[1])})

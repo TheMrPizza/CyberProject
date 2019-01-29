@@ -41,11 +41,21 @@ class Room(Screen):
                         j.msg = i['headers']['message']
                         update.remove(i)
                         break
+            elif i['code'] == 'ADD PLAYER':
+                if int(i['headers']['room_id']) == self.screen_id:
+                    info = self.world.client.player_info(i['headers']['username'])
+                    self.players.append(Player(self.world, info))
+                else:
+                    for j in self.players:
+                        if i['headers']['username'] == j.username:
+                            self.players.remove(j)
+                            break
+                update.remove(i)
 
     def check_event(self, event, objects=None):
         if objects is None:
             objects = []
-        Screen.check_event(self, event, [self.path] + self.players + objects)
+        Screen.check_event(self, event, self.out + [self.path] + self.players + objects)
 
     def draw_screen(self, objects=None):
         for i in self.players:
@@ -54,7 +64,7 @@ class Room(Screen):
 
         if objects is None:
             objects = []
-        Screen.draw_screen(self, [self.path] + self.players + objects)
+        Screen.draw_screen(self, self.out + [self.path] + self.players + objects)
 
     def on_click(self, map_object, event):
         raise NotImplementedError

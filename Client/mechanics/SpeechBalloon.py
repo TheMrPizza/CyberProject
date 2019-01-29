@@ -57,10 +57,11 @@ class SpeechBalloon(NinePatch):
         self.text_rect.x += pos[0] - self.pos[0]
         self.text_rect.y += pos[1] - self.pos[1]
         self.pos = pos
-        if pygame.time.get_ticks() - self.start_time >= self.TTL:
-            self.is_alive = False
 
     def draw_object(self):
+        if pygame.time.get_ticks() - self.start_time >= self.TTL:
+            self.is_alive = False
+            return
         self.world.draw(self.surface, self.pos)
         for i in self.lines:
             self.world.draw(i.surface, i.pos)

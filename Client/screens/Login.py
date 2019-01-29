@@ -3,6 +3,7 @@ from Client.mechanics.TextBox import TextBox
 from Client.mechanics.Label import Label
 from Client.mechanics.Player import Player
 from Client.screens.Beach import Beach
+from Client.screens.Submarine import Submarine
 
 
 class Login(Screen):
@@ -36,4 +37,7 @@ class Login(Screen):
                 self.world.client.connect(data)
                 info = self.world.client.player_info(data)
                 self.world.cur_player = Player(self.world, info)
-                self.world.cur_screen = Beach(self.world)
+                if self.world.cur_player.room_id == 201:
+                    self.world.cur_screen = Beach(self.world)
+                elif self.world.cur_player.room_id == 202:
+                    self.world.cur_screen = Submarine(self.world)
