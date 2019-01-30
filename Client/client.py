@@ -1,6 +1,4 @@
 from mechanics.World import World
-from screens.Beach import Beach
-from mechanics.Player import Player
 from screens.Login import Login
 
 import os

@@ -2,7 +2,6 @@ from Client.mechanics.MapObject import MapObject
 from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
 from Client.mechanics.TextBox import TextBox
-from Client.screens.Submarine import Submarine
 
 
 class Beach(Room):
@@ -25,7 +24,7 @@ class Beach(Room):
         Room.draw_screen(self, [self.bush, self.bush_shadow, self.chat_box] + objects)
 
     def on_click(self, map_object, event):
-        if map_object is self.path:
+        if map_object in [self.path] + self.out:
             if self.path.surface.get_at(event.pos).a != 0:
                 path = search_path(self.world, (self.world.cur_player.pos[0] + self.world.cur_player.width / 2,
                                                 self.world.cur_player.pos[1] + self.world.cur_player.height / 2), event.pos)
@@ -33,10 +32,8 @@ class Beach(Room):
                     self.world.cur_player.walking_path = path
                     self.world.client.update_player_pos(self.world.cur_player.username, [event.pos[0] - self.world.cur_player.width/2,
                                                                                          event.pos[1] - self.world.cur_player.height/2])
-        elif map_object in self.out:
-            room = Submarine(self.world)
-            self.world.client.add_player(room.screen_id, self.world.cur_player.username)
-            self.world.cur_screen = room
+                    if map_object in self.out:
+                        self.world.cur_player.path_target = 202
 
     def layer_reorder(self):
         objects = self.players + [self.bush]
