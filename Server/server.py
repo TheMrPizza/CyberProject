@@ -25,11 +25,15 @@ class Server(object):
         self.waiting_data = []
 
         while True:
-            rlist, wlist, xlist = select.select(self.client_sockets + [self.socket], self.client_sockets, [])
+            sockets = []
+            for i in self.client_sockets:
+                if 'socket' in i:
+                    sockets.append(i['socket'])
+            rlist, wlist, xlist = select.select(sockets + [self.socket], sockets, [])
             for i in rlist:
                 if i is self.socket:
                     new_socket, address = self.socket.accept()
-                    self.client_sockets.append(new_socket)
+                    self.client_sockets.append({'socket': new_socket, 'username': None, 'room_id': 0})
                 else:
                     self.receive_message(i)
 
@@ -50,7 +54,15 @@ class Server(object):
                 client_socket.send(response[:KB])
             except socket.error:
                 print 'Error: No client communication!'
-                self.client_sockets.remove(client_socket)
+                for i in self.client_sockets:
+                    if i['socket'] == client_socket:
+                        print 'QUIT', i['username']
+                        ref = db.reference('rooms/' + i['room_id'] + '/players/' + i['username'])
+                        ref.delete()
+                        for j in self.client_sockets:
+                            self.add_message(j, 'QUIT', {'username': i['username']})
+                        self.client_sockets.remove(i)
+                        break
                 return
             response = response[KB:]
 
@@ -77,7 +89,14 @@ class Server(object):
                 data += client_socket.recv(KB)
             except socket.error:
                 print 'Error: No client communication!'
-                self.client_sockets.remove(client_socket)
+                for i in self.client_sockets:
+                    if i['socket'] == self.client_sockets:  # TODO: Remove player
+                        ref = db.reference('rooms/' + i['room_id'] + '/players/' + i['username'])
+                        ref.delete()
+                        for j in self.client_sockets:
+                            self.add_message(j, 'QUIT', {'username': i['username']})
+                        self.client_sockets.remove(i)
+                        break
                 return
         if command == 'STORAGE':
             blob = self.bucket.get_blob(headers['item'])
@@ -87,10 +106,10 @@ class Server(object):
             pos = headers['pos'].split(' ')
             ref.update({'pos': [int(pos[0]), int(pos[1])]})
             for i in self.client_sockets:
-                if i == client_socket:
+                if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
                 else:
-                    self.add_message(i, 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
+                    self.add_message(i['socket'], 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
             print headers['username']
@@ -113,10 +132,10 @@ class Server(object):
             ref = db.reference('rooms/' + headers['room_id'] + '/players')
             ref.child(headers['username']).set(True)
             for i in self.client_sockets:
-                if i == client_socket:
+                if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
                 else:
-                    self.add_message(i, 'ADD PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
+                    self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
         elif command == 'PLAYER INFO':
             ref = db.reference('users/' + headers['username']).get()
             info = {'username': headers['username']}
@@ -137,12 +156,14 @@ class Server(object):
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
             ref = db.reference('rooms/' + str(room_id) + '/players')
             ref.child(headers['username']).set(True)
+            self.add_socket_details(client_socket, headers['username'], str(room_id))
             for i in self.client_sockets:
-                if i == client_socket:
+                if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
                 else:
-                    self.add_message(i, 'ADD PLAYER', {'username': headers['username'], 'room_id': room_id, 'command': command})
+                    self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'], 'room_id': room_id, 'command': command})
         elif command == 'QUIT':
+            print 'QUITTT'
             ref = db.reference('rooms/' + headers['room_id'] + '/players/' + headers['username'])
             ref.delete()
             for i in self.client_sockets:
@@ -150,10 +171,17 @@ class Server(object):
             self.add_message(client_socket, 'OK', {'command': command})
         elif command == 'CHAT':
             for i in self.client_sockets:
-                if i == client_socket:
+                if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
                 else:
-                    self.add_message(i, 'CHAT', {'username': headers['username'], 'message': headers['message'], 'command': command})
+                    self.add_message(i['socket'], 'CHAT', {'username': headers['username'], 'message': headers['message'], 'command': command})
+
+    def add_socket_details(self, client_socket, username, room_id):
+        for i in self.client_sockets:
+            if i['socket'] == client_socket:
+                i['username'] = username
+                i['room_id'] = room_id
+                break
 
     @staticmethod
     def message_format(command, headers, data):

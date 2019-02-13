@@ -9,13 +9,14 @@ class Screen(object):
         self.bg_image = MapObject(self.world, [0, 0], image=bg_image, size=self.world.SIZE, layer=0)
 
     def check_event(self, event, objects):
-        for i in objects:
+        for i in sorted(objects, key=lambda o: o.layer, reverse=True):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if i.check_collision(event.pos):
+                    for j in objects:  # TODO: List comprehension
+                        j.is_focus = False
                     i.is_focus = True
                     self.world.cur_screen.on_click(i, event)
-                else:
-                    i.is_focus = False
+                    break
             elif event.type == pygame.KEYDOWN:
                 if i.is_focus:
                     self.world.cur_screen.on_type(i, event)

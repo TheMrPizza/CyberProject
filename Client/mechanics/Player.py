@@ -27,18 +27,25 @@ class Player(MapObject):
             pos = [pos[0] - self.width / 2, pos[1] - self.height / 2]
             self.update_pos(pos)
             self.world.cur_screen.layer_reorder()
+
             if not self.walking_path:  # Path ended
                 if self.path_target:  # Player is going out of the room
                     if self.path_target == 201:  # TODO: Fix
                         self.world.cur_player.update_pos([780, 380])
                         self.world.cur_screen.layer_reorder()
+                        self.path_target = None
+
                         from Client.screens.Beach import Beach
                         room = Beach(self.world)
                         self.world.client.add_player(room.screen_id, self.world.cur_player.username)
                         self.world.cur_screen = room
+
                     if self.path_target == 202:
+                        print True
                         self.world.cur_player.update_pos([20, 0])
                         self.world.cur_screen.layer_reorder()
+                        self.path_target = None
+
                         from Client.screens.Submarine import Submarine
                         room = Submarine(self.world)
                         self.world.client.add_player(room.screen_id, self.world.cur_player.username)
