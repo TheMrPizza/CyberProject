@@ -27,8 +27,7 @@ class Submarine(Room):
                                                 self.world.cur_player.pos[1] + self.world.cur_player.height / 2), event.pos)
                 if path:
                     self.world.cur_player.walking_path = path
-                    self.world.client.update_player_pos(self.world.cur_player.username, [event.pos[0] - self.world.cur_player.width/2,
-                                                                                         event.pos[1] - self.world.cur_player.height/2])
+                    self.world.client.update_player_pos(self.world.cur_player.username, event.pos)
                     if map_object in self.out:
                         self.world.cur_player.path_target = 201
 

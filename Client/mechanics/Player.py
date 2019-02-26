@@ -31,7 +31,9 @@ class Player(MapObject):
             if not self.walking_path:  # Path ended
                 if self.path_target:  # Player is going out of the room
                     if self.path_target == 201:  # TODO: Fix
+                        print '201'
                         self.world.cur_player.update_pos([780, 380])
+                        self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
                         self.world.cur_screen.layer_reorder()
                         self.path_target = None
 
@@ -43,6 +45,7 @@ class Player(MapObject):
                     if self.path_target == 202:
                         print True
                         self.world.cur_player.update_pos([20, 0])
+                        self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
                         self.world.cur_screen.layer_reorder()
                         self.path_target = None
 

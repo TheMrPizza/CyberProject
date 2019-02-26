@@ -60,7 +60,7 @@ class Server(object):
                         ref = db.reference('rooms/' + i['room_id'] + '/players/' + i['username'])
                         ref.delete()
                         for j in self.client_sockets:
-                            self.add_message(j, 'QUIT', {'username': i['username']})
+                            self.add_message(j['socket'], 'QUIT', {'username': i['username']})
                         self.client_sockets.remove(i)
                         break
                 return
@@ -94,7 +94,7 @@ class Server(object):
                         ref = db.reference('rooms/' + i['room_id'] + '/players/' + i['username'])
                         ref.delete()
                         for j in self.client_sockets:
-                            self.add_message(j, 'QUIT', {'username': i['username']})
+                            self.add_message(j['socket'], 'QUIT', {'username': i['username']})
                         self.client_sockets.remove(i)
                         break
                 return
@@ -109,7 +109,7 @@ class Server(object):
                 if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
                 else:
-                    self.add_message(i['socket'], 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
+                    self.add_message(i['socket'], 'POS', {'username': headers['username'], 'is_path': headers['is_path'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
             print headers['username']
@@ -133,7 +133,7 @@ class Server(object):
             ref.child(headers['username']).set(True)
             for i in self.client_sockets:
                 if i['socket'] == client_socket:
-                    self.add_message(client_socket, 'OK', {'command': command})
+                    self.add_message(client_socket, 'REMOVE PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
                 else:
                     self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
         elif command == 'PLAYER INFO':
@@ -167,7 +167,7 @@ class Server(object):
             ref = db.reference('rooms/' + headers['room_id'] + '/players/' + headers['username'])
             ref.delete()
             for i in self.client_sockets:
-                self.add_message(i, 'QUIT', {'username': headers['username'], 'command': command})
+                self.add_message(i['socket'], 'QUIT', {'username': headers['username'], 'command': command})
             self.add_message(client_socket, 'OK', {'command': command})
         elif command == 'CHAT':
             for i in self.client_sockets:
