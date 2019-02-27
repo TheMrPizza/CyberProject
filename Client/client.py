@@ -116,8 +116,8 @@ class Client(object):
             return data.split(' ')
         return []
 
-    def update_player_pos(self, username, pos, is_path=True):
-        self.send_message('POS', {'username': username, 'pos': str(pos[0]) + ' ' + str(pos[1]), 'is_path': is_path})
+    def update_player_pos(self, username, pos):
+        self.send_message('POS', {'username': username, 'pos': str(pos[0]) + ' ' + str(pos[1])})
 
     def connect(self, username):
         self.send_message('CONNECT', {'username': username})

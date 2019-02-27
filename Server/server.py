@@ -90,7 +90,7 @@ class Server(object):
             except socket.error:
                 print 'Error: No client communication!'
                 for i in self.client_sockets:
-                    if i['socket'] == self.client_sockets:  # TODO: Remove player
+                    if i['socket'] == self.client_sockets:
                         ref = db.reference('rooms/' + i['room_id'] + '/players/' + i['username'])
                         ref.delete()
                         for j in self.client_sockets:
@@ -109,7 +109,7 @@ class Server(object):
                 if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
                 else:
-                    self.add_message(i['socket'], 'POS', {'username': headers['username'], 'is_path': headers['is_path'], 'command': command}, headers['pos'])
+                    self.add_message(i['socket'], 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
             print headers['username']
@@ -124,17 +124,22 @@ class Server(object):
             })
             self.add_message(client_socket, 'OK', {'command': command})
         elif command == 'ADD PLAYER':
+            # Delete player from the old room
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
             db.reference('rooms/' + str(room_id) + '/players').delete()
 
+            # Add player to the new room
             db.reference('users/' + headers['username'] + '/room_id').set(int(headers['room_id']))
-
             ref = db.reference('rooms/' + headers['room_id'] + '/players')
             ref.child(headers['username']).set(True)
+
             for i in self.client_sockets:
-                if i['socket'] == client_socket:
-                    self.add_message(client_socket, 'REMOVE PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
-                else:
+                if i['socket'] == client_socket:  # The player, send him OK
+                    i['room_id'] = headers['room_id']
+                    self.add_message(client_socket, 'OK', {'command': command})
+                elif int(i['room_id']) == room_id:  # A player in the old room, say goodbye
+                    self.add_message(i['socket'], 'REMOVE PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
+                elif i['room_id'] == headers['room_id']:  # A player in the new room, say hello
                     self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
         elif command == 'PLAYER INFO':
             ref = db.reference('users/' + headers['username']).get()
@@ -160,7 +165,7 @@ class Server(object):
             for i in self.client_sockets:
                 if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
-                else:
+                elif int(i['room_id']) == room_id:
                     self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'], 'room_id': room_id, 'command': command})
         elif command == 'QUIT':
             print 'QUITTT'
