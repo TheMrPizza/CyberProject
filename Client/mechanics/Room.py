@@ -21,7 +21,8 @@ class Room(Screen):
             if i['code'] == 'POS':
                 for j in self.players:
                     if i['headers']['username'] == j.username:
-                        pos = [int(i['data'].split(' ')[0]), int(i['data'].split(' ')[1])]
+                        pos = [int(i['data'].split(' ')[0]) + j.width / 2, int(i['data'].split(' ')[1]) + j.height / 2]
+                        print 'pos', j.username, pos
                         path = search_path(self.world, (j.pos[0] + j.width / 2, j.pos[1] + j.height / 2), pos)
                         j.walking_path = path
                         update.remove(i)
@@ -61,8 +62,6 @@ class Room(Screen):
 
     def draw_screen(self, objects=None):
         for i in self.players:
-            if i != self.world.cur_player:
-                print i.walking_path
             i.walk()
             i.check_message()
 

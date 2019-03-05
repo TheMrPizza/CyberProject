@@ -86,7 +86,8 @@ class Client(object):
         headers, data = self.send_message('STORAGE', {'item': item})
         item_path = self.FILE_PATH + item
         if os.path.exists(item_path):
-            if os.path.getctime(item_path) < time.mktime(datetime.strptime(headers['time-created'][:-6], '%Y-%m-%d %H:%M:%S.%f').timetuple()):
+            if os.path.getctime(item_path) < time.mktime(datetime.strptime(headers['time-created'][:-6],
+                                                                           '%Y-%m-%d %H:%M:%S.%f').timetuple()):
                 # File was changed! Update
                 item_file = open(item_path, 'wb')
                 item_file.write(data)

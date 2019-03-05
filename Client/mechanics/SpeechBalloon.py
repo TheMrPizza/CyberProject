@@ -12,8 +12,10 @@ class SpeechBalloon(NinePatch):
 
         text = SpeechBalloon.size_adjustment(text, self.FONT, self.MAX_WIDTH)
         pos = [pos[0] + 40, pos[1] - 60]
-        NinePatch.__init__(self, world, pos, 'images/test_speech_balloon.9.png', text_size=SpeechBalloon.calc_text_size(text, self.FONT), layer=4, **kwargs)
-        self.lines = SpeechBalloon.create_lines(world, [self.text_rect.x, self.text_rect.y], text, self.FONT, self.text_rect)
+        NinePatch.__init__(self, world, pos, 'images/test_speech_balloon.9.png',
+                           text_size=SpeechBalloon.calc_text_size(text, self.FONT), layer=4, **kwargs)
+        self.lines = SpeechBalloon.create_lines(world, [self.text_rect.x, self.text_rect.y], text, self.FONT,
+                                                self.text_rect)
 
         self.start_time = pygame.time.get_ticks()
 
@@ -35,7 +37,8 @@ class SpeechBalloon(NinePatch):
     def create_lines(world, pos, lines, font, text_rect):
         height = font.size(lines[0])[1]
         for i in xrange(len(lines)):
-            lines[i] = MapObject(world, [None, pos[1] + height * i], font.render(lines[i], False, (0, 0, 0)), middle=text_rect, layer=5)
+            lines[i] = MapObject(world, [None, pos[1] + height * i], font.render(lines[i], False, (0, 0, 0)),
+                                 middle=text_rect, layer=5)
         return lines
 
     @staticmethod

@@ -53,16 +53,7 @@ class Server(object):
             try:
                 client_socket.send(response[:KB])
             except socket.error:
-                print 'Error: No client communication!'
-                for i in self.client_sockets:
-                    if i['socket'] == client_socket:
-                        print 'QUIT', i['username']
-                        ref = db.reference('rooms/' + i['room_id'] + '/players/' + i['username'])
-                        ref.delete()
-                        for j in self.client_sockets:
-                            self.add_message(j['socket'], 'QUIT', {'username': i['username']})
-                        self.client_sockets.remove(i)
-                        break
+                self.quit_socket(client_socket)
                 return
             response = response[KB:]
 
@@ -70,6 +61,7 @@ class Server(object):
         try:
             msg = client_socket.recv(KB)
         except (socket.error, socket.timeout):
+            self.quit_socket(client_socket)
             return
         if msg == '':
             return
@@ -88,32 +80,30 @@ class Server(object):
             try:
                 data += client_socket.recv(KB)
             except socket.error:
-                print 'Error: No client communication!'
-                for i in self.client_sockets:
-                    if i['socket'] == self.client_sockets:
-                        ref = db.reference('rooms/' + i['room_id'] + '/players/' + i['username'])
-                        ref.delete()
-                        for j in self.client_sockets:
-                            self.add_message(j['socket'], 'QUIT', {'username': i['username']})
-                        self.client_sockets.remove(i)
-                        break
+                self.quit_socket(client_socket)
                 return
         if command == 'STORAGE':
             blob = self.bucket.get_blob(headers['item'])
-            self.add_message(client_socket, 'OK', {'time-created': blob.time_created, 'command': command}, blob.download_as_string())
+            self.add_message(client_socket, 'OK', {'time-created': blob.time_created, 'command': command},
+                             blob.download_as_string())
         elif command == 'POS':
             ref = db.reference('users/' + headers['username'])
             pos = headers['pos'].split(' ')
             ref.update({'pos': [int(pos[0]), int(pos[1])]})
+            room_id = 0
             for i in self.client_sockets:
                 if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
-                else:
-                    self.add_message(i['socket'], 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
+                    room_id = i['room_id']
+            for i in self.client_sockets:
+                if i['socket'] != client_socket and i['room_id'] == room_id:
+                    self.add_message(i['socket'], 'POS', {'username': headers['username'], 'command': command},
+                                     headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
             print headers['username']
             ref.child(headers['username']).set({
+                'body': headers['body'],
                 'is_male': bool(headers['is_male']),
                 'items': headers['items'][1:-1].split(', '),
                 'level': int(headers['level']),
@@ -138,9 +128,11 @@ class Server(object):
                     i['room_id'] = headers['room_id']
                     self.add_message(client_socket, 'OK', {'command': command})
                 elif int(i['room_id']) == room_id:  # A player in the old room, say goodbye
-                    self.add_message(i['socket'], 'REMOVE PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
+                    self.add_message(i['socket'], 'REMOVE PLAYER', {'username': headers['username'],
+                                                                    'room_id': headers['room_id'], 'command': command})
                 elif i['room_id'] == headers['room_id']:  # A player in the new room, say hello
-                    self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'], 'room_id': headers['room_id'], 'command': command})
+                    self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'],
+                                                                 'room_id': headers['room_id'], 'command': command})
         elif command == 'PLAYER INFO':
             ref = db.reference('users/' + headers['username']).get()
             info = {'username': headers['username']}
@@ -166,7 +158,8 @@ class Server(object):
                 if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
                 elif int(i['room_id']) == room_id:
-                    self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'], 'room_id': room_id, 'command': command})
+                    self.add_message(i['socket'], 'ADD PLAYER', {'username': headers['username'],
+                                                                 'room_id': room_id, 'command': command})
         elif command == 'QUIT':
             print 'QUITTT'
             ref = db.reference('rooms/' + headers['room_id'] + '/players/' + headers['username'])
@@ -179,7 +172,8 @@ class Server(object):
                 if i['socket'] == client_socket:
                     self.add_message(client_socket, 'OK', {'command': command})
                 else:
-                    self.add_message(i['socket'], 'CHAT', {'username': headers['username'], 'message': headers['message'], 'command': command})
+                    self.add_message(i['socket'], 'CHAT', {'username': headers['username'],
+                                                           'message': headers['message'], 'command': command})
 
     def add_socket_details(self, client_socket, username, room_id):
         for i in self.client_sockets:
@@ -187,6 +181,18 @@ class Server(object):
                 i['username'] = username
                 i['room_id'] = room_id
                 break
+
+    def quit_socket(self, client_socket):
+        print 'Error: No client communication!'
+        for i in self.client_sockets:
+            if i['socket'] == client_socket:
+                print 'QUIT', i['username']
+                ref = db.reference('rooms/' + i['room_id'] + '/players/' + i['username'])
+                ref.delete()
+                for j in self.client_sockets:
+                    self.add_message(j['socket'], 'QUIT', {'username': i['username']})
+                self.client_sockets.remove(i)
+                return
 
     @staticmethod
     def message_format(command, headers, data):

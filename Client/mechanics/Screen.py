@@ -24,7 +24,6 @@ class Screen(object):
     def draw_screen(self, objects=None):
         if not objects:
             objects = []
-        # TODO: Add image to Login
         objects = [self.bg_image] + objects
         for i in sorted(objects, key=lambda o: o.layer):
             i.draw_object()

@@ -24,10 +24,13 @@ class Submarine(Room):
         if map_object in [self.path] + self.out:
             if self.path.surface.get_at(event.pos).a != 0:
                 path = search_path(self.world, (self.world.cur_player.pos[0] + self.world.cur_player.width / 2,
-                                                self.world.cur_player.pos[1] + self.world.cur_player.height / 2), event.pos)
+                                                self.world.cur_player.pos[1] + self.world.cur_player.height / 2),
+                                   event.pos)
                 if path:
                     self.world.cur_player.walking_path = path
-                    self.world.client.update_player_pos(self.world.cur_player.username, event.pos)
+                    self.world.client.update_player_pos(self.world.cur_player.username,
+                                                        [event.pos[0] - self.world.cur_player.width / 2,
+                                                         event.pos[1] - self.world.cur_player.height / 2])
                     if map_object in self.out:
                         self.world.cur_player.path_target = 201
 

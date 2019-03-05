@@ -6,7 +6,7 @@ class Player(MapObject):
     def __init__(self, world, data):
         if data:
             # Another player. Data sent from the server
-            MapObject.__init__(self, world, data['pos'], image='images/player.png')
+            MapObject.__init__(self, world, data['pos'], image='images/' + data['body'] + '.png')
             self.username = data['username']
             self.is_male = data['is_male']
             self.items = data['items']
@@ -19,7 +19,8 @@ class Player(MapObject):
             self.msg = None
             self.balloon = None
             self.text_object = MapObject(world, [None, self.pos[1] + 75],
-                                         self.world.fonts['Username'].render(self.username, False, (0, 0, 0)), middle=self, layer=6)
+                                         self.world.fonts['Username'].render(self.username, False, (0, 0, 0)),
+                                         middle=self, layer=6)
 
     def walk(self):
         if self.walking_path:
@@ -31,24 +32,14 @@ class Player(MapObject):
             if not self.walking_path:  # Path ended
                 if self.path_target:  # Player is going out of the room
                     if self.path_target == 201:
-                        #self.update_pos([780, 380])
                         self.world.client.update_player_pos(self.username, [780, 380])
-                        #self.walking_path = []
-                        #self.world.cur_screen.layer_reorder()
-                        #self.path_target = None
-
                         from Client.screens.Beach import Beach
                         room = Beach(self.world)
                         self.world.client.add_player(room.screen_id, self.username)
                         self.world.cur_screen = room
 
                     if self.path_target == 202:
-                        #self.update_pos([20, 0])
                         self.world.client.update_player_pos(self.username, [20, 0])
-                        #self.walking_path = []
-                        #self.world.cur_screen.layer_reorder()
-                        #self.path_target = None
-
                         from Client.screens.Submarine import Submarine
                         room = Submarine(self.world)
                         self.world.client.add_player(room.screen_id, self.username)

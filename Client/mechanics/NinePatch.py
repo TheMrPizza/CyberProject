@@ -70,7 +70,8 @@ class NinePatch(MapObject):
         # Y-Middle
         left = pygame.Surface((x['start'], y['end'] - y['start']), pygame.SRCALPHA)
         left.blit(cur_image, (0, 0), area=(0, y['start'], x['start'], y['end'] - y['start']))
-        left = pygame.transform.smoothscale(left, (x['start'], size[1] - y['start'] - (cur_image.get_size()[1] - y['end'])))
+        left = pygame.transform.smoothscale(left, (x['start'], size[1] - y['start'] -
+                                                   (cur_image.get_size()[1] - y['end'])))
 
         middle = pygame.Surface((x['end'] - x['start'], y['end'] - y['start']), pygame.SRCALPHA)
         middle.blit(cur_image, (0, 0), area=(x['start'], y['start'], x['end'] - x['start'], y['end'] - y['start']))
@@ -80,7 +81,8 @@ class NinePatch(MapObject):
         right = pygame.Surface((cur_image.get_size()[0] - x['end'], y['end'] - y['start']), pygame.SRCALPHA)
         right.blit(cur_image, (0, 0), area=(x['end'], y['start'], cur_image.get_size()[0] - x['end'],
                                             y['end'] - y['start']))
-        right = pygame.transform.smoothscale(right, (cur_image.get_size()[0] - x['end'], size[1] - y['start'] - (cur_image.get_size()[1] - y['end'])))
+        right = pygame.transform.smoothscale(right, (cur_image.get_size()[0] - x['end'], size[1] - y['start'] -
+                                                     (cur_image.get_size()[1] - y['end'])))
 
         surfaces.append([left, middle, right])
 
