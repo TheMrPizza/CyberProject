@@ -33,7 +33,7 @@ class Server(object):
             for i in rlist:
                 if i is self.socket:
                     new_socket, address = self.socket.accept()
-                    self.client_sockets.append({'socket': new_socket, 'username': None, 'room_id': 0})
+                    self.client_sockets.append({'socket': new_socket, 'username': '', 'room_id': '0'})
                 else:
                     self.receive_message(i)
 
@@ -82,6 +82,7 @@ class Server(object):
             except socket.error:
                 self.quit_socket(client_socket)
                 return
+
         if command == 'STORAGE':
             blob = self.bucket.get_blob(headers['item'])
             self.add_message(client_socket, 'OK', {'time-created': blob.time_created, 'command': command},
@@ -136,6 +137,16 @@ class Server(object):
         elif command == 'PLAYER INFO':
             ref = db.reference('users/' + headers['username']).get()
             info = {'username': headers['username']}
+            for key, value in ref.iteritems():
+                if type(key) is unicode:
+                    key = str(key)
+                if type(value) is unicode:
+                    value = str(value)
+                info[key] = value
+            self.add_message(client_socket, 'OK', {'command': command}, str(info))
+        elif command == 'ITEM INFO':
+            ref = db.reference('items/' + headers['item_id']).get()
+            info = {'item_id': headers['item_id']}
             for key, value in ref.iteritems():
                 if type(key) is unicode:
                     key = str(key)

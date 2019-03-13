@@ -1,5 +1,6 @@
 from MapObject import MapObject
 from SpeechBalloon import SpeechBalloon
+from Item import Item
 
 
 class Player(MapObject):
@@ -9,7 +10,10 @@ class Player(MapObject):
             MapObject.__init__(self, world, data['pos'], image='images/' + data['body'] + '.png')
             self.username = data['username']
             self.is_male = data['is_male']
-            self.items = data['items']
+            self.items = []
+            for i in data['items']:
+                if i != -1:  # No Items
+                    self.items.append(Item(self.world, self.world.client.item_info(i), self.pos, True))  # Change True
             self.level = data['level']
             self.join_date = data['join_date']
             self.is_admin = data['is_admin']
@@ -46,8 +50,9 @@ class Player(MapObject):
                         self.world.cur_screen = room
 
     def update_pos(self, pos):
-        self.text_object.pos[0] += pos[0] - self.pos[0]
-        self.text_object.pos[1] += pos[1] - self.pos[1]
+        for i in self.items + [self.text_object]:
+            i.pos[0] += pos[0] - self.pos[0]
+            i.pos[1] += pos[1] - self.pos[1]
         self.pos = pos
         if self.balloon:
             self.balloon.update(pos)
@@ -61,6 +66,8 @@ class Player(MapObject):
 
     def draw_object(self):
         self.world.draw(self.surface, self.pos)
+        for i in self.items:
+            self.world.draw(i.surface, i.pos)
         self.world.draw(self.text_object.surface, self.text_object.pos)
         if self.balloon:
             self.balloon.draw_object()

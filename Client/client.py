@@ -109,6 +109,12 @@ class Client(object):
 
     def player_info(self, username):
         headers, data = self.send_message('PLAYER INFO', {'username': username})
+        print ast.literal_eval(data)
+        return ast.literal_eval(data)
+
+    def item_info(self, item_id):
+        headers, data = self.send_message('ITEM INFO', {'item_id': item_id})
+        print ast.literal_eval(data)
         return ast.literal_eval(data)
 
     def find_players(self, room_id):

@@ -69,6 +69,8 @@ class MapObject(object):
 
     @staticmethod
     def load_image(world, image, size=None):
+        if not os.path.exists(world.PATH + '/images'):
+            os.makedirs(world.PATH + '/images')
         if not os.path.exists(world.PATH + image):
             world.client.get_from_storage(image)
         surface = pygame.image.load(world.PATH + image)
