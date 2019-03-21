@@ -19,7 +19,9 @@ class World(object):
         self.fonts = {'Text Box': pygame.font.SysFont('Agency FB', 25),
                       'Title': pygame.font.SysFont('Agency FB', 20),
                       'Speech Balloon': pygame.font.SysFont('Arial', 18),
-                      'Username': pygame.font.SysFont('Arial', 20, True)}
+                      'Username': pygame.font.SysFont('Arial', 20, True),
+                      'Level': pygame.font.SysFont('Arial', 40, True)}
+        self.storage_history = []
 
         self.loop_thread = threading.Thread(target=self.world_loop)
         self.loop_thread.start()
@@ -30,6 +32,7 @@ class World(object):
 
     def world_loop(self):
         pygame.init()
+        pygame.mixer.quit()
         self.SURF = pygame.display.set_mode(self.SIZE)
         pygame.display.set_caption("Cyber!")
         execute_thread = threading.Thread(target=self.execute_loop)

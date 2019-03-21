@@ -28,7 +28,8 @@ class Login(Screen):
         Screen.draw_screen(self, self.buttons + objects)
 
     def on_click(self, map_object, event):
-        print map_object
+        # print map_object
+        pass
 
     def on_type(self, map_object, event):
         if map_object in self.buttons[:2]:

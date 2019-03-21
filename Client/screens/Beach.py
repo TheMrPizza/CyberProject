@@ -1,7 +1,6 @@
 from Client.mechanics.MapObject import MapObject
 from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
-from Client.mechanics.TextBox import TextBox
 
 
 class Beach(Room):
@@ -10,7 +9,6 @@ class Beach(Room):
         self.bush = MapObject(self.world, [606, 192], image='images/test_bush.png', layer=3)
         self.bush_shadow = MapObject(self.world, [self.bush.pos[0], self.bush.pos[1] + 42],
                                      image='images/test_bush_shadow.png', layer=1)
-        self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image)
         self.out.append(MapObject(self.world, [770, 370], image='images/submarine_enterance.png', layer=2))
 
     def check_event(self, event, objects=None):
@@ -36,6 +34,7 @@ class Beach(Room):
                                                          event.pos[1] - self.world.cur_player.height / 2])
                     if map_object in self.out:
                         self.world.cur_player.path_target = 202
+        Room.on_click(self, map_object, event)
 
     def layer_reorder(self):
         objects = self.players + [self.bush]

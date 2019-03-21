@@ -5,11 +5,11 @@ import os
 
 
 class MapObject(object):
-    def __init__(self, world, pos, surface=None, image=None, size=None, middle=None, is_transparent=False, layer=2):
+    def __init__(self, world, pos, surface=None, image=None, size=None, square=None, middle=None, is_transparent=False, layer=2):
         self.world = world
         if not surface:
             if image:
-                self.surface = MapObject.load_image(self.world, image, size)
+                self.surface = MapObject.load_image(self.world, image, size, square)
             else:
                 print 'No surface or image!'
         else:
@@ -21,12 +21,9 @@ class MapObject(object):
                 print 'No pos or middle!'
             middle = MapObject.find_middle(self.surface, middle)
             if not pos[0]:
-                if not pos[1]:
-                    self.pos = middle
-                else:
-                    self.pos[0] = middle[0]
-            else:
-                self.pos[1] = middle[1]
+                pos[0] = middle[0]
+            if not pos[1]:
+                pos[1] = middle[1]
 
         self.width = self.surface.get_size()[0]
         self.height = self.surface.get_size()[1]
@@ -65,19 +62,28 @@ class MapObject(object):
             y = parent.y + parent.height / 2 - surface.get_size()[1] / 2
             return [x, y]
         else:
-            print 'No!'
+            print 'No!'  # TODO: Add error
 
     @staticmethod
-    def load_image(world, image, size=None):
+    def load_image(world, image, size=None, square=None):
         if not os.path.exists(world.PATH + '/images'):
             os.makedirs(world.PATH + '/images')
-        if not os.path.exists(world.PATH + image):
+        if image not in world.storage_history:
             world.client.get_from_storage(image)
+            world.storage_history.append(image)
         surface = pygame.image.load(world.PATH + image)
         if image.endswith('.9.png'):  # No resize
             return surface
         if not size:
             size = [None, None]
+        if square:
+            print surface.get_size()
+            if surface.get_size()[0] > surface.get_size()[1]:
+                size[0] = square
+                size[1] = surface.get_size()[1] * square / surface.get_size()[0]
+            else:
+                size[1] = square
+                size[0] = surface.get_size()[0] * square / surface.get_size()[1]
         ratio = float(world.GUI_SIZE[0]) / world.SIZE[0], float(world.GUI_SIZE[1]) / world.SIZE[1]
         if not size[0]:
             size[0] = int(surface.get_size()[0] / ratio[0])

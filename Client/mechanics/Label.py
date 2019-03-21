@@ -2,17 +2,11 @@ from MapObject import MapObject
 
 
 class Label(MapObject):
-    def __init__(self, world, pos, text, font):
-        self.text_surface = world.fonts[font].render(text, False, (0, 0, 0))
+    def __init__(self, world, pos, text, font, color=(0, 0, 0)):
+        self.text_surface = world.fonts[font].render(text, False, color)
         MapObject.__init__(self, world, pos, self.text_surface)
         self.text = text
         self.font = font
-
-    def on_click(self):
-        pass
-
-    def on_type(self, event):
-        pass
 
     def check_collision(self, pos):
         return False

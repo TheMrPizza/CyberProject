@@ -13,7 +13,7 @@ KB = 1024
 class Server(object):
     def __init__(self):
         # Initialize
-        cred = credentials.Certificate(r'C:\Users\USER\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
+        cred = credentials.Certificate(r'C:\Users\Guy\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://cyberproject-ec385.firebaseio.com',
                                              'storageBucket': 'cyberproject-ec385.appspot.com'})
         self.bucket = storage.bucket()

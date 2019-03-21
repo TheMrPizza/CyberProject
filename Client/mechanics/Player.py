@@ -13,7 +13,8 @@ class Player(MapObject):
             self.items = []
             for i in data['items']:
                 if i != -1:  # No Items
-                    self.items.append(Item(self.world, self.world.client.item_info(i), self.pos, True))  # Change True
+                    self.items.append(Item(self.world, self.world.client.item_info(i), self.pos,
+                                           data['items'][i]['is_used']))
             self.level = data['level']
             self.join_date = data['join_date']
             self.is_admin = data['is_admin']
@@ -50,9 +51,10 @@ class Player(MapObject):
                         self.world.cur_screen = room
 
     def update_pos(self, pos):
-        for i in self.items + [self.text_object]:
-            i.pos[0] += pos[0] - self.pos[0]
-            i.pos[1] += pos[1] - self.pos[1]
+        self.text_object.pos[0] += pos[0] - self.pos[0]
+        self.text_object.pos[1] += pos[1] - self.pos[1]
+        for i in self.items:
+            i.pos = pos
         self.pos = pos
         if self.balloon:
             self.balloon.update(pos)
@@ -65,10 +67,10 @@ class Player(MapObject):
             self.balloon = None
 
     def draw_object(self):
-        self.world.draw(self.surface, self.pos)
+        MapObject.draw_object(self)
         for i in self.items:
-            self.world.draw(i.surface, i.pos)
-        self.world.draw(self.text_object.surface, self.text_object.pos)
+            i.draw_object()
+        self.text_object.draw_object()
         if self.balloon:
             self.balloon.draw_object()
 

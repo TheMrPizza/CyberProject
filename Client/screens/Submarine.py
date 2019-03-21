@@ -33,6 +33,7 @@ class Submarine(Room):
                                                          event.pos[1] - self.world.cur_player.height / 2])
                     if map_object in self.out:
                         self.world.cur_player.path_target = 201
+        Room.on_click(self, map_object, event)
 
     def layer_reorder(self):
         objects = self.players

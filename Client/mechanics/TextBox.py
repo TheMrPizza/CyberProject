@@ -10,9 +10,6 @@ class TextBox(NinePatch):
         self.text_object = MapObject(world, (self.text_rect.x, self.text_rect.y),
                                      self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0)), layer=5)
 
-    def on_click(self):
-        print 'Someone clicked me!'
-
     def on_type(self, event):
         if event.key == pygame.K_BACKSPACE:
             self.text = self.text[:-1]
