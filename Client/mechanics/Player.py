@@ -66,6 +66,19 @@ class Player(MapObject):
         elif self.balloon and not self.balloon.is_alive:
             self.balloon = None
 
+    def change_item(self, item):
+        if item.is_used:
+            item.is_used = False
+        else:
+            for i in self.items:
+                if i.type == item.type and i.is_used:
+                    i.is_used = False
+                    if self is self.world.cur_player:
+                        self.world.client.change_item(self.username, i.item_id)
+            item.is_used = True
+        if self is self.world.cur_player:
+            self.world.client.change_item(self.username, item.item_id)
+
     def draw_object(self):
         MapObject.draw_object(self)
         for i in self.items:

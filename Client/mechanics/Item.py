@@ -9,6 +9,7 @@ class Item(MapObject):
         self.gender = data['gender']
         self.min_level = data['min_level']
         self.item_pos = data['item_pos']
+        self.type = data['type']
         self.is_used = is_used
 
     def draw_object(self):

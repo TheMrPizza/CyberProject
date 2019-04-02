@@ -28,7 +28,6 @@ class Client(object):
 
     def send_message(self, command, headers, data=''):
         # Protocol
-        print command, headers, data
         headers['length'] = len(data)
         request = Client.message_format(command, headers, data)
         while request != '':
@@ -112,13 +111,14 @@ class Client(object):
 
     def player_info(self, username):
         headers, data = self.send_message('PLAYER INFO', {'username': username})
-        print ast.literal_eval(data)
         return ast.literal_eval(data)
 
     def item_info(self, item_id):
         headers, data = self.send_message('ITEM INFO', {'item_id': item_id})
-        print ast.literal_eval(data)
         return ast.literal_eval(data)
+
+    def change_item(self, username, item_id):
+        self.send_message('CHANGE ITEM', {'username': username, 'item_id': item_id})
 
     def find_players(self, room_id):
         headers, data = self.send_message('ROOM PLAYERS', {'room_id': room_id})
@@ -143,6 +143,7 @@ def main():
     client = Client()
     world = World(client.FILE_PATH, client)
     world.cur_screen = Login(world)
+
 
 if __name__ == '__main__':
     main()

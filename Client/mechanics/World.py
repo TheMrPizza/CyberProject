@@ -31,8 +31,8 @@ class World(object):
                 break
 
     def world_loop(self):
-        pygame.init()
-        pygame.mixer.quit()
+        # pygame.init()
+        # pygame.mixer.quit()
         self.SURF = pygame.display.set_mode(self.SIZE)
         pygame.display.set_caption("Cyber!")
         execute_thread = threading.Thread(target=self.execute_loop)

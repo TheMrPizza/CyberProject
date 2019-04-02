@@ -30,7 +30,6 @@ class Room(Screen):
                 for j in self.players:
                     if i['headers']['username'] == j.username:
                         pos = [int(i['data'].split(' ')[0]) + j.width / 2, int(i['data'].split(' ')[1]) + j.height / 2]
-                        print 'pos', j.username, pos
                         path = search_path(self.world, (j.pos[0] + j.width / 2, j.pos[1] + j.height / 2), pos)
                         j.walking_path = path
                         update.remove(i)
@@ -62,11 +61,20 @@ class Room(Screen):
                         self.players.remove(j)
                         update.remove(i)
                         break
+            elif i['code'] == 'CHANGE ITEM':
+                for j in self.players:
+                    if i['headers']['username'] == j.username:
+                        for k in j.items:
+                            if k.item_id == i['headers']['item_id']:
+                                j.change_item(k)
+                                break
+                        update.remove(i)
+                        break
 
     def check_event(self, event, objects=None):
         if objects is None:
             objects = []
-        Screen.check_event(self, event, self.out + [self.path, self.bag_button] + self.players + objects)
+        Screen.check_event(self, event, self.out + list(zip(*self.info_menu.cells)[1]) + [self.path, self.bag_button] + self.players + objects)
 
     def draw_screen(self, objects=None):
         for i in self.players:
@@ -80,6 +88,13 @@ class Room(Screen):
     def on_click(self, map_object, event):
         if map_object is self.bag_button:
             self.info_menu.change_focus()
+        for i in self.info_menu.cells:
+            if map_object is i[1] and map_object.front:
+                for j in self.world.cur_player.items:
+                    if j.item_id == i[0]:
+                        self.world.cur_player.change_item(j)
+                        break
+                break
 
     def on_type(self, map_object, event):
         raise NotImplementedError

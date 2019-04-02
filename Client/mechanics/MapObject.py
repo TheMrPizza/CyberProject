@@ -77,7 +77,6 @@ class MapObject(object):
         if not size:
             size = [None, None]
         if square:
-            print surface.get_size()
             if surface.get_size()[0] > surface.get_size()[1]:
                 size[0] = square
                 size[1] = surface.get_size()[1] * square / surface.get_size()[0]
