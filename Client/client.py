@@ -85,7 +85,8 @@ class Client(object):
         headers, data = self.send_message('STORAGE', {'item': item})
         item_path = self.FILE_PATH + item
         if os.path.exists(item_path):
-            if time.time() - os.path.getctime(item_path) > 60*60*24:  # Check if the file updated in the last 24 hours
+            # Check if the file was updated in the last 24 hours
+            if time.time() - os.path.getctime(item_path) > 60*60*24:
                 # The file is already updated
                 return
             if os.path.getctime(item_path) < time.mktime(datetime.strptime(headers['time-created'][:-6],

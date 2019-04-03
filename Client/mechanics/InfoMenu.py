@@ -8,6 +8,7 @@ class InfoMenu(NinePatch):
     def __init__(self, world):
         NinePatch.__init__(self, world, [300, -10], 'images/test_text_box.9.png', [480, 340], layer=8)
         self.stage = MapObject(world, [330, -10], image='images/stage.png')
+        self.arrow = MapObject(world, [360, 280], image='images/green_arrow.png')
         self.level = Label(world, [385, 270], str(self.world.cur_player.level), 'Level', (82, 175, 46))
         self.cells = []
         for i in xrange(5):
@@ -35,6 +36,7 @@ class InfoMenu(NinePatch):
                 if i.is_used:
                     self.world.draw(i.surface, [player_pos[0] + i.item_pos[0], player_pos[1] + i.item_pos[1]])
             self.world.draw(self.world.cur_player.text_object.surface, [375, 225])
+            self.arrow.draw_object()
             self.level.draw_object()
             for i in self.cells:
                 i[1].draw_object()
