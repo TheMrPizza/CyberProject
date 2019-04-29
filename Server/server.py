@@ -13,7 +13,7 @@ KB = 1024
 class Server(object):
     def __init__(self):
         # Initialize Firebase database and storage
-        cred = credentials.Certificate(r'C:\Users\USER\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
+        cred = credentials.Certificate(r'C:\Users\Guy\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://cyberproject-ec385.firebaseio.com',
                                              'storageBucket': 'cyberproject-ec385.appspot.com'})
         self.bucket = storage.bucket()
@@ -84,7 +84,7 @@ class Server(object):
         while int(headers['length']) != len(data):
             try:
                 data += client_player['socket'].recv(KB)
-            except socket.error:
+            except (socket.error, socket.timeout):
                 self.quit_socket(client_player)
                 return
 
@@ -171,6 +171,21 @@ class Server(object):
                 self.add_message(client_player, 'OK', {'command': command}, ' '.join(ref))
             else:
                 self.add_message(client_player, 'OK', {'command': command})
+        elif command == 'TRADE REQUEST':
+            for i in self.client_players:
+                if i['username'] == headers['addressee']:
+                    self.add_message(i, 'TRADE REQUEST', {'sender': headers['sender'],
+                                                          'addressee': headers['addressee'], 'command': command})
+                    break
+            self.add_message(client_player, 'OK', {'command': command})
+        elif command == 'TRADE RESPONSE':
+            for i in self.client_players:
+                if i['username'] == headers['addressee']:
+                    self.add_message(i, 'TRADE RESPONSE', {'sender': headers['sender'],
+                                                          'addressee': headers['addressee'],
+                                                           'is_accepted': headers['is_accepted'], 'command': command})
+                    break
+            self.add_message(client_player, 'OK', {'command': command})
         elif command == 'CONNECT':
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
             ref = db.reference('rooms/' + str(room_id) + '/players')

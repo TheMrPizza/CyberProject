@@ -5,7 +5,7 @@ import os
 
 
 class MapObject(object):
-    def __init__(self, world, pos, surface=None, image=None, size=None, square=None, middle=None, is_transparent=False, layer=2):
+    def __init__(self, world, pos, surface=None, image=None, size=None, square=None, middle=None, is_visible=True, layer=2):
         self.world = world
         if not surface:
             if image:
@@ -27,7 +27,8 @@ class MapObject(object):
 
         self.width = self.surface.get_size()[0]
         self.height = self.surface.get_size()[1]
-        self.is_transparent = is_transparent
+        if not hasattr(self, 'is_visible'):
+            self.is_visible = is_visible
         self.layer = layer
         self.is_focus = False
 
@@ -38,7 +39,7 @@ class MapObject(object):
         return False
 
     def draw_object(self):
-        if not self.is_transparent:
+        if self.is_visible:
             self.world.draw(self.surface, self.pos)
 
     @staticmethod
