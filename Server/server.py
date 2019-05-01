@@ -13,7 +13,7 @@ KB = 1024
 class Server(object):
     def __init__(self):
         # Initialize Firebase database and storage
-        cred = credentials.Certificate(r'C:\Users\Guy\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
+        cred = credentials.Certificate(r'C:\Users\USER\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://cyberproject-ec385.firebaseio.com',
                                              'storageBucket': 'cyberproject-ec385.appspot.com'})
         self.bucket = storage.bucket()
@@ -34,8 +34,10 @@ class Server(object):
             rlist, wlist, xlist = select.select(sockets + [self.socket], sockets, [])
             for i in rlist:  # Reading messages
                 if i is self.socket:  # New client, adding to client players
+                    print 'New client connected'
                     new_socket, address = self.socket.accept()
                     self.client_players.append({'socket': new_socket, 'username': '', 'room_id': '0'})
+                    print 'New client added to list'
                 else:  # Known client, receiving message
                     for j in self.client_players:
                         if i == j['socket']:
@@ -63,6 +65,7 @@ class Server(object):
             response = response[KB:]
 
     def receive_message(self, client_player):
+        print 'Receiving message from ' + str(client_player)
         try:
             msg = client_player['socket'].recv(KB)
         except (socket.error, socket.timeout):
@@ -87,6 +90,7 @@ class Server(object):
             except (socket.error, socket.timeout):
                 self.quit_socket(client_player)
                 return
+        print command
 
         if command == 'STORAGE':
             blob = self.bucket.get_blob(headers['item'])
@@ -137,6 +141,7 @@ class Server(object):
                     self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
                                                                  'room_id': headers['room_id'], 'command': command})
         elif command == 'PLAYER INFO':
+            print 'Received player info of ' + headers['username']
             ref = db.reference('users/' + headers['username']).get()
             info = {'username': headers['username']}
             for key, value in ref.iteritems():
@@ -182,11 +187,12 @@ class Server(object):
             for i in self.client_players:
                 if i['username'] == headers['addressee']:
                     self.add_message(i, 'TRADE RESPONSE', {'sender': headers['sender'],
-                                                          'addressee': headers['addressee'],
+                                                           'addressee': headers['addressee'],
                                                            'is_accepted': headers['is_accepted'], 'command': command})
                     break
             self.add_message(client_player, 'OK', {'command': command})
         elif command == 'CONNECT':
+            print 'Received connect of ' + headers['username']
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
             ref = db.reference('rooms/' + str(room_id) + '/players')
             ref.child(headers['username']).set(True)
@@ -196,7 +202,7 @@ class Server(object):
                     self.add_message(client_player, 'OK', {'command': command})
                 elif int(i['room_id']) == room_id:
                     self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
-                                                                 'room_id': room_id, 'command': command})
+                                                       'room_id': room_id, 'command': command})
         elif command == 'QUIT':
             print 'QUITTT'
             ref = db.reference('rooms/' + headers['room_id'] + '/players/' + headers['username'])
@@ -210,7 +216,7 @@ class Server(object):
                     self.add_message(client_player, 'OK', {'command': command})
                 else:
                     self.add_message(i, 'CHAT', {'username': headers['username'],
-                                                           'message': headers['message'], 'command': command})
+                                                 'message': headers['message'], 'command': command})
 
     def add_socket_details(self, client_player, username, room_id):
         client_player['username'] = username

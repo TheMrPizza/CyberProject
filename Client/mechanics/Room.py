@@ -18,9 +18,7 @@ class Room(Screen):
         self.bag_button = ImageButton(self.world, [900, 540], 'images/test_text_box.9.png', [50, 50], 'images/bag.png')
         self.bag = MapObject(self.world, [600, 540], image='images/bag.png')
         self.self_info_menu = SelfInfoMenu(world)
-        #self.self_info_menu.change_visible()
         self.player_info_menu = PlayerInfoMenu(world)
-        #self.player_info_menu.change_visible()
         self.trade_requests = []
 
         self.world.cur_player = Player(world, data=self.world.client.player_info(self.world.cur_player.username))
@@ -78,15 +76,15 @@ class Room(Screen):
                         break
             elif i['code'] == 'TRADE REQUEST':
                 for j in self.players:
-                    if i['headers']['username'] == j.username:
+                    if i['headers']['sender'] == j.username:
                         self.trade_requests.append(TradeRequest(self.world, j, True))
                         update.remove(i)
                         break
             elif i['code'] == 'TRADE RESPONSE':
                 for j in self.players:
-                    if i['headers']['username'] == j.username:
+                    if i['headers']['addressee'] == j.username:
                         for k in self.trade_requests:
-                            if k.player == i['headers']['addressee']:
+                            if k.player == i['headers']['sender']:
                                 self.trade_requests.remove(k)
                                 break
                         print 'start trading!'
@@ -103,7 +101,7 @@ class Room(Screen):
                 buttons.append(i.buttons[j])
         Screen.check_event(self, event, self.out + buttons + list(zip(*self.self_info_menu.cells)[1]) +
                            [self.path, self.bag_button, self.self_info_menu.x_button, self.player_info_menu.x_button, self.player_info_menu.trade_button]
-                           + self.players + objects)
+                           + self.players + reduce(lambda t, s: t.buttons + s.buttons, self.trade_requests) + objects)
 
     def draw_screen(self, objects=None):
         for i in self.players:
@@ -115,13 +113,15 @@ class Room(Screen):
         Screen.draw_screen(self, self.out + self.trade_requests + [self.path, self.bag_button, self.self_info_menu, self.player_info_menu] + self.players + objects)
 
     def on_click(self, map_object, event):
-        print map_object.pos
         if map_object in [self.bag_button, self.self_info_menu.x_button]:
-            self.self_info_menu.change_focus()
+            self.self_info_menu.change_visible()
+            self.self_info_menu.change_clickable()
         elif map_object is self.player_info_menu.x_button:
-            self.player_info_menu.change_focus()
+            self.player_info_menu.change_visible()
+            self.player_info_menu.change_clickable()
         elif map_object is self.player_info_menu.trade_button:
             self.world.client.trade_request(self.world.cur_player.username, self.player_info_menu.player.username)
+            self.trade_requests.append(TradeRequest(self.world, self.player_info_menu.player, False))
         for i in self.trade_requests:
             for j in i.buttons:
                 if map_object is i.buttons[j]:
@@ -132,7 +132,8 @@ class Room(Screen):
         for i in self.players:
             if map_object is i and i is not self.world.cur_player:
                 self.player_info_menu.update_player(i)
-                self.player_info_menu.change_focus()
+                self.player_info_menu.change_visible()
+                self.player_info_menu.change_clickable()
                 break
         for i in self.self_info_menu.cells:
             if map_object is i[1] and map_object.front:

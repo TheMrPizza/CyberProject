@@ -11,7 +11,7 @@ class Screen(object):
     def check_event(self, event, objects):
         for i in sorted(objects, key=lambda o: o.layer, reverse=True):
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if i.check_collision(event.pos) and i.is_visible:
+                if i.check_collision(event.pos) and i.is_clickable:
                     for j in objects:  # TODO: List comprehension
                         j.is_focus = False
                     i.is_focus = True

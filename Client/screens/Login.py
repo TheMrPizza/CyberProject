@@ -36,9 +36,12 @@ class Login(Screen):
             data = map_object.on_type(event)
             if data:
                 self.world.client.connect(data)
+                print 'Player connected'
                 info = self.world.client.player_info(data)
+                print 'Info received'
                 self.world.cur_player = Player(self.world, info)
                 if self.world.cur_player.room_id == 201:
                     self.world.cur_screen = Beach(self.world)
                 elif self.world.cur_player.room_id == 202:
                     self.world.cur_screen = Submarine(self.world)
+                print 'Room loaded'

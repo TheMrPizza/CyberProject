@@ -19,6 +19,7 @@ class Client(object):
         self.socket = socket.socket()
         try:
             self.socket.connect(SERVER_ADDRESS)
+            print 'Connected to server'
         except socket.error:
             print 'Error: No server communication!'
             sys.exit()
@@ -43,7 +44,6 @@ class Client(object):
                 print 'Error: No server communication!'
                 sys.exit()
             request = request[KB:]
-
         while True:
             for i in self.updates:
                 if i['headers']['command'] == command:
@@ -56,6 +56,7 @@ class Client(object):
                             return
 
     def receive_message(self):
+        print 'Receiving messages'
         while True:
             try:
                 msg = self.socket.recv(KB)
@@ -146,7 +147,7 @@ class Client(object):
         self.send_message('TRADE RESPONSE', {'sender': sender, 'addressee': addressee, 'is_accepted': is_accepted})
 
     def connect(self, username):
-        self.send_message('CONNECT', {'username': username})
+        self.send_message('CONNECT', {'username': username}, is_waiting=True)
 
     def quit(self, username, room_id):
         self.send_message('QUIT', {'username': username, 'room_id': room_id})
@@ -158,7 +159,9 @@ class Client(object):
 def main():
     client = Client()
     world = World(client.FILE_PATH, client)
+    print 'Created world'
     world.cur_screen = Login(world)
+    print 'Defined screen'
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ import os
 
 
 class MapObject(object):
-    def __init__(self, world, pos, surface=None, image=None, size=None, square=None, middle=None, is_visible=True, layer=2):
+    def __init__(self, world, pos, surface=None, image=None, size=None, square=None, middle=None, is_visible=True, is_clickable=True, layer=2):
         self.world = world
         if not surface:
             if image:
@@ -29,6 +29,7 @@ class MapObject(object):
         self.height = self.surface.get_size()[1]
         if not hasattr(self, 'is_visible'):
             self.is_visible = is_visible
+        self.is_clickable = is_clickable
         self.layer = layer
         self.is_focus = False
 
@@ -41,6 +42,18 @@ class MapObject(object):
     def draw_object(self):
         if self.is_visible:
             self.world.draw(self.surface, self.pos)
+
+    def change_visible(self, is_visible=None):
+        if is_visible:
+            self.is_visible = is_visible
+        else:
+            self.is_visible = not self.is_visible
+
+    def change_clickable(self, is_clickable=None):
+        if is_clickable:
+            self.is_clickable = is_clickable
+        else:
+            self.is_clickable = not self.is_clickable
 
     @staticmethod
     def merge_surfaces_horizontal(surfaces):

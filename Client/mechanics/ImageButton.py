@@ -10,6 +10,24 @@ class ImageButton(NinePatch):
         else:
             self.front = None
 
+    def change_visible(self, is_visible=None):
+        if is_visible:
+            change = is_visible
+        else:
+            change = not self.is_visible
+        self.is_visible = change
+        if self.front:
+            self.front.change_visible(change)
+
+    def change_clickable(self, is_clickable=None):
+        if is_clickable:
+            change = is_clickable
+        else:
+            change = not self.is_clickable
+        self.is_clickable = change
+        if self.front:
+            self.front.change_clickable(change)
+
     def draw_object(self):
         NinePatch.draw_object(self)
         if self.front:
