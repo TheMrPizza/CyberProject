@@ -92,6 +92,7 @@ class Client(object):
         return msg
 
     def get_from_storage(self, item):
+        return  # TODO: STORAGE IS TAKING A LOT OF TIME!
         headers, data = self.send_message('STORAGE', {'item': item}, is_waiting=True)
         item_path = self.FILE_PATH + item
         if os.path.exists(item_path):
@@ -145,6 +146,12 @@ class Client(object):
 
     def trade_response(self, sender, addressee, is_accepted):
         self.send_message('TRADE RESPONSE', {'sender': sender, 'addressee': addressee, 'is_accepted': is_accepted})
+
+    def place_item(self, username, item):
+        self.send_message('PLACE ITEM', {'username': username, 'item': item})
+
+    def remove_item(self, username, index):
+        self.send_message('REMOVE ITEM', {'username': username, 'index': index})
 
     def connect(self, username):
         self.send_message('CONNECT', {'username': username}, is_waiting=True)

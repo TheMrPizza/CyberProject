@@ -4,6 +4,7 @@ from Client.mechanics.ImageButton import ImageButton
 from Client.mechanics.SelfInfoMenu import SelfInfoMenu
 from Client.mechanics.PlayerInfoMenu import PlayerInfoMenu
 from Client.mechanics.TradeRequest import TradeRequest
+from TradeMenu import TradeMenu
 from Player import Player
 from Client.mechanics.AStar.Search import search_path
 from Screen import Screen
@@ -20,6 +21,7 @@ class Room(Screen):
         self.self_info_menu = SelfInfoMenu(world)
         self.player_info_menu = PlayerInfoMenu(world)
         self.trade_requests = []
+        self.trade_menu = TradeMenu(world)
 
         self.world.cur_player = Player(world, data=self.world.client.player_info(self.world.cur_player.username))
         self.players = [self.world.cur_player]
@@ -81,15 +83,21 @@ class Room(Screen):
                         update.remove(i)
                         break
             elif i['code'] == 'TRADE RESPONSE':
-                for j in self.players:
-                    if i['headers']['addressee'] == j.username:
-                        for k in self.trade_requests:
-                            if k.player == i['headers']['sender']:
-                                self.trade_requests.remove(k)
-                                break
-                        print 'start trading!'
-                        update.remove(i)
+                for j in self.trade_requests:
+                    if j.player.username == i['headers']['addressee']:
+                        self.trade_requests.remove(j)
+                        if i['headers']['is_accepted'] == 'v':
+                            self.trade_menu.player = j.player
+                            self.trade_menu.change_visible()
+                            self.trade_menu.change_clickable()
                         break
+                update.remove(i)
+            elif i['code'] == 'PLACE ITEM':
+                self.trade_menu.player_place_item(i['headers']['item'])
+                update.remove(i)
+            elif i['code'] == 'REMOVE ITEM':
+                self.trade_menu.player_remove_item(int(i['headers']['index']))
+                update.remove(i)
 
     def check_event(self, event, objects=None):
         if objects is None:
@@ -100,8 +108,10 @@ class Room(Screen):
             for j in i.buttons:
                 buttons.append(i.buttons[j])
         Screen.check_event(self, event, self.out + buttons + list(zip(*self.self_info_menu.cells)[1]) +
+                           list(zip(*self.trade_menu.all_cells)[1]) + list(zip(*self.trade_menu.self_cells)[1]) +
+                           list(zip(*self.trade_menu.player_cells)[1]) +
                            [self.path, self.bag_button, self.self_info_menu.x_button, self.player_info_menu.x_button, self.player_info_menu.trade_button]
-                           + self.players + reduce(lambda t, s: t.buttons + s.buttons, self.trade_requests) + objects)
+                           + self.players + objects)
 
     def draw_screen(self, objects=None):
         for i in self.players:
@@ -110,38 +120,53 @@ class Room(Screen):
 
         if objects is None:
             objects = []
-        Screen.draw_screen(self, self.out + self.trade_requests + [self.path, self.bag_button, self.self_info_menu, self.player_info_menu] + self.players + objects)
+        Screen.draw_screen(self, self.out + self.trade_requests + [self.path, self.bag_button, self.self_info_menu, self.player_info_menu, self.trade_menu] + self.players + objects)
 
     def on_click(self, map_object, event):
         if map_object in [self.bag_button, self.self_info_menu.x_button]:
             self.self_info_menu.change_visible()
             self.self_info_menu.change_clickable()
-        elif map_object is self.player_info_menu.x_button:
+            return
+        if map_object is self.player_info_menu.x_button:
             self.player_info_menu.change_visible()
             self.player_info_menu.change_clickable()
-        elif map_object is self.player_info_menu.trade_button:
+            return
+        if map_object is self.player_info_menu.trade_button:
             self.world.client.trade_request(self.world.cur_player.username, self.player_info_menu.player.username)
             self.trade_requests.append(TradeRequest(self.world, self.player_info_menu.player, False))
+            return
         for i in self.trade_requests:
             for j in i.buttons:
                 if map_object is i.buttons[j]:
-                    self.world.client.trade_response(i.player.username, self.world.cur_player.username, j == 'v')
-                    if j == 'v':
-                        print 'start trading!'
-                    break
+                    self.world.client.trade_response(i.player.username, self.world.cur_player.username, j)
+                    self.trade_requests.remove(i)
+                    if j == 'v':  # Start trading!
+                        self.trade_menu.player = i.player
+                        self.trade_menu.change_visible()
+                        self.trade_menu.change_clickable()
+                    return
         for i in self.players:
             if map_object is i and i is not self.world.cur_player:
                 self.player_info_menu.update_player(i)
                 self.player_info_menu.change_visible()
                 self.player_info_menu.change_clickable()
-                break
+                return
         for i in self.self_info_menu.cells:
             if map_object is i[1] and map_object.front:
                 for j in self.world.cur_player.items:
                     if j.item_id == i[0]:
                         self.world.cur_player.change_item(j)
-                        break
-                break
+                        return
+        for i in xrange(len(self.trade_menu.all_cells)):
+            if map_object is self.trade_menu.all_cells[i][1] and map_object.front:
+                self.world.client.place_item(self.trade_menu.player.username, self.trade_menu.all_cells[i][0])
+                self.trade_menu.place_item(i)
+                return
+        for i in xrange(len(self.trade_menu.self_cells)):
+            if map_object is self.trade_menu.self_cells[i][1] and map_object.front:
+                self.trade_menu.remove_item(i)
+                self.world.client.remove_item(self.trade_menu.player.username, i)
+                return
 
     def on_type(self, map_object, event):
         raise NotImplementedError

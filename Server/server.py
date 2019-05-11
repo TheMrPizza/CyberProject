@@ -13,7 +13,7 @@ KB = 1024
 class Server(object):
     def __init__(self):
         # Initialize Firebase database and storage
-        cred = credentials.Certificate(r'C:\Users\USER\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
+        cred = credentials.Certificate(r'C:\Users\Guy\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://cyberproject-ec385.firebaseio.com',
                                              'storageBucket': 'cyberproject-ec385.appspot.com'})
         self.bucket = storage.bucket()
@@ -185,10 +185,22 @@ class Server(object):
             self.add_message(client_player, 'OK', {'command': command})
         elif command == 'TRADE RESPONSE':
             for i in self.client_players:
-                if i['username'] == headers['addressee']:
+                if i['username'] == headers['sender']:
                     self.add_message(i, 'TRADE RESPONSE', {'sender': headers['sender'],
                                                            'addressee': headers['addressee'],
                                                            'is_accepted': headers['is_accepted'], 'command': command})
+                    break
+            self.add_message(client_player, 'OK', {'command': command})
+        elif command == 'PLACE ITEM':
+            for i in self.client_players:
+                if i['username'] == headers['username']:
+                    self.add_message(i, 'PLACE ITEM', {'item': headers['item']})
+                    break
+            self.add_message(client_player, 'OK', {'command': command})
+        elif command == 'REMOVE ITEM':
+            for i in self.client_players:
+                if i['username'] == headers['username']:
+                    self.add_message(i, 'REMOVE ITEM', {'index': headers['index']})
                     break
             self.add_message(client_player, 'OK', {'command': command})
         elif command == 'CONNECT':
