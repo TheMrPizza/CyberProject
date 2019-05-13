@@ -153,6 +153,16 @@ class Client(object):
     def remove_item(self, username, index):
         self.send_message('REMOVE ITEM', {'username': username, 'index': index})
 
+    def accept_trade(self, username):
+        self.send_message('ACCEPT TRADE', {'username': username})
+
+    def decline_trade(self, username):
+        self.send_message('DECLINE TRADE', {'username': username})
+
+    def make_trade(self, username, self_items, player_items):
+        self.send_message('MAKE TRADE', {'username': username, 'self_items': ' '.join(map(str, self_items)),
+                                         'player_items': ' '.join(map(str, player_items))}, is_waiting=True)
+
     def connect(self, username):
         self.send_message('CONNECT', {'username': username}, is_waiting=True)
 

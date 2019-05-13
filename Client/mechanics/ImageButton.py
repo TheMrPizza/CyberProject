@@ -10,11 +10,14 @@ class ImageButton(NinePatch):
         else:
             self.front = None
 
-    def change_image(self, image, **kwargs):
+    def change_bg(self, image, image_size):
+        NinePatch.__init__(self, self.world, self.pos, image, image_size=image_size, layer=8)
+
+    def change_front(self, image, **kwargs):
         self.front = MapObject(self.world, [None, None], image=image, middle=self, **kwargs)
 
     def change_visible(self, is_visible=None):
-        if is_visible:
+        if is_visible is not None:
             change = is_visible
         else:
             change = not self.is_visible
@@ -23,7 +26,7 @@ class ImageButton(NinePatch):
             self.front.change_visible(change)
 
     def change_clickable(self, is_clickable=None):
-        if is_clickable:
+        if is_clickable is not None:
             change = is_clickable
         else:
             change = not self.is_clickable

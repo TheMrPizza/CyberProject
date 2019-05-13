@@ -44,13 +44,13 @@ class MapObject(object):
             self.world.draw(self.surface, self.pos)
 
     def change_visible(self, is_visible=None):
-        if is_visible:
+        if is_visible is not None:
             self.is_visible = is_visible
         else:
             self.is_visible = not self.is_visible
 
     def change_clickable(self, is_clickable=None):
-        if is_clickable:
+        if is_clickable is not None:
             self.is_clickable = is_clickable
         else:
             self.is_clickable = not self.is_clickable
@@ -79,7 +79,7 @@ class MapObject(object):
             print 'No!'  # TODO: Add error
 
     @staticmethod
-    def load_image(world, image, size=None, square=None):
+    def load_image(world, image, size=None, square=None): # TODO: CHANGE THIS WHOLE FUNCTION
         if not os.path.exists(world.PATH + '/images'):
             os.makedirs(world.PATH + '/images')
         if image not in world.storage_history:

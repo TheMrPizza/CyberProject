@@ -19,7 +19,7 @@ class PlayerInfoMenu(NinePatch):
         self.change_clickable(False)
 
     def change_visible(self, is_visible=None):
-        if is_visible:
+        if is_visible is not None:
             change = is_visible
         else:
             change = not self.is_visible
@@ -31,7 +31,7 @@ class PlayerInfoMenu(NinePatch):
         self.x_button.change_visible(change)
 
     def change_clickable(self, is_clickable=None):
-        if is_clickable:
+        if is_clickable is not None:
             change = is_clickable
         else:
             change = not self.is_clickable

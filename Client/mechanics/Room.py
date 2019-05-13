@@ -8,6 +8,7 @@ from TradeMenu import TradeMenu
 from Player import Player
 from Client.mechanics.AStar.Search import search_path
 from Screen import Screen
+from Item import Item
 
 
 class Room(Screen):
@@ -87,6 +88,10 @@ class Room(Screen):
                     if j.player.username == i['headers']['addressee']:
                         self.trade_requests.remove(j)
                         if i['headers']['is_accepted'] == 'v':
+                            self.player_info_menu.change_visible(False)
+                            self.player_info_menu.change_clickable(False)
+                            self.self_info_menu.change_visible(False)
+                            self.self_info_menu.change_clickable(False)
                             self.trade_menu.player = j.player
                             self.trade_menu.change_visible()
                             self.trade_menu.change_clickable()
@@ -97,6 +102,35 @@ class Room(Screen):
                 update.remove(i)
             elif i['code'] == 'REMOVE ITEM':
                 self.trade_menu.player_remove_item(int(i['headers']['index']))
+                update.remove(i)
+            elif i['code'] == 'ACCEPT TRADE':
+                self.trade_menu.player_accept_trade()
+                update.remove(i)
+            elif i['code'] == 'DECLINE TRADE':
+                self.trade_menu.change_visible()
+                self.trade_menu.change_clickable()
+                self.trade_menu.player = None
+                update.remove(i)
+            elif i['code'] == 'MAKE TRADE':
+                for j in self.players:
+                    if i['headers']['user1'] == j.username:
+                        for k in j.items:
+                            if k.item_id in i['headers']['items1'].split():
+                                j.items.remove(k)
+                        for k in i['headers']['items2'].split():
+                            j.items.append(Item(self.world, self.world.client.item_info(k), j.pos, False))
+                    elif i['headers']['user2'] == j.username:
+                        for k in j.items:
+                            if k.item_id in i['headers']['items2'].split():
+                                j.items.remove(k)
+                        for k in i['headers']['items1'].split():
+                            j.items.append(Item(self.world, self.world.client.item_info(k), j.pos, False))
+
+                if self.world.cur_player.username in [i['headers']['user1'], i['headers']['user2']]:
+                    self.world.cur_screen.self_info_menu = SelfInfoMenu(self.world)
+                    self.trade_menu.change_visible()
+                    self.trade_menu.change_clickable()
+                    self.trade_menu.player = None
                 update.remove(i)
 
     def check_event(self, event, objects=None):
@@ -110,7 +144,8 @@ class Room(Screen):
         Screen.check_event(self, event, self.out + buttons + list(zip(*self.self_info_menu.cells)[1]) +
                            list(zip(*self.trade_menu.all_cells)[1]) + list(zip(*self.trade_menu.self_cells)[1]) +
                            list(zip(*self.trade_menu.player_cells)[1]) +
-                           [self.path, self.bag_button, self.self_info_menu.x_button, self.player_info_menu.x_button, self.player_info_menu.trade_button]
+                           [self.path, self.bag_button, self.self_info_menu.x_button, self.player_info_menu.x_button,
+                            self.player_info_menu.trade_button, self.trade_menu.v_button, self.trade_menu.x_button]
                            + self.players + objects)
 
     def draw_screen(self, objects=None):
@@ -141,6 +176,10 @@ class Room(Screen):
                     self.world.client.trade_response(i.player.username, self.world.cur_player.username, j)
                     self.trade_requests.remove(i)
                     if j == 'v':  # Start trading!
+                        self.player_info_menu.change_visible(False)
+                        self.player_info_menu.change_clickable(False)
+                        self.self_info_menu.change_visible(False)
+                        self.self_info_menu.change_clickable(False)
                         self.trade_menu.player = i.player
                         self.trade_menu.change_visible()
                         self.trade_menu.change_clickable()
@@ -158,15 +197,24 @@ class Room(Screen):
                         self.world.cur_player.change_item(j)
                         return
         for i in xrange(len(self.trade_menu.all_cells)):
-            if map_object is self.trade_menu.all_cells[i][1] and map_object.front:
+            if map_object is self.trade_menu.all_cells[i][1] and map_object.front and not self.trade_menu.is_final:
                 self.world.client.place_item(self.trade_menu.player.username, self.trade_menu.all_cells[i][0])
                 self.trade_menu.place_item(i)
                 return
         for i in xrange(len(self.trade_menu.self_cells)):
-            if map_object is self.trade_menu.self_cells[i][1] and map_object.front:
+            if map_object is self.trade_menu.self_cells[i][1] and map_object.front and not self.trade_menu.is_final:
                 self.trade_menu.remove_item(i)
                 self.world.client.remove_item(self.trade_menu.player.username, i)
                 return
+        if map_object is self.trade_menu.v_button:
+            self.trade_menu.accept_trade()
+            return
+        if map_object is self.trade_menu.x_button:
+            self.world.client.decline_trade(self.trade_menu.player.username)
+            self.trade_menu.change_visible()
+            self.trade_menu.change_clickable()
+            self.trade_menu.player = None
+            return
 
     def on_type(self, map_object, event):
         raise NotImplementedError

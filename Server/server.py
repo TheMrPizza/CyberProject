@@ -203,6 +203,33 @@ class Server(object):
                     self.add_message(i, 'REMOVE ITEM', {'index': headers['index']})
                     break
             self.add_message(client_player, 'OK', {'command': command})
+        elif command == 'ACCEPT TRADE':
+            for i in self.client_players:
+                if i['username'] == headers['username']:
+                    self.add_message(i, 'ACCEPT TRADE', {})
+                    break
+            self.add_message(client_player, 'OK', {'command': command})
+        elif command == 'DECLINE TRADE':
+            for i in self.client_players:
+                if i['username'] == headers['username']:
+                    self.add_message(i, 'DECLINE TRADE', {})
+                    break
+            self.add_message(client_player, 'OK', {'command': command})
+        elif command == 'MAKE TRADE':
+            self.add_message(client_player, 'OK', {'command': command})
+            for i in self.client_players:
+                if i['username'] == headers['username']:
+                    for j in headers['self_items'].split():
+                        db.reference('users/' + client_player['username'] + '/items/' + j).delete()
+                        db.reference('users/' + headers['username'] + '/items').child(j).set({'is_used': False})
+                    for j in headers['player_items'].split():
+                        db.reference('users/' + headers['username'] + '/items/' + j).delete()
+                        db.reference('users/' + client_player['username'] + '/items').child(j).set({'is_used': False})
+                if i['room_id'] == client_player['room_id']:
+                    self.add_message(i, 'MAKE TRADE', {'user1': client_player['username'], 'user2': headers['username'],
+                                                       'items1': headers['self_items'], 'items2': headers['player_items'],
+                                                       'command': command})
+
         elif command == 'CONNECT':
             print 'Received connect of ' + headers['username']
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
