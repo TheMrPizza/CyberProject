@@ -11,9 +11,10 @@ class SpeechBalloon(NinePatch):
         self.is_alive = True
 
         text = SpeechBalloon.size_adjustment(text, self.FONT, self.MAX_WIDTH)
-        pos = [pos[0] + 40, pos[1] - 60]
+        text_size = SpeechBalloon.calc_text_size(text, self.FONT)
+        pos = [pos[0] + 60 - text_size[0], pos[1] - 50 - text_size[1]]
         NinePatch.__init__(self, world, pos, 'images/test_speech_balloon.9.png',
-                           text_size=SpeechBalloon.calc_text_size(text, self.FONT), layer=4, **kwargs)
+                           text_size=text_size, layer=4, **kwargs)
         self.lines = SpeechBalloon.create_lines(world, [self.text_rect.x, self.text_rect.y], text, self.FONT,
                                                 self.text_rect)
 

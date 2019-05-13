@@ -92,14 +92,13 @@ class Client(object):
         return msg
 
     def get_from_storage(self, item):
-        return  # TODO: STORAGE IS TAKING A LOT OF TIME!
-        headers, data = self.send_message('STORAGE', {'item': item}, is_waiting=True)
         item_path = self.FILE_PATH + item
         if os.path.exists(item_path):
             # Check if the file was updated in the last 24 hours
             if time.time() - os.path.getctime(item_path) > 60*60*24:
                 # The file is already updated
                 return
+            headers, data = self.send_message('STORAGE', {'item': item}, is_waiting=True)
             if os.path.getctime(item_path) < time.mktime(datetime.strptime(headers['time-created'][:-6],
                                                                            '%Y-%m-%d %H:%M:%S.%f').timetuple()):
                 # File was changed! Update
@@ -108,6 +107,7 @@ class Client(object):
                 item_file.close()
         else:
             # File doesn't exist! Download
+            headers, data = self.send_message('STORAGE', {'item': item}, is_waiting=True)
             item_file = open(item_path, 'wb')
             item_file.write(data)
             item_file.close()
@@ -141,11 +141,11 @@ class Client(object):
     def update_player_pos(self, username, pos):
         self.send_message('POS', {'username': username, 'pos': str(pos[0]) + ' ' + str(pos[1])})
 
-    def trade_request(self, sender, addressee):
-        self.send_message('TRADE REQUEST', {'sender': sender, 'addressee': addressee})
+    def activity_request(self, activity, sender, addressee):
+        self.send_message('ACTIVITY REQUEST', {'activity': activity, 'sender': sender, 'addressee': addressee})
 
-    def trade_response(self, sender, addressee, is_accepted):
-        self.send_message('TRADE RESPONSE', {'sender': sender, 'addressee': addressee, 'is_accepted': is_accepted})
+    def activity_response(self, activity, sender, addressee, is_accepted):
+        self.send_message('ACTIVITY RESPONSE', {'activity': activity, 'sender': sender, 'addressee': addressee, 'is_accepted': is_accepted})
 
     def place_item(self, username, item):
         self.send_message('PLACE ITEM', {'username': username, 'item': item})
@@ -162,6 +162,9 @@ class Client(object):
     def make_trade(self, username, self_items, player_items):
         self.send_message('MAKE TRADE', {'username': username, 'self_items': ' '.join(map(str, self_items)),
                                          'player_items': ' '.join(map(str, player_items))}, is_waiting=True)
+
+    def xo_turn(self, username, letter, row, col):
+        self.send_message('XO TURN', {'username': username, 'letter': letter, 'row': row, 'col': col})
 
     def connect(self, username):
         self.send_message('CONNECT', {'username': username}, is_waiting=True)

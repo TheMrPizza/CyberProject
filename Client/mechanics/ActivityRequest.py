@@ -2,9 +2,10 @@ from NinePatch import NinePatch
 from ImageButton import ImageButton
 
 
-class TradeRequest(NinePatch):
-    def __init__(self, world, player, is_incoming):
+class ActivityRequest(NinePatch):
+    def __init__(self, world, activity, player, is_incoming):
         NinePatch.__init__(self, world, [20, 20], 'images/test_text_box.9.png', [150, 60], layer=8)
+        self.activity = activity
         self.player = player
         self.is_incoming = is_incoming
         self.buttons = {}

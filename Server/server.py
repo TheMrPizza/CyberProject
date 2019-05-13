@@ -59,13 +59,12 @@ class Server(object):
         while response != '':
             try:
                 client_player['socket'].send(response[:KB])
-            except socket.error:
+            except (socket.error, socket.timeout):
                 self.quit_socket(client_player)
                 return
             response = response[KB:]
 
     def receive_message(self, client_player):
-        print 'Receiving message from ' + str(client_player)
         try:
             msg = client_player['socket'].recv(KB)
         except (socket.error, socket.timeout):
@@ -176,17 +175,17 @@ class Server(object):
                 self.add_message(client_player, 'OK', {'command': command}, ' '.join(ref))
             else:
                 self.add_message(client_player, 'OK', {'command': command})
-        elif command == 'TRADE REQUEST':
+        elif command == 'ACTIVITY REQUEST':
             for i in self.client_players:
                 if i['username'] == headers['addressee']:
-                    self.add_message(i, 'TRADE REQUEST', {'sender': headers['sender'],
+                    self.add_message(i, 'ACTIVITY REQUEST', {'activity': headers['activity'], 'sender': headers['sender'],
                                                           'addressee': headers['addressee'], 'command': command})
                     break
             self.add_message(client_player, 'OK', {'command': command})
-        elif command == 'TRADE RESPONSE':
+        elif command == 'ACTIVITY RESPONSE':
             for i in self.client_players:
                 if i['username'] == headers['sender']:
-                    self.add_message(i, 'TRADE RESPONSE', {'sender': headers['sender'],
+                    self.add_message(i, 'ACTIVITY RESPONSE', {'activity': headers['activity'], 'sender': headers['sender'],
                                                            'addressee': headers['addressee'],
                                                            'is_accepted': headers['is_accepted'], 'command': command})
                     break
@@ -229,7 +228,8 @@ class Server(object):
                     self.add_message(i, 'MAKE TRADE', {'user1': client_player['username'], 'user2': headers['username'],
                                                        'items1': headers['self_items'], 'items2': headers['player_items'],
                                                        'command': command})
-
+        elif command == 'XO TURN':
+            pass
         elif command == 'CONNECT':
             print 'Received connect of ' + headers['username']
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
@@ -262,13 +262,12 @@ class Server(object):
         client_player['room_id'] = room_id
 
     def quit_socket(self, client_player):
+        self.client_players.remove(client_player)
         print 'Error: No client communication!'
         print 'QUIT', client_player['username']
-        ref = db.reference('rooms/' + client_player['room_id'] + '/players/' + client_player['username'])
-        ref.delete()
+        db.reference('rooms/' + client_player['room_id'] + '/players/' + client_player['username']).delete()
         for i in self.client_players:
             self.add_message(i, 'QUIT', {'username': client_player['username']})
-        self.client_players.remove(client_player)
 
     @staticmethod
     def message_format(command, headers, data):
