@@ -87,6 +87,7 @@ class TradeMenu(NinePatch):
         for i in self.player_cells:
             i[1].change_bg('images/green_cell.9.png', [58, 58])
 
+
     def change_visible(self, is_visible=None):
         if is_visible is not None:
             change = is_visible

@@ -13,7 +13,7 @@ KB = 1024
 class Server(object):
     def __init__(self):
         # Initialize Firebase database and storage
-        cred = credentials.Certificate(r'C:\Users\Guy\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
+        cred = credentials.Certificate(r'C:\Users\USER\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://cyberproject-ec385.firebaseio.com',
                                              'storageBucket': 'cyberproject-ec385.appspot.com'})
         self.bucket = storage.bucket()
@@ -122,7 +122,7 @@ class Server(object):
         elif command == 'ADD PLAYER':
             # Delete player from the old room
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
-            db.reference('rooms/' + str(room_id) + '/players').delete()
+            db.reference('rooms/' + str(room_id) + '/players/' + headers['username']).delete()
 
             # Add player to the new room
             db.reference('users/' + headers['username'] + '/room_id').set(int(headers['room_id']))
@@ -130,7 +130,7 @@ class Server(object):
             ref.child(headers['username']).set(True)
 
             for i in self.client_players:
-                if i is client_player:  # The player, send him OK
+                if i is client_player:  # It's the player, send him OK
                     i['room_id'] = headers['room_id']
                     self.add_message(client_player, 'OK', {'command': command})
                 elif int(i['room_id']) == room_id:  # A player in the old room, say goodbye
@@ -171,6 +171,7 @@ class Server(object):
                                                         'command': command})
         elif command == 'ROOM PLAYERS':
             ref = db.reference('rooms/' + headers['room_id'] + '/players').get()
+            print ref
             if ref:
                 self.add_message(client_player, 'OK', {'command': command}, ' '.join(ref))
             else:

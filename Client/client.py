@@ -47,6 +47,7 @@ class Client(object):
         while True:
             for i in self.updates:
                 if i['headers']['command'] == command:
+                    print command
                     code, headers, data = i['code'], i['headers'], i['data']
                     self.updates.remove(i)
                     if code == 'OK':
@@ -95,7 +96,7 @@ class Client(object):
         item_path = self.FILE_PATH + item
         if os.path.exists(item_path):
             # Check if the file was updated in the last 24 hours
-            if time.time() - os.path.getctime(item_path) > 60*60*24:
+            if time.time() - os.path.getctime(item_path) < 60*60*24:
                 # The file is already updated
                 return
             headers, data = self.send_message('STORAGE', {'item': item}, is_waiting=True)
@@ -135,7 +136,7 @@ class Client(object):
     def find_players(self, room_id):
         headers, data = self.send_message('ROOM PLAYERS', {'room_id': room_id}, is_waiting=True)
         if data:
-            return data.split(' ')
+            return data.split()
         return []
 
     def update_player_pos(self, username, pos):
