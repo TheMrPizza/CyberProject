@@ -122,27 +122,45 @@ class Room(Screen):
                 self.trade_menu.change_visible()
                 self.trade_menu.change_clickable()
                 self.trade_menu.player = None
+                self.trade_menu = TradeMenu(self.world)
                 update.remove(i)
             elif i['code'] == 'MAKE TRADE':
                 for j in self.players:
                     if i['headers']['user1'] == j.username:
                         for k in j.items:
                             if k.item_id in i['headers']['items1'].split():
-                                j.items.remove(k)
+                                if k.amount == 1:
+                                    j.items.remove(k)
+                                else:
+                                    k.amount -= 1
+
                         for k in i['headers']['items2'].split():
-                            j.items.append(Item(self.world, self.world.client.item_info(k), j.pos, False))
+                            is_found = False
+                            for l in j.items:
+                                if l.item_id == k:
+                                    is_found = True
+                                    l.amount += 1
+                            if not is_found:
+                                j.items.append(Item(self.world, self.world.client.item_info(k), j.pos, 1, False))
                     elif i['headers']['user2'] == j.username:
                         for k in j.items:
                             if k.item_id in i['headers']['items2'].split():
-                                j.items.remove(k)
+                                if k.amount == 1:
+                                    j.items.remove(k)
+                                else:
+                                    k.amount -= 1
                         for k in i['headers']['items1'].split():
-                            j.items.append(Item(self.world, self.world.client.item_info(k), j.pos, False))
+                            is_found = False
+                            for l in j.items:
+                                if l.item_id == k:
+                                    is_found = True
+                                    l.amount += 1
+                            if not is_found:
+                                j.items.append(Item(self.world, self.world.client.item_info(k), j.pos, 1, False))
 
                 if self.world.cur_player.username in [i['headers']['user1'], i['headers']['user2']]:
                     self.world.cur_screen.self_info_menu = SelfInfoMenu(self.world)
-                    self.trade_menu.change_visible()
-                    self.trade_menu.change_clickable()
-                    self.trade_menu.player = None
+                    self.trade_menu = TradeMenu(self.world)
                 update.remove(i)
 
     def check_event(self, event, objects=None):
@@ -242,15 +260,13 @@ class Room(Screen):
             return
         if map_object is self.trade_menu.x_button:
             self.world.client.decline_trade(self.trade_menu.player.username)
-            self.trade_menu.change_visible()
-            self.trade_menu.change_clickable()
-            self.trade_menu.player = None
+            self.trade_menu = TradeMenu(self.world)
             return
         for i in xrange(len(self.xo_menu.cells)):
             for j in xrange(len(self.xo_menu.cells[0])):
                 if map_object is self.xo_menu.cells[i][j][1]:
                     self.xo_menu.play_turn(self.xo_menu.letter, i, j)
-                    self.client.xo_turn()
+                    self.world.client.xo_turn()
 
     def on_type(self, map_object, event):
         raise NotImplementedError

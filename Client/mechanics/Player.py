@@ -12,9 +12,8 @@ class Player(MapObject):
             self.is_male = data['is_male']
             self.items = []
             for i in data['items']:
-                if i != -1:  # No Items
-                    self.items.append(Item(self.world, self.world.client.item_info(i), self.pos,
-                                           data['items'][i]['is_used']))
+                self.items.append(Item(self.world, self.world.client.item_info(i), self.pos,
+                                       data['items'][i]['amount'], data['items'][i]['is_used']))
             self.level = data['level']
             self.join_date = data['join_date']
             self.is_admin = data['is_admin']
@@ -65,6 +64,13 @@ class Player(MapObject):
             self.msg = None
         elif self.balloon and not self.balloon.is_alive:
             self.balloon = None
+
+    def get_all_items(self):
+        items = []
+        for i in self.items:
+            for j in xrange(i.amount):
+                items.append(i)
+        return items
 
     def change_item(self, item):
         if item.is_used:

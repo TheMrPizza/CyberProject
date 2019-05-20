@@ -13,7 +13,7 @@ KB = 1024
 class Server(object):
     def __init__(self):
         # Initialize Firebase database and storage
-        cred = credentials.Certificate(r'C:\Users\USER\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
+        cred = credentials.Certificate(r'C:\Users\Guy\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://cyberproject-ec385.firebaseio.com',
                                              'storageBucket': 'cyberproject-ec385.appspot.com'})
         self.bucket = storage.bucket()
@@ -140,7 +140,6 @@ class Server(object):
                     self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
                                                                  'room_id': headers['room_id'], 'command': command})
         elif command == 'PLAYER INFO':
-            print 'Received player info of ' + headers['username']
             ref = db.reference('users/' + headers['username']).get()
             info = {'username': headers['username']}
             for key, value in ref.iteritems():
@@ -220,11 +219,29 @@ class Server(object):
             for i in self.client_players:
                 if i['username'] == headers['username']:
                     for j in headers['self_items'].split():
-                        db.reference('users/' + client_player['username'] + '/items/' + j).delete()
-                        db.reference('users/' + headers['username'] + '/items').child(j).set({'is_used': False})
+                        amount = db.reference('users/' + client_player['username'] + '/items/' + j + '/amount').get()
+                        if amount > 1:
+                            db.reference('users/' + client_player['username'] + '/items/' + j + '/amount').set(amount - 1)
+                        else:
+                            db.reference('users/' + client_player['username'] + '/items/' + j).delete()
+
+                        amount = db.reference('users/' + headers['username'] + '/items/' + j + '/amount').get()
+                        if amount:
+                            db.reference('users/' + headers['username'] + '/items/' + j + '/amount').set(amount + 1)
+                        else:
+                            db.reference('users/' + headers['username'] + '/items').child(j).set({'is_used': False, 'amount': 1})
                     for j in headers['player_items'].split():
-                        db.reference('users/' + headers['username'] + '/items/' + j).delete()
-                        db.reference('users/' + client_player['username'] + '/items').child(j).set({'is_used': False})
+                        amount = db.reference('users/' + headers['username'] + '/items/' + j + '/amount').get()
+                        if amount > 1:
+                            db.reference('users/' + headers['username'] + '/items/' + j + '/amount').set(amount - 1)
+                        else:
+                            db.reference('users/' + headers['username'] + '/items/' + j).delete()
+
+                        amount = db.reference('users/' + client_player['username'] + '/items/' + j + '/amount').get()
+                        if amount:
+                            db.reference('users/' + client_player['username'] + '/items/' + j + '/amount').set(amount + 1)
+                        else:
+                            db.reference('users/' + client_player['username'] + '/items').child(j).set({'is_used': False, 'amount': 1})
                 if i['room_id'] == client_player['room_id']:
                     self.add_message(i, 'MAKE TRADE', {'user1': client_player['username'], 'user2': headers['username'],
                                                        'items1': headers['self_items'], 'items2': headers['player_items'],

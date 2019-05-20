@@ -12,10 +12,10 @@ class TradeMenu(NinePatch):
         self.all_cells = []
         for i in xrange(5):
             for j in xrange(4):
-                if len(self.world.cur_player.items) > 4 * i + j:
-                    self.all_cells.append([self.world.cur_player.items[4 * i + j].item_id,
+                if len(self.world.cur_player.get_all_items()) > 4 * i + j:
+                    self.all_cells.append([self.world.cur_player.get_all_items()[4 * i + j].item_id,
                                            ImageButton(self.world, [630 + j * 63, 5 + i * 63], 'images/cell.9.png', [58, 58],
-                                                       front='images/' + self.world.cur_player.items[4 * i + j].item_id +
+                                                       front='images/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
                                                         '.png',
                                                   square=50)])
                 else:
@@ -86,7 +86,6 @@ class TradeMenu(NinePatch):
         self.is_final = True
         for i in self.player_cells:
             i[1].change_bg('images/green_cell.9.png', [58, 58])
-
 
     def change_visible(self, is_visible=None):
         if is_visible is not None:

@@ -44,10 +44,11 @@ class Client(object):
                 print 'Error: No server communication!'
                 sys.exit()
             request = request[KB:]
+        print 'Sent ' + command + '...'
         while True:
             for i in self.updates:
                 if i['headers']['command'] == command:
-                    print command
+                    print '...Received ' + command
                     code, headers, data = i['code'], i['headers'], i['data']
                     self.updates.remove(i)
                     if code == 'OK':
@@ -96,10 +97,11 @@ class Client(object):
         item_path = self.FILE_PATH + item
         if os.path.exists(item_path):
             # Check if the file was updated in the last 24 hours
-            if time.time() - os.path.getctime(item_path) < 60*60*24:
+            if time.time() - os.path.getatime(item_path) < 60*60*24:
                 # The file is already updated
                 return
             headers, data = self.send_message('STORAGE', {'item': item}, is_waiting=True)
+            os.utime(item_path, None)
             if os.path.getctime(item_path) < time.mktime(datetime.strptime(headers['time-created'][:-6],
                                                                            '%Y-%m-%d %H:%M:%S.%f').timetuple()):
                 # File was changed! Update
