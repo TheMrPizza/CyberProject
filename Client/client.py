@@ -20,7 +20,7 @@ class Client(object):
         try:
             self.socket.connect(SERVER_ADDRESS)
             print 'Connected to server'
-        except socket.error:
+        except (socket.error, socket.timeout):
             print 'Error: No server communication!'
             sys.exit()
         self.updates = []
@@ -40,7 +40,7 @@ class Client(object):
         while request != '':
             try:
                 self.socket.send(request[:KB])
-            except socket.error:
+            except (socket.error, socket.timeout):
                 print 'Error: No server communication!'
                 sys.exit()
             request = request[KB:]
@@ -62,7 +62,7 @@ class Client(object):
         while True:
             try:
                 msg = self.socket.recv(KB)
-            except socket.error:
+            except (socket.error, socket.timeout):
                 print 'Error: No server communication!'
                 sys.exit()
             lines = msg.split('\r\n')
@@ -79,7 +79,7 @@ class Client(object):
             while int(headers['length']) != len(data):
                 try:
                     data += self.socket.recv(KB)
-                except socket.error:
+                except (socket.error, socket.timeout):
                     print 'Error: No server communication!'
                     sys.exit()
 

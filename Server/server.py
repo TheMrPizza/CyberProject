@@ -247,7 +247,11 @@ class Server(object):
                                                        'items1': headers['self_items'], 'items2': headers['player_items'],
                                                        'command': command})
         elif command == 'XO TURN':
-            pass
+            for i in self.client_players:
+                if i['username'] == headers['username']:
+                    self.add_message(i, 'XO TURN', {'letter': headers['letter'], 'row': headers['row'], 'col': headers['col']})
+                    break
+            self.add_message(client_player, 'OK', {'command': command})
         elif command == 'CONNECT':
             print 'Received connect of ' + headers['username']
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
@@ -259,7 +263,7 @@ class Server(object):
                     self.add_message(client_player, 'OK', {'command': command})
                 elif int(i['room_id']) == room_id:
                     self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
-                                                       'room_id': room_id, 'command': command})
+                                                       'room_id': room_id, 'command': 'ADD PLAYER'})
         elif command == 'QUIT':
             print 'QUITTT'
             ref = db.reference('rooms/' + headers['room_id'] + '/players/' + headers['username'])

@@ -26,7 +26,6 @@ class Room(Screen):
         self.trade_menu = TradeMenu(world)
         self.xo_menu = XOMenu(world)
 
-        self.world.cur_player = Player(world, data=self.world.client.player_info(self.world.cur_player.username))
         self.players = [self.world.cur_player]
         for i in self.world.client.find_players(room_id):
             if i != self.world.cur_player.username:
@@ -61,8 +60,13 @@ class Room(Screen):
                         update.remove(i)
                         break
             elif i['code'] == 'ADD PLAYER':
-                info = self.world.client.player_info(i['headers']['username'])
-                self.players.append(Player(self.world, data=info))
+                is_found = False
+                for j in self.players:
+                    if j.username == i['headers']['username']:
+                        is_found = True
+                if not is_found:
+                    info = self.world.client.player_info(i['headers']['username'])
+                    self.players.append(Player(self.world, data=info))
                 update.remove(i)
             elif i['code'] == 'REMOVE PLAYER':
                 for j in self.players:
@@ -105,9 +109,22 @@ class Room(Screen):
                                 self.self_info_menu.change_clickable(False)
                                 self.xo_menu.player = j.player
                                 self.xo_menu.letter = 'X'
-                                self.xo_menu.change_visible()
-                                self.xo_menu.change_clickable()
+                                self.xo_menu.stage.pos = [650, -10]
+                                self.xo_menu.change_visible(True)
+                                self.xo_menu.change_clickable(True)
                         break
+                update.remove(i)
+            elif i['code'] == 'XO TURN':
+                self.xo_menu.play_turn(i['headers']['letter'], int(i['headers']['row']), int(i['headers']['col']))
+                winner = self.xo_menu.check_winner()
+                if winner:
+                    if winner == self.xo_menu.letter:
+                        print 'You Win!'
+                    elif winner == 'XO':
+                        print 'A Tie!'
+                    else:
+                        print 'You Lose!'
+                    self.xo_menu = XOMenu(self.world)
                 update.remove(i)
             elif i['code'] == 'PLACE ITEM':
                 self.trade_menu.player_place_item(i['headers']['item'])
@@ -175,6 +192,8 @@ class Room(Screen):
         for i in self.xo_menu.cells:
             for j in i:
                 cells.append(j[1])
+        for i in self.players:
+            print i.layer
         Screen.check_event(self, event, self.out + buttons + cells + list(zip(*self.self_info_menu.cells)[1]) +
                            list(zip(*self.trade_menu.all_cells)[1]) + list(zip(*self.trade_menu.self_cells)[1]) +
                            list(zip(*self.trade_menu.player_cells)[1]) +
@@ -231,7 +250,6 @@ class Room(Screen):
                             self.xo_menu.player = i.player
                             self.xo_menu.letter = 'O'
                             self.xo_menu.change_visible()
-                            self.xo_menu.stage.pos = [650, -10]
                     return
         for i in self.players:
             if map_object is i and i is not self.world.cur_player:
@@ -266,7 +284,19 @@ class Room(Screen):
             for j in xrange(len(self.xo_menu.cells[0])):
                 if map_object is self.xo_menu.cells[i][j][1]:
                     self.xo_menu.play_turn(self.xo_menu.letter, i, j)
-                    self.world.client.xo_turn()
+                    self.world.client.xo_turn(self.xo_menu.player.username, self.xo_menu.letter, i, j)
+                    winner = self.xo_menu.check_winner()
+                    if winner:
+                        if winner == self.xo_menu.letter:
+                            print 'You Win!'
+                        elif winner == 'XO':
+                            print 'A Tie!'
+                        else:
+                            print 'You Lose!'
+                        self.xo_menu = XOMenu(self.world)
 
     def on_type(self, map_object, event):
+        raise NotImplementedError
+
+    def layer_reorder(self):
         raise NotImplementedError

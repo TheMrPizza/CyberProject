@@ -8,7 +8,9 @@ class Screen(object):
         self.screen_id = screen_id
         self.bg_image = MapObject(self.world, [0, 0], image=bg_image, size=self.world.SIZE, layer=0)
 
-    def check_event(self, event, objects):
+    def check_event(self, event, objects=None):
+        if not objects:
+            objects = []
         for i in sorted(objects, key=lambda o: o.layer, reverse=True):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if i.check_collision(event.pos) and i.is_clickable:
@@ -35,4 +37,7 @@ class Screen(object):
         raise NotImplementedError
 
     def on_type(self, map_object, event):
+        raise NotImplementedError
+
+    def layer_reorder(self):
         raise NotImplementedError

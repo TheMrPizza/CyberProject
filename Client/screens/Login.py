@@ -1,9 +1,7 @@
 from Client.mechanics.Screen import Screen
 from Client.mechanics.TextBox import TextBox
 from Client.mechanics.Label import Label
-from Client.mechanics.Player import Player
-from Client.screens.Beach import Beach
-from Client.screens.Submarine import Submarine
+from Loading import Loading
 
 
 class Login(Screen):
@@ -37,11 +35,7 @@ class Login(Screen):
             if data:
                 self.world.client.connect(data)
                 print 'Player connected'
-                info = self.world.client.player_info(data)
-                print 'Info received'
-                self.world.cur_player = Player(self.world, info)
-                if self.world.cur_player.room_id == 201:
-                    self.world.cur_screen = Beach(self.world)
-                elif self.world.cur_player.room_id == 202:
-                    self.world.cur_screen = Submarine(self.world)
-                print 'Room loaded'
+                self.world.cur_screen = Loading(self.world, None, data)
+
+    def layer_reorder(self):
+        pass

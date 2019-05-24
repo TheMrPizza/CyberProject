@@ -7,7 +7,7 @@ class XOMenu(NinePatch):
     def __init__(self, world):
         NinePatch.__init__(self, world, [100, -10], 'images/test_text_box.9.png', [800, 340], layer=8)
 
-        self.grid = MapObject(world, [400, 30], image='images/grid.png', size=[280, 280], layer=9)
+        self.grid = MapObject(world, [300, 30], image='images/grid.png', size=[280, 280], layer=9)
         self.stage = MapObject(world, [130, -10], image='images/stage.png')
         self.player = None
         self.letter = ''
@@ -15,10 +15,13 @@ class XOMenu(NinePatch):
         for i in xrange(3):
             self.cells.append([])
             for j in xrange(3):
-                self.cells[i].append([' ', ImageButton(world, [405 + 90 * j, 40 + 90 * i], 'images/area.9.png', [90 ,90], square=60)])
+                self.cells[i].append([' ', ImageButton(world, [305 + 90 * j, 35 + 90 * i], 'images/area.9.png', [90 ,90], square=60, layer=10)])
 
         self.change_visible(False)
-        self.change_clickable(False)
+        self.change_clickable(True)
+        for i in self.cells:
+            for j in i:
+                j[1].change_clickable(False)
 
     def play_turn(self, letter, row, col):
         if letter == 'X':
@@ -27,6 +30,7 @@ class XOMenu(NinePatch):
         else:
             self.cells[row][col][0] = 'O'
             self.cells[row][col][1].change_front('images/o_sign.png')
+        self.cells[row][col][1].change_clickable(False)
 
         if letter == self.letter:
             self.stage.pos = [130, -10]
@@ -35,20 +39,28 @@ class XOMenu(NinePatch):
 
         for i in self.cells:
             for j in i:
-                if j[0] != ' ':
+                if j[0] == ' ':
                     j[1].change_clickable()
 
     def check_winner(self):
         for i in self.cells:
-            if i[0][0] == i[1][0] == i[2][0]:
+            if i[0][0] == i[1][0] == i[2][0] != ' ':
                 return i[0][0]
-        for i in xrange(len(self.cells)):
-            if self.cells[i][0][0] == self.cells[i][1][0] == self.cells[i][2][0]:
+        for i in xrange(len(self.cells[0])):
+            if self.cells[0][i][0] == self.cells[1][i][0] == self.cells[2][i][0] != ' ':
                 return self.cells[i][0][0]
-        if self.cells[0][0][0] == self.cells[1][1][0] == self.cells[2][2][0]:
+        if self.cells[0][0][0] == self.cells[1][1][0] == self.cells[2][2][0] != ' ':
             return self.cells[0][0][0]
-        if self.cells[0][2][0] == self.cells[1][1][0] == self.cells[2][0][0]:
+        if self.cells[0][2][0] == self.cells[1][1][0] == self.cells[2][0][0] != ' ':
             return self.cells[0][2][0]
+
+        count = 0
+        for i in self.cells:
+            for j in i:
+                if j[0] != ' ':
+                    count += 1
+        if count == 9:
+            return 'XO'
         return None
 
     def change_visible(self, is_visible=None):
