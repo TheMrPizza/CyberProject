@@ -37,19 +37,6 @@ class Player(MapObject):
                 if self.path_target:  # Player is going out of the room
                     from Client.screens.Loading import Loading
                     self.world.cur_screen = Loading(self.world, self.path_target)
-                    # if self.path_target == 201:
-                    #     self.world.client.update_player_pos(self.username, [780, 380])
-                    #     from Client.screens.Beach import Beach
-                    #     room = Beach(self.world)
-                    #     self.world.client.add_player(room.screen_id, self.username)
-                    #     self.world.cur_screen = room
-                    #
-                    # if self.path_target == 202:
-                    #     self.world.client.update_player_pos(self.username, [20, 0])
-                    #     from Client.screens.Submarine import Submarine
-                    #     room = Submarine(self.world)
-                    #     self.world.client.add_player(room.screen_id, self.username)
-                    #     self.world.cur_screen = room
 
     def update_pos(self, pos):
         self.text_object.pos[0] += pos[0] - self.pos[0]

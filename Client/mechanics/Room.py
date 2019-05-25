@@ -1,9 +1,10 @@
 from MapObject import MapObject
-from Client.mechanics.TextBox import TextBox
-from Client.mechanics.ImageButton import ImageButton
-from Client.mechanics.SelfInfoMenu import SelfInfoMenu
-from Client.mechanics.PlayerInfoMenu import PlayerInfoMenu
-from Client.mechanics.ActivityRequest import ActivityRequest
+from TextBox import TextBox
+from ImageButton import ImageButton
+from SelfInfoMenu import SelfInfoMenu
+from PlayerInfoMenu import PlayerInfoMenu
+from ActivityRequest import ActivityRequest
+from ScrollBar import ScrollBar
 from TradeMenu import TradeMenu
 from XOMenu import XOMenu
 from Player import Player
@@ -22,7 +23,7 @@ class Room(Screen):
         self.bag = MapObject(self.world, [600, 540], image='images/bag.png')
         self.self_info_menu = SelfInfoMenu(world)
         self.player_info_menu = PlayerInfoMenu(world)
-        self.activity_requests = []
+        self.activity_requests = ScrollBar(self.world, [20, 20], 5, True)
         self.trade_menu = TradeMenu(world)
         self.xo_menu = XOMenu(world)
 
@@ -67,6 +68,7 @@ class Room(Screen):
                 if not is_found:
                     info = self.world.client.player_info(i['headers']['username'])
                     self.players.append(Player(self.world, data=info))
+                self.world.cur_screen.layer_reorder()
                 update.remove(i)
             elif i['code'] == 'REMOVE PLAYER':
                 for j in self.players:
@@ -91,7 +93,7 @@ class Room(Screen):
                         break
             elif i['code'] == 'ACTIVITY RESPONSE':
                 for j in self.activity_requests:
-                    if j.player.username == i['headers']['addressee']:
+                    if j.player.username == i['headers']['addressee'] and j.activity == i['headers']['activity']:
                         self.activity_requests.remove(j)
                         if i['headers']['is_accepted'] == 'v':
                             if i['headers']['activity'] == 'TRADE':
@@ -192,8 +194,6 @@ class Room(Screen):
         for i in self.xo_menu.cells:
             for j in i:
                 cells.append(j[1])
-        for i in self.players:
-            print i.layer
         Screen.check_event(self, event, self.out + buttons + cells + list(zip(*self.self_info_menu.cells)[1]) +
                            list(zip(*self.trade_menu.all_cells)[1]) + list(zip(*self.trade_menu.self_cells)[1]) +
                            list(zip(*self.trade_menu.player_cells)[1]) +
@@ -209,7 +209,7 @@ class Room(Screen):
 
         if objects is None:
             objects = []
-        Screen.draw_screen(self, self.out + self.activity_requests + [self.path, self.bag_button, self.self_info_menu, self.player_info_menu, self.trade_menu, self.xo_menu] + self.players + objects)
+        Screen.draw_screen(self, self.out + [self.path, self.bag_button, self.self_info_menu, self.player_info_menu, self.activity_requests, self.trade_menu, self.xo_menu] + self.players + objects)
 
     def on_click(self, map_object, event):
         if map_object in [self.bag_button, self.self_info_menu.x_button]:
@@ -221,12 +221,22 @@ class Room(Screen):
             self.player_info_menu.change_clickable()
             return
         if map_object is self.player_info_menu.trade_button:
-            self.world.client.activity_request('TRADE', self.world.cur_player.username, self.player_info_menu.player.username)
-            self.activity_requests.append(ActivityRequest(self.world, 'TRADE', self.player_info_menu.player, False))
+            is_found = False
+            for i in self.activity_requests:
+                if i.activity == 'TRADE' and i.player == self.player_info_menu.player:
+                    is_found = True
+            if not is_found:
+                self.world.client.activity_request('TRADE', self.world.cur_player.username, self.player_info_menu.player.username)
+                self.activity_requests.append(ActivityRequest(self.world, 'TRADE', self.player_info_menu.player, False))
             return
         if map_object is self.player_info_menu.xo_button:
-            self.world.client.activity_request('XO', self.world.cur_player.username, self.player_info_menu.player.username)
-            self.activity_requests.append(ActivityRequest(self.world, 'XO', self.player_info_menu.player, False))
+            is_found = False
+            for i in self.activity_requests:
+                if i.activity == 'XO' and i.player == self.player_info_menu.player:
+                    is_found = True
+            if not is_found:
+                self.world.client.activity_request('XO', self.world.cur_player.username, self.player_info_menu.player.username)
+                self.activity_requests.append(ActivityRequest(self.world, 'XO', self.player_info_menu.player, False))
             return
         for i in self.activity_requests:
             for j in i.buttons:

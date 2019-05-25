@@ -9,6 +9,7 @@ class Submarine(Room):
         Room.__init__(self, world, 202, 'images/submarine.png', 'images/submarine_path.png', [])
         self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image)
         self.out.append(MapObject(self.world, [20, -30], image='images/ladder.png', layer=2))
+        self.layer_reorder()
 
     def check_event(self, event, objects=None):
         if objects is None:

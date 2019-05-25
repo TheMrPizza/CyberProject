@@ -21,14 +21,11 @@ class Loading(Screen):
             info = self.world.client.player_info(self.player_data)
             print 'Info received'
             self.world.cur_player = Player(self.world, info)
-            print '1'
             self.room_id = self.world.cur_player.room_id
         if self.room_id == 201:
             if not self.player_data:
                 self.world.client.update_player_pos(self.world.cur_player.username, [780, 380])
-            print '1.5'
             self.room = Beach(self.world)
-            print '2'
         elif self.room_id == 202:
             if not self.player_data:
                 self.world.client.update_player_pos(self.world.cur_player.username, [20, 0])
@@ -36,7 +33,6 @@ class Loading(Screen):
 
         if not self.player_data:
             self.world.client.add_player(self.room.screen_id, self.world.cur_player.username)
-        print '3'
 
     def execute(self):
         if not self.thread.is_alive():  # Thread finished to create the room

@@ -10,6 +10,7 @@ class Beach(Room):
         self.bush_shadow = MapObject(self.world, [self.bush.pos[0], self.bush.pos[1] + 42],
                                      image='images/test_bush_shadow.png', layer=1)
         self.out.append(MapObject(self.world, [770, 370], image='images/submarine_enterance.png', layer=2))
+        self.layer_reorder()
 
     def check_event(self, event, objects=None):
         if objects is None:
