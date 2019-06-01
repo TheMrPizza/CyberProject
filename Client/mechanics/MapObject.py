@@ -82,9 +82,7 @@ class MapObject(object):
     def load_image(world, image, size=None, square=None): # TODO: CHANGE THIS WHOLE FUNCTION
         if not os.path.exists(world.PATH + '/images'):
             os.makedirs(world.PATH + '/images')
-        if image not in world.storage_history:
-            world.client.get_from_storage(image)
-            world.storage_history.append(image)
+        world.client.get_from_storage(image)
         surface = pygame.image.load(world.PATH + image)
         if image.endswith('.9.png'):  # No resize
             return surface

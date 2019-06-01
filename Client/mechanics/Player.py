@@ -7,7 +7,7 @@ class Player(MapObject):
     def __init__(self, world, data):
         if data:
             # Another player. Data sent from the server
-            MapObject.__init__(self, world, data['pos'], image='images/' + data['body'] + '.png')
+            MapObject.__init__(self, world, data['pos'], image='images/items/' + str(data['body']) + '.png', layer=5)
             self.username = data['username']
             self.is_male = data['is_male']
             self.items = []
@@ -36,7 +36,8 @@ class Player(MapObject):
             if not self.walking_path:  # Path ended
                 if self.path_target:  # Player is going out of the room
                     from Client.screens.Loading import Loading
-                    self.world.cur_screen = Loading(self.world, self.path_target)
+                    self.world.cur_screen = Loading(self.world, self.world.cur_screen.screen_id, self.path_target)
+                    self.path_target = None
 
     def update_pos(self, pos):
         self.text_object.pos[0] += pos[0] - self.pos[0]

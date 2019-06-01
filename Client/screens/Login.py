@@ -6,7 +6,7 @@ from Loading import Loading
 
 class Login(Screen):
     def __init__(self, world):
-        Screen.__init__(self, world, 101, 'images/test_map.png')
+        Screen.__init__(self, world, 101, 'images/rooms/201/beach.png')
         self.buttons = [TextBox(self.world, (380, 200), 300),
                         TextBox(self.world, (380, 270), 300),
                         Label(self.world, (300, 215), 'Username:', 'Title'),
@@ -35,7 +35,7 @@ class Login(Screen):
             if data:
                 self.world.client.connect(data)
                 print 'Player connected'
-                self.world.cur_screen = Loading(self.world, None, data)
+                self.world.cur_screen = Loading(self.world, None, None, data)
 
     def layer_reorder(self):
         pass

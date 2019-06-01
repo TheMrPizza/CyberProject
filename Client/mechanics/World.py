@@ -21,7 +21,6 @@ class World(object):
                       'Speech Balloon': pygame.font.SysFont('Arial', 18),
                       'Username': pygame.font.SysFont('Arial', 20, True),
                       'Level': pygame.font.SysFont('Arial', 40, True)}
-        self.storage_history = []
 
         self.loop_thread = threading.Thread(target=self.world_loop)
         self.loop_thread.start()
@@ -31,10 +30,9 @@ class World(object):
                 break
 
     def world_loop(self):
-        # pygame.init()
-        # pygame.mixer.quit()
+        pygame.init()
         self.SURF = pygame.display.set_mode(self.SIZE)
-        pygame.display.set_caption("Cyber!")
+        pygame.display.set_caption('Volantis')
         execute_thread = threading.Thread(target=self.execute_loop)
         execute_thread.start()
 
@@ -51,6 +49,7 @@ class World(object):
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        self.client.quit(self.cur_player.username, self.cur_player.room_id)
                         pygame.quit()
                         sys.exit()
                     else:

@@ -1,25 +1,31 @@
 from Client.mechanics.MapObject import MapObject
 from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
-from Client.mechanics.TextBox import TextBox
 
 
-class Submarine(Room):
+class Forest(Room):
     def __init__(self, world):
-        Room.__init__(self, world, 202, 'images/rooms/202/submarine.png', 'images/rooms/202/path.png', [])
-        self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image)
-        self.out = [MapObject(self.world, [0, 0], image='images/rooms/202/out1.png', is_visible=False)]
+        Room.__init__(self, world, 203, 'images/rooms/203/forest.png', 'images/rooms/203/path.png', [])
+        self.tree = MapObject(self.world, [20, 0], image='images/rooms/203/tree.png', layer=4)
+        self.bush1 = MapObject(self.world, [5, 450], image='images/rooms/203/bush1.png', layer=4)
+        self.bush2 = MapObject(self.world, [950, 230], image='images/rooms/203/bush2.png', layer=4)
+        self.trunk = MapObject(self.world, [370, 300], image='images/rooms/203/trunk.png', layer=4)
+        self.sign = MapObject(self.world, [900, 530], image='images/rooms/203/sign.png', layer=4)
+
+        self.out = [MapObject(self.world, [0, 0], image='images/rooms/203/out1.png', is_visible=False),
+                    MapObject(self.world, [0, 0], image='images/rooms/203/out2.png', is_visible=False),
+                    MapObject(self.world, [0, 0], image='images/rooms/203/out3.png', is_visible=False)]
         self.layer_reorder()
 
     def check_event(self, event, objects=None):
         if objects is None:
             objects = []
-        Room.check_event(self, event, [self.chat_box] + objects)
+        Room.check_event(self, event, [self.tree, self.bush1, self.bush2, self.trunk, self.chat_box] + objects)
 
     def draw_screen(self, objects=None):
         if objects is None:
             objects = []
-        Room.draw_screen(self, [self.chat_box] + objects)
+        Room.draw_screen(self, [self.tree, self.bush1, self.bush2, self.trunk, self.chat_box] + objects)
 
     def on_click(self, map_object, event):
         if map_object in [self.path] + self.out:
@@ -33,10 +39,14 @@ class Submarine(Room):
                                                      event.pos[1] - self.world.cur_player.height / 2])
                 if map_object is self.out[0]:
                     self.world.cur_player.path_target = 201
+                elif map_object is self.out[1]:
+                    pass  # self.world.cur_player.path_target = 204
+                elif map_object is self.out[2]:
+                    pass  # self.world.cur_player.path_target = 205
         Room.on_click(self, map_object, event)
 
     def layer_reorder(self):
-        objects = self.players
+        objects = self.players + [self.tree, self.bush2, self.trunk]
         objects = sorted(objects, key=lambda o: o.pos[1] + o.height)
         for i in xrange(len(objects)):
             objects[i].layer = i+2

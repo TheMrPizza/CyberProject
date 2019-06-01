@@ -18,7 +18,7 @@ class SelfInfoMenu(NinePatch):
                 if len(self.world.cur_player.get_all_items()) > 4 * i + j:
                     self.cells.append([self.world.cur_player.get_all_items()[4 * i + j].item_id,
                                       ImageButton(self.world, [520 + j * 63, 5 + i * 63], 'images/cell.9.png', [58, 58],
-                                                  front='images/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
+                                                  front='images/items/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
                                                         '.png',
                                                   square=50)])
                 else:

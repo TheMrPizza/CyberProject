@@ -15,7 +15,7 @@ class TradeMenu(NinePatch):
                 if len(self.world.cur_player.get_all_items()) > 4 * i + j:
                     self.all_cells.append([self.world.cur_player.get_all_items()[4 * i + j].item_id,
                                            ImageButton(self.world, [630 + j * 63, 5 + i * 63], 'images/cell.9.png', [58, 58],
-                                                       front='images/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
+                                                       front='images/items/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
                                                         '.png',
                                                   square=50)])
                 else:
@@ -46,7 +46,7 @@ class TradeMenu(NinePatch):
         for i in self.self_cells:
             if i[0] == -1:
                 i[0] = self.all_cells[index][0]
-                i[1].change_front('images/' + str(i[0]) + '.png', square=50)
+                i[1].change_front('images/items/' + str(i[0]) + '.png', square=50)
                 break
         self.all_cells[index][0] = -1
         self.all_cells[index][1].front = None
@@ -55,7 +55,7 @@ class TradeMenu(NinePatch):
         for i in self.all_cells:
             if i[0] == -1:
                 i[0] = self.self_cells[index][0]
-                i[1].change_front('images/' + str(i[0]) + '.png', square=50)
+                i[1].change_front('images/items/' + str(i[0]) + '.png', square=50)
                 break
         self.self_cells[index][0] = -1
         self.self_cells[index][1].front = None
@@ -64,7 +64,7 @@ class TradeMenu(NinePatch):
         for i in self.player_cells:
             if i[0] == -1:
                 i[0] = item
-                i[1].change_front('images/' + str(i[0]) + '.png', square=50)
+                i[1].change_front('images/items/' + str(i[0]) + '.png', square=50)
                 break
 
     def player_remove_item(self, index):

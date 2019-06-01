@@ -16,9 +16,9 @@ from Item import Item
 class Room(Screen):
     def __init__(self, world, room_id, bg_image, path, out):
         Screen.__init__(self, world, room_id, bg_image)
-        self.path = MapObject(self.world, [0, 0], image=path, size=world.SIZE, is_visible=False)
+        self.path = MapObject(self.world, [0, 0], image=path, size=world.SIZE, is_visible=False, layer=0)
         self.out = out
-        self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image)
+        self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image, layer=10)
         self.bag_button = ImageButton(self.world, [900, 540], 'images/test_text_box.9.png', [50, 50], 'images/bag.png')
         self.bag = MapObject(self.world, [600, 540], image='images/bag.png')
         self.self_info_menu = SelfInfoMenu(world)

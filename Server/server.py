@@ -23,14 +23,13 @@ class Server(object):
         self.socket.bind(SERVER_ADDRESS)
         self.socket.listen(5)
 
+        self.remove_all_players()
+
         self.client_players = []  # The client socket and client's player username and room id
         self.waiting_data = []  # Data to send to clients
 
         while True:
-            sockets = []
-            for i in self.client_players:
-                if 'socket' in i:
-                    sockets.append(i['socket'])
+            sockets = [i['socket'] for i in self.client_players]
             rlist, wlist, xlist = select.select(sockets + [self.socket], sockets, [])
             for i in rlist:  # Reading messages
                 if i is self.socket:  # New client, adding to client players
@@ -103,8 +102,7 @@ class Server(object):
                 if i == client_player:
                     self.add_message(client_player, 'OK', {'command': command})
                 elif i['room_id'] == client_player['room_id']:
-                    self.add_message(i, 'POS', {'username': headers['username'], 'command': command},
-                                     headers['pos'])
+                    self.add_message(i, 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
             print headers['username']
@@ -290,6 +288,9 @@ class Server(object):
         db.reference('rooms/' + client_player['room_id'] + '/players/' + client_player['username']).delete()
         for i in self.client_players:
             self.add_message(i, 'QUIT', {'username': client_player['username']})
+
+    def remove_all_players(self):
+        db.reference('rooms').delete()
 
     @staticmethod
     def message_format(command, headers, data):
