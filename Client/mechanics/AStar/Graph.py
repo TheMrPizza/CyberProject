@@ -8,8 +8,8 @@ class Graph:
 
     def neighbors(self, parent, goal):
         points = []
-        for x in [-10, 0, 10]:
-            for y in [-10, 0, 10]:
+        for x in [-20, 0, 20]:
+            for y in [-20, 0, 20]:
                 if not (x == 0 and y == 0) and 0 <= parent.pos[0] + x < self.path.width and 0 <= parent.pos[1] + y < self.path.height:
                     if not self.path.surface.get_at((parent.pos[0]+x, parent.pos[1]+y)).a == 0:
                         points += [StarNode(pos=(parent.pos[0]+x, parent.pos[1]+y))]

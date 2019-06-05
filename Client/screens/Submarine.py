@@ -8,7 +8,7 @@ class Submarine(Room):
     def __init__(self, world):
         Room.__init__(self, world, 202, 'images/rooms/202/submarine.png', 'images/rooms/202/path.png', [])
         self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image)
-        self.out = [MapObject(self.world, [0, 0], image='images/rooms/202/out1.png', is_visible=False)]
+        self.out = [MapObject(self.world, [0, 0], image='images/rooms/202/out1.png', is_visible=False, layer=7)]
         self.layer_reorder()
 
     def check_event(self, event, objects=None):
@@ -24,7 +24,7 @@ class Submarine(Room):
     def on_click(self, map_object, event):
         if map_object in [self.path] + self.out:
             path = search_path(self.world, (self.world.cur_player.pos[0] + self.world.cur_player.width / 2,
-                                            self.world.cur_player.pos[1] + self.world.cur_player.height / 2),
+                                            self.world.cur_player.pos[1] + self.world.cur_player.height),
                                event.pos)
             if path:
                 self.world.cur_player.walking_path = path

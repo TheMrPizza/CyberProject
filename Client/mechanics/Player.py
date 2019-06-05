@@ -29,7 +29,7 @@ class Player(MapObject):
     def walk(self):
         if self.walking_path:
             pos = self.walking_path.pop()
-            pos = [pos[0] - self.width / 2, pos[1] - self.height / 2]
+            pos = [pos[0] - self.width / 2, pos[1] - self.height]
             self.update_pos(pos)
             self.world.cur_screen.layer_reorder()
 

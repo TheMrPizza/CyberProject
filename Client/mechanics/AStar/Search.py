@@ -13,8 +13,8 @@ def search_path(world, start, goal):
     """
 
     # Rounding start and goal by 10
-    start = start[0]/10*10, start[1]/10*10
-    goal = goal[0]/10*10, goal[1]/10*10
+    start = start[0]/20*20, start[1]/20*20
+    goal = goal[0]/20*20, goal[1]/20*20
 
     # Initializing the graph and the nodes
     graph = Graph(world)
@@ -39,9 +39,9 @@ def search_path(world, start, goal):
         if cur_node.equals(goal_node):  # Goal has reached! Creating the path that was found
             path = []
             while cur_node.parent:
-                for i in xrange(2):  # Adding mid-points to control walking speed
-                    x = cur_node.pos[0] + (cur_node.parent.pos[0] - cur_node.pos[0]) / 2 * i
-                    y = cur_node.pos[1] + (cur_node.parent.pos[1] - cur_node.pos[1]) / 2 * i
+                for i in xrange(4):  # Adding mid-points to control walking speed
+                    x = cur_node.pos[0] + (cur_node.parent.pos[0] - cur_node.pos[0]) / 4 * i
+                    y = cur_node.pos[1] + (cur_node.parent.pos[1] - cur_node.pos[1]) / 4 * i
                     path.append((x, y))
                 cur_node = cur_node.parent
             return path
