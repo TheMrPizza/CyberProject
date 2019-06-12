@@ -5,6 +5,7 @@ from firebase_admin import db
 
 import socket
 import select
+from datetime import datetime
 
 SERVER_ADDRESS = ('0.0.0.0', 1943)
 KB = 1024
@@ -108,13 +109,11 @@ class Server(object):
             print headers['username']
             ref.child(headers['username']).set({
                 'body': headers['body'],
-                'is_male': bool(headers['is_male']),
-                'items': headers['items'][1:-1].split(', '),
-                'level': int(headers['level']),
-                'join_date': headers['join_date'],
-                'is_admin': bool(headers['is_admin']),
-                'room_id': int(headers['room_id']),
-                'pos': map(lambda p: int(p), headers['pos'][1:-1].split(', '))
+                'level': 1,
+                'join_date': datetime.now().strftime('%d.%m.%Y'),
+                'is_admin': False,
+                'room_id': 201,
+                'pos': [23, 303]
             })
             self.add_message(client_player, 'OK', {'command': command})
         elif command == 'ADD PLAYER':
@@ -138,6 +137,7 @@ class Server(object):
                     self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
                                                                  'room_id': headers['room_id'], 'command': command})
         elif command == 'PLAYER INFO':
+            print headers['username']
             ref = db.reference('users/' + headers['username']).get()
             info = {'username': headers['username']}
             for key, value in ref.iteritems():
@@ -250,6 +250,12 @@ class Server(object):
                     self.add_message(i, 'XO TURN', {'letter': headers['letter'], 'row': headers['row'], 'col': headers['col']})
                     break
             self.add_message(client_player, 'OK', {'command': command})
+        elif command == 'CHECK USERNAME':
+            ref = db.reference('users/' + headers['username']).get()
+            if ref:
+                self.add_message(client_player, 'OK', {'command': command}, 'True')
+            else:
+                self.add_message(client_player, 'OK', {'command': command}, 'False')
         elif command == 'CONNECT':
             print 'Received connect of ' + headers['username']
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()

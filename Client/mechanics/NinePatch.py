@@ -49,7 +49,7 @@ class NinePatch(MapObject):
         if size[1] < min_height:
             size[1] = min_height
 
-        # Y-Top
+        # Top
         left = pygame.Surface((x['start'], y['start']), pygame.SRCALPHA)
         left.blit(cur_image, (0, 0), area=(0, 0, x['start'], y['start']))
 
@@ -67,7 +67,7 @@ class NinePatch(MapObject):
 
         surfaces.append([left, middle, right])
 
-        # Y-Middle
+        # Middle
         left = pygame.Surface((x['start'], y['end'] - y['start']), pygame.SRCALPHA)
         left.blit(cur_image, (0, 0), area=(0, y['start'], x['start'], y['end'] - y['start']))
         left = pygame.transform.smoothscale(left, (x['start'], size[1] - y['start'] -
@@ -86,7 +86,7 @@ class NinePatch(MapObject):
 
         surfaces.append([left, middle, right])
 
-        # Y-Bottom
+        # Bottom
         left = pygame.Surface((x['start'], cur_image.get_size()[1] - y['end']), pygame.SRCALPHA)
         left.blit(cur_image, (0, 0), area=(0, y['end'], x['start'], cur_image.get_size()[1] - y['end']))
 
@@ -106,7 +106,6 @@ class NinePatch(MapObject):
         # Merge all the parts
         merged = NinePatch.merge(surfaces)
 
-        # Adjust the text area
         text_x['end'] = size[0] - (cur_image.get_size()[0] - text_x['end'])
         text_y['end'] = size[1] - (cur_image.get_size()[1] - text_y['end'])
         text_rect = pygame.Rect((text_x['start'], text_y['start']),

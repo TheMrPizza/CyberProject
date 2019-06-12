@@ -12,11 +12,11 @@ class PlayerInfoMenu(NinePatch):
         self.arrow = MapObject(world, [460, 280], image='images/green_arrow.png')
         self.level = Label(world, [485, 270], '0', 'Level', (82, 175, 46))
         self.trade_button = ImageButton(world, [600, 50], 'images/cell.9.png', [50, 50],
-                                        front='images/orange_arrows.png', square=45)
+                                        image='images/orange_arrows.png', square=45)
         self.xo_button = ImageButton(world, [600, 120], 'images/cell.9.png', [50, 50],
-                                        front='images/xo.png', square=45)
+                                        image='images/xo.png', square=45)
         self.x_button = ImageButton(self.world, [420, 10], 'images/red_cell.9.png', [28, 28],
-                                    front='images/x.png', square=22)
+                                    image='images/x.png', square=22)
         self.change_visible(False)
         self.change_clickable(False)
 

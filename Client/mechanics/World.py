@@ -16,11 +16,14 @@ class World(object):
 
         self.clock = pygame.time.Clock()
         pygame.font.init()
-        self.fonts = {'Text Box': pygame.font.SysFont('Agency FB', 25),
-                      'Title': pygame.font.SysFont('Agency FB', 20),
-                      'Speech Balloon': pygame.font.SysFont('Arial', 18),
-                      'Username': pygame.font.SysFont('Arial', 20, True),
-                      'Level': pygame.font.SysFont('Arial', 40, True)}
+        self.fonts = {'Small': pygame.font.SysFont('coolveticacondensedrgregular', 19),
+                      'Regular': pygame.font.SysFont('coolveticacondensedrgregular', 28),
+                      'Medium': pygame.font.SysFont('coolveticacondensedrgregular', 31),
+                      'Large': pygame.font.SysFont('coolveticacondensedrgregular', 72),
+                      'Big': pygame.font.SysFont('coolveticacondensedrgregular', 100),
+                      'Speech Balloon': pygame.font.SysFont('coolveticacondensedrgregular', 24),
+                      'Username': pygame.font.SysFont('coolveticacondensedrgregular', 24),
+                      'Level': pygame.font.SysFont('coolveticacondensedrgregular', 40)}
 
         self.loop_thread = threading.Thread(target=self.world_loop)
         self.loop_thread.start()

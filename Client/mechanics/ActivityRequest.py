@@ -18,10 +18,10 @@ class ActivityRequest(NinePatch):
             self.icon = MapObject(self.world, [30, None], image='images/xo.png', size=[40, 40], square=40, middle=self)
 
         if self.is_incoming:
-            self.buttons['v'] = ImageButton(world, [160, 30], 'images/green_cell.9.png', [20, 20], front='images/v.png', square=15)
-            self.buttons['x'] = ImageButton(world, [160, 50], 'images/red_cell.9.png', [20, 20], front='images/x.png', square=15)
+            self.buttons['v'] = ImageButton(world, [160, 30], 'images/green_cell.9.png', [20, 20], image='images/v.png', square=15)
+            self.buttons['x'] = ImageButton(world, [160, 50], 'images/red_cell.9.png', [20, 20], image='images/x.png', square=15)
         else:
-            self.buttons['x'] = ImageButton(world, [160, 40], 'images/red_cell.9.png', [20, 20], front='images/x.png', square=15)
+            self.buttons['x'] = ImageButton(world, [160, 40], 'images/red_cell.9.png', [20, 20], image='images/x.png', square=15)
         self.start_time = pygame.time.get_ticks()
 
     def change_visible(self, is_visible=None):

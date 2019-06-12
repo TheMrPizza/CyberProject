@@ -9,11 +9,11 @@ class Player(MapObject):
             # Another player. Data sent from the server
             MapObject.__init__(self, world, data['pos'], image='images/items/' + str(data['body']) + '.png', layer=5)
             self.username = data['username']
-            self.is_male = data['is_male']
             self.items = []
-            for i in data['items']:
-                self.items.append(Item(self.world, self.world.client.item_info(i), self.pos,
-                                       data['items'][i]['amount'], data['items'][i]['is_used']))
+            if 'items' in data:
+                for i in data['items']:
+                    self.items.append(Item(self.world, self.world.client.item_info(i), self.pos,
+                                           data['items'][i]['amount'], data['items'][i]['is_used']))
             self.level = data['level']
             self.join_date = data['join_date']
             self.is_admin = data['is_admin']
@@ -23,7 +23,7 @@ class Player(MapObject):
             self.msg = None
             self.balloon = None
             self.text_object = MapObject(world, [None, self.pos[1] + 75],
-                                         self.world.fonts['Username'].render(self.username, False, (0, 0, 0)),
+                                         self.world.fonts['Username'].render(self.username, True, (0, 0, 0)),
                                          middle=self, layer=6)
 
     def walk(self):

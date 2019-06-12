@@ -20,7 +20,8 @@ class Forest(Room):
     def check_event(self, event, objects=None):
         if objects is None:
             objects = []
-        Room.check_event(self, event, [self.tree, self.bush1, self.bush2, self.trunk, self.sign, self.chat_box] + objects)
+        Room.check_event(self, event,
+                         [self.tree, self.bush1, self.bush2, self.trunk, self.sign, self.chat_box] + objects)
 
     def draw_screen(self, objects=None):
         if objects is None:
@@ -40,7 +41,7 @@ class Forest(Room):
                 if map_object is self.out[0]:
                     self.world.cur_player.path_target = 201
                 elif map_object is self.out[1]:
-                    pass  # self.world.cur_player.path_target = 205
+                    self.world.cur_player.path_target = 205
                 elif map_object is self.out[2]:
                     self.world.cur_player.path_target = 204
         Room.on_click(self, map_object, event)

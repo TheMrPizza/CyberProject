@@ -10,7 +10,8 @@ class Graph:
         points = []
         for x in [-20, 0, 20]:
             for y in [-20, 0, 20]:
-                if not (x == 0 and y == 0) and 0 <= parent.pos[0] + x < self.path.width and 0 <= parent.pos[1] + y < self.path.height:
+                if not (x == 0 and y == 0) and 0 <= parent.pos[0] + x < self.path.width and \
+                        0 <= parent.pos[1] + y < self.path.height:
                     if not self.path.surface.get_at((parent.pos[0]+x, parent.pos[1]+y)).a == 0:
                         points += [StarNode(pos=(parent.pos[0]+x, parent.pos[1]+y))]
                         points[-1].g = parent.g + self.cost(parent.pos, points[-1].pos)
@@ -18,5 +19,6 @@ class Graph:
                         points[-1].f = points[-1].g + points[-1].h
         return points
 
-    def cost(self, pos1, pos2):
+    @staticmethod
+    def cost(pos1, pos2):
         return math.sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)  # Distance

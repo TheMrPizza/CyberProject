@@ -4,11 +4,15 @@ import pygame
 
 
 class TextBox(NinePatch):
-    def __init__(self, world, pos, width, middle=None, **kwargs):
-        NinePatch.__init__(self, world, pos, 'images/test_text_box.9.png', [width, 50], middle=middle, **kwargs)
+    def __init__(self, world, pos, width, color=(0, 0, 0), **kwargs):
+        NinePatch.__init__(self, world, pos, 'images/elements/light_blue_cell.9.png', [width, 45], **kwargs)
         self.text = ''
-        self.text_object = MapObject(world, (self.text_rect.x, self.text_rect.y),
-                                     self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0)), layer=5)
+        self.width = width
+        self.color = color
+        self.text_object = MapObject(world, [self.text_rect.x, None], self.world.fonts['Regular'].render(self.text, True, self.color), layer=5, middle=self.text_rect)
+
+    def change_background(self, image, **kwargs):
+        NinePatch.__init__(self, self.world, self.pos, image, [self.width, 45], **kwargs)
 
     def on_type(self, event):
         if event.key == pygame.K_BACKSPACE:
@@ -16,11 +20,11 @@ class TextBox(NinePatch):
         elif event.key == pygame.K_RETURN and self.text != '':
             data = self.text
             self.text = ''
-            self.text_object.surface = self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0))
+            self.text_object.surface = self.world.fonts['Regular'].render(self.text, True, self.color)
             return data
-        elif self.world.fonts['Text Box'].size(self.text + event.unicode)[0] <= self.text_rect.width:
+        elif self.world.fonts['Regular'].size(self.text + event.unicode)[0] <= self.text_rect.width:
             self.text += event.unicode
-        self.text_object.surface = self.world.fonts['Text Box'].render(self.text, False, (0, 0, 0))
+        self.text_object.surface = self.world.fonts['Regular'].render(self.text, True, self.color)
 
     def on_send(self, data):
         self.world.cur_player.msg = data

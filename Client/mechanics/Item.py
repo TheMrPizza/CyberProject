@@ -6,7 +6,6 @@ class Item(MapObject):
         MapObject.__init__(self, world, pos, image='images/items/' + data['item_id'] + '.png')
         self.item_id = data['item_id']
         self.title = data['title']
-        self.gender = data['gender']
         self.min_level = data['min_level']
         self.item_pos = data['item_pos']
         self.type = data['type']

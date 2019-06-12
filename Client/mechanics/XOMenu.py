@@ -15,7 +15,7 @@ class XOMenu(NinePatch):
         for i in xrange(3):
             self.cells.append([])
             for j in xrange(3):
-                self.cells[i].append([' ', ImageButton(world, [305 + 90 * j, 35 + 90 * i], 'images/area.9.png', [90 ,90], square=60, layer=10)])
+                self.cells[i].append([' ', ImageButton(world, [305 + 90 * j, 35 + 90 * i], 'images/area.9.png', [90 ,90], square=60)])
 
         self.change_visible(False)
         self.change_clickable(True)

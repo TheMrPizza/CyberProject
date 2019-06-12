@@ -4,6 +4,8 @@ from Beach import Beach
 from Submarine import Submarine
 from Forest import Forest
 from Plaza import Plaza
+from Market import Market
+from Mountain import Mountain
 from random import randint
 import threading
 
@@ -33,6 +35,9 @@ class Loading(Screen):
             elif self.cur_id == 203:
                 self.world.cur_player.update_pos([23, 303])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
+            elif self.cur_id == 206:
+                self.world.cur_player.update_pos([963, 163])
+                self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             self.room = Beach(self.world)
         elif self.next_id == 202:
             if self.cur_id == 201:
@@ -46,13 +51,37 @@ class Loading(Screen):
             elif self.cur_id == 204:
                 self.world.cur_player.update_pos([303, 83])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
+            elif self.cur_id == 205:
+                self.world.cur_player.update_pos([963, 103])
+                self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             self.room = Forest(self.world)
         elif self.next_id == 204:
             if self.cur_id == 203:
-                self.world.cur_player.update_pos([103, 523])
+                self.world.cur_player.update_pos([43, 483])
+                self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
+            elif self.cur_id == 205:
+                self.world.cur_player.update_pos([163, 163])
+                self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
+            elif self.cur_id == 206:
+                self.world.cur_player.update_pos([783, 123])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             self.room = Plaza(self.world)
-
+        elif self.next_id == 205:
+            if self.cur_id == 203:
+                self.world.cur_player.update_pos([23, 343])
+                self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
+            elif self.cur_id == 204:
+                self.world.cur_player.update_pos([963, 323])
+                self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
+            self.room = Market(self.world)
+        elif self.next_id == 206:
+            if self.cur_id == 201:
+                self.world.cur_player.update_pos([23, 383])
+                self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
+            elif self.cur_id == 204:
+                self.world.cur_player.update_pos([963, 383])
+                self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
+            self.room = Mountain(self.world)
         if not self.player_data:
             self.world.client.add_player(self.room.screen_id, self.world.cur_player.username)
 

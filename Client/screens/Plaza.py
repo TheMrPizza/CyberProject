@@ -38,9 +38,9 @@ class Plaza(Room):
                 if map_object is self.out[0]:
                     self.world.cur_player.path_target = 203
                 elif map_object is self.out[1]:
-                    pass  # self.world.cur_player.path_target = 206
+                    self.world.cur_player.path_target = 206
                 elif map_object is self.out[2]:
-                    pass  # self.world.cur_player.path_target = 205
+                    self.world.cur_player.path_target = 205
         Room.on_click(self, map_object, event)
 
     def layer_reorder(self):

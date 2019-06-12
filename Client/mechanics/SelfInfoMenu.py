@@ -10,15 +10,14 @@ class SelfInfoMenu(NinePatch):
         self.stage = MapObject(world, [330, -10], image='images/stage.png')
         self.arrow = MapObject(world, [360, 280], image='images/green_arrow.png')
         self.level = Label(world, [385, 270], str(self.world.cur_player.level), 'Level', (82, 175, 46))
-        self.x_button = ImageButton(self.world, [320, 10], 'images/red_cell.9.png', [28, 28],
-                                    front='images/x.png', square=22)
+        self.x_button = ImageButton(self.world, [320, 10], 'images/red_cell.9.png', [28, 28], image='images/x.png', square=22)
         self.cells = []
         for i in xrange(5):
             for j in xrange(4):
                 if len(self.world.cur_player.get_all_items()) > 4 * i + j:
                     self.cells.append([self.world.cur_player.get_all_items()[4 * i + j].item_id,
                                       ImageButton(self.world, [520 + j * 63, 5 + i * 63], 'images/cell.9.png', [58, 58],
-                                                  front='images/items/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
+                                                  image='images/items/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
                                                         '.png',
                                                   square=50)])
                 else:

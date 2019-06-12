@@ -24,7 +24,7 @@ def search_path(world, start, goal):
     open_list = [start_node]
     closed_list = []
 
-    start_node.f = graph.cost(start_node.pos, goal_node.pos)
+    start_node.f = Graph.cost(start_node.pos, goal_node.pos)
 
     while open_list:
         index = 0
@@ -60,7 +60,7 @@ def search_path(world, start, goal):
             if is_found:
                 continue
 
-            cost = cur_node.g + graph.cost(cur_node.pos, i.pos)
+            cost = cur_node.g + Graph.cost(cur_node.pos, i.pos)
 
             is_found = False
             for j in open_list:
@@ -73,7 +73,7 @@ def search_path(world, start, goal):
                 continue
 
             i.g = cost
-            i.h = graph.cost(i.pos, goal_node.pos)
+            i.h = Graph.cost(i.pos, goal_node.pos)
             i.f = i.g + i.h
             i.parent = cur_node
 

@@ -19,7 +19,7 @@ class Room(Screen):
         self.path = MapObject(self.world, [0, 0], image=path, size=world.SIZE, is_visible=False, layer=0)
         self.out = out
         self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image, layer=10)
-        self.bag_button = ImageButton(self.world, [900, 540], 'images/test_text_box.9.png', [50, 50], 'images/bag.png')
+        self.bag_button = ImageButton(self.world, [900, 540], 'images/test_text_box.9.png', [50, 50], image='images/bag.png')
         self.bag = MapObject(self.world, [600, 540], image='images/bag.png')
         self.self_info_menu = SelfInfoMenu(world)
         self.player_info_menu = PlayerInfoMenu(world)
@@ -209,7 +209,9 @@ class Room(Screen):
 
         if objects is None:
             objects = []
-        Screen.draw_screen(self, self.out + [self.path, self.bag_button, self.self_info_menu, self.player_info_menu, self.activity_requests, self.trade_menu, self.xo_menu] + self.players + objects)
+        Screen.draw_screen(self, self.out + [self.path, self.bag_button, self.self_info_menu, self.player_info_menu,
+                                             self.activity_requests, self.trade_menu,
+                                             self.xo_menu] + self.players + objects)
 
     def on_click(self, map_object, event):
         if map_object in [self.bag_button, self.self_info_menu.x_button]:
@@ -226,7 +228,8 @@ class Room(Screen):
                 if i.activity == 'TRADE' and i.player == self.player_info_menu.player:
                     is_found = True
             if not is_found:
-                self.world.client.activity_request('TRADE', self.world.cur_player.username, self.player_info_menu.player.username)
+                self.world.client.activity_request('TRADE', self.world.cur_player.username,
+                                                   self.player_info_menu.player.username)
                 self.activity_requests.append(ActivityRequest(self.world, 'TRADE', self.player_info_menu.player, False))
             return
         if map_object is self.player_info_menu.xo_button:
@@ -235,13 +238,15 @@ class Room(Screen):
                 if i.activity == 'XO' and i.player == self.player_info_menu.player:
                     is_found = True
             if not is_found:
-                self.world.client.activity_request('XO', self.world.cur_player.username, self.player_info_menu.player.username)
+                self.world.client.activity_request('XO', self.world.cur_player.username,
+                                                   self.player_info_menu.player.username)
                 self.activity_requests.append(ActivityRequest(self.world, 'XO', self.player_info_menu.player, False))
             return
         for i in self.activity_requests:
             for j in i.buttons:
                 if map_object is i.buttons[j]:
-                    self.world.client.activity_response(i.activity, i.player.username, self.world.cur_player.username, j)
+                    self.world.client.activity_response(i.activity, i.player.username, self.world.cur_player.username,
+                                                        j)
                     self.activity_requests.remove(i)
                     if j == 'v':  # Start trading!
                         if i.activity == 'TRADE':

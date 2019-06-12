@@ -1,5 +1,5 @@
 from mechanics.World import World
-from screens.Login import Login
+from screens.SignIn import SignIn
 
 import os
 import time
@@ -115,11 +115,8 @@ class Client(object):
             item_file.write(data)
             item_file.close()
 
-    def create_player(self, player):
-        self.send_message('CREATE PLAYER', {'username': player.username, 'is_male': player.is_male,
-                                            'items': player.items, 'level': player.level, 'join_date': player.join_date,
-                                            'is_admin': player.is_admin, 'room_id': player.room_id, 'pos': player.pos})
-        self.add_player(player.room_id, player.username)
+    def create_player(self, username, password, body):
+        self.send_message('CREATE PLAYER', {'username': username, 'body': body}, is_waiting=True)  # TODO: Add password
 
     def add_player(self, room_id, username):
         self.send_message('ADD PLAYER', {'room_id': room_id, 'username': username})
@@ -148,7 +145,8 @@ class Client(object):
         self.send_message('ACTIVITY REQUEST', {'activity': activity, 'sender': sender, 'addressee': addressee})
 
     def activity_response(self, activity, sender, addressee, is_accepted):
-        self.send_message('ACTIVITY RESPONSE', {'activity': activity, 'sender': sender, 'addressee': addressee, 'is_accepted': is_accepted})
+        self.send_message('ACTIVITY RESPONSE',
+                          {'activity': activity, 'sender': sender, 'addressee': addressee, 'is_accepted': is_accepted})
 
     def place_item(self, username, item):
         self.send_message('PLACE ITEM', {'username': username, 'item': item})
@@ -169,6 +167,10 @@ class Client(object):
     def xo_turn(self, username, letter, row, col):
         self.send_message('XO TURN', {'username': username, 'letter': letter, 'row': row, 'col': col})
 
+    def check_username(self, username):
+        headers, data = self.send_message('CHECK USERNAME', {'username': username}, is_waiting=True)
+        return data == 'True'
+
     def connect(self, username):
         self.send_message('CONNECT', {'username': username}, is_waiting=True)
 
@@ -183,7 +185,7 @@ def main():
     client = Client()
     world = World(client.FILE_PATH, client)
     print 'Created world'
-    world.cur_screen = Login(world)
+    world.cur_screen = SignIn(world)
     print 'Defined screen'
 
 

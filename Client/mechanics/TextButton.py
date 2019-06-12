@@ -2,26 +2,20 @@ from NinePatch import NinePatch
 from MapObject import MapObject
 
 
-class ImageButton(NinePatch):
-    def __init__(self, world, pos, bg, bg_size, image=None, **kwargs):
-        middle = None
-        if 'middle' in kwargs:
-            middle = kwargs['middle']
-            kwargs.pop('middle')
-        NinePatch.__init__(self, world, pos, bg, image_size=bg_size, middle=middle, layer=8)
-        if image:
-            self.front = MapObject(world, [None, None], image=image, middle=self, **kwargs)
+class TextButton(NinePatch):
+    def __init__(self, world, pos, bg, bg_size, text=None, font=None, color=(0, 0, 0), **kwargs):
+        NinePatch.__init__(self, world, pos, bg, image_size=bg_size, layer=8, **kwargs)
+        if text and font:
+            self.front = MapObject(world, [None, None], self.world.fonts[font].render(text, True, color), layer=5, middle=self.text_rect)
         else:
             self.front = None
 
     def change_bg(self, image, image_size):
         NinePatch.__init__(self, self.world, self.pos, image, image_size=image_size, layer=8)
 
-    def change_front(self, image, **kwargs):
-        if image:
-            self.front = MapObject(self.world, [None, None], image=image, middle=self, **kwargs)
-        else:
-            self.front = None
+    def change_front(self, text, font, color=(0, 0, 0)):
+        self.front = MapObject(self.world, [None, None], self.world.fonts[font].render(text, True, color), layer=5,
+                               middle=self.text_rect)
 
     def update_pos(self, pos):
         if self.front:
