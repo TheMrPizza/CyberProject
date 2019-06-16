@@ -4,13 +4,21 @@ from MapObject import MapObject
 
 class ImageButton(NinePatch):
     def __init__(self, world, pos, bg, bg_size, image=None, **kwargs):
-        middle = None
+        middle, layer = None, 10
         if 'middle' in kwargs:
             middle = kwargs['middle']
             kwargs.pop('middle')
-        NinePatch.__init__(self, world, pos, bg, image_size=bg_size, middle=middle, layer=8)
+        if 'layer' in kwargs:
+            layer = kwargs['layer']
+        NinePatch.__init__(self, world, pos, bg, image_size=bg_size, middle=middle, layer=layer)
         if image:
             self.front = MapObject(world, [None, None], image=image, middle=self, **kwargs)
+            width, height = self.front.width, self.front.height
+            if self.front.width > self.width - 6:
+                width = self.width - 6
+            if self.front.height > self.height - 8:
+                height = self.height - 8
+            self.front = MapObject(world, [None, None], image=image, middle=self, size=[width, height], **kwargs)
         else:
             self.front = None
 
@@ -51,3 +59,8 @@ class ImageButton(NinePatch):
         NinePatch.draw_object(self)
         if self.front:
             self.front.draw_object()
+
+    def draw_item(self, surface):
+        surface.blit(self.surface, self.pos)
+        if self.front:
+            surface.blit(self.front.surface, self.front.pos)

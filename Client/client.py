@@ -12,6 +12,8 @@ import sys
 SERVER_ADDRESS = ('127.0.0.1', 1943)
 KB = 1024
 
+msg_id = 0
+
 
 class Client(object):
     def __init__(self):
@@ -35,7 +37,9 @@ class Client(object):
 
     def send_and_receive(self, command, headers, data, is_waiting):
         # Protocol
+        global msg_id
         headers['length'] = len(data)
+        headers['id'] = msg_id
         request = Client.message_format(command, headers, data)
         while request != '':
             try:
@@ -45,17 +49,20 @@ class Client(object):
                 sys.exit()
             request = request[KB:]
         print 'Sent ' + command + '...'
+        msg_id += 1
+
         while True:
             for i in self.updates:
-                if i['headers']['command'] == command:
-                    print '...Received ' + command
-                    code, headers, data = i['code'], i['headers'], i['data']
-                    self.updates.remove(i)
-                    if code == 'OK':
-                        if is_waiting:
-                            return headers, data
-                        else:
-                            return
+                if 'id' in i['headers']:
+                    if i['headers']['id'] == str(headers['id']):
+                        print '...Received ' + command
+                        code, headers, data = i['code'], i['headers'], i['data']
+                        self.updates.remove(i)
+                        if code == 'OK':
+                            if is_waiting:
+                                return headers, data
+                            else:
+                                return
 
     def receive_message(self):
         print 'Receiving messages'
@@ -167,12 +174,16 @@ class Client(object):
     def xo_turn(self, username, letter, row, col):
         self.send_message('XO TURN', {'username': username, 'letter': letter, 'row': row, 'col': col})
 
+    def add_rewards(self, username, xp=0, items=0, coins=0):
+        self.send_message('ADD REWARDS', {'username': username, 'xp': xp, 'items': items, 'coins': coins}, is_waiting=True)
+
     def check_username(self, username):
         headers, data = self.send_message('CHECK USERNAME', {'username': username}, is_waiting=True)
         return data == 'True'
 
     def connect(self, username):
-        self.send_message('CONNECT', {'username': username}, is_waiting=True)
+        headers, data = self.send_message('CONNECT', {'username': username}, is_waiting=True)
+        return data != 'Error'
 
     def quit(self, username, room_id):
         self.send_message('QUIT', {'username': username, 'room_id': room_id})

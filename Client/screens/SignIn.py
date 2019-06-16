@@ -18,6 +18,7 @@ class SignIn(Screen):
         self.password_label = Label(self.world, [750, 245], 'Password', 'Regular', (41, 182, 246))
         self.password_text_box = TextBox(self.world, [None, 278], 250, color=(41, 182, 246), middle=self.card)
         self.sign_in_button = TextButton(self.world, [None, 350], 'images/elements/light_blue_box.9.png', [250, 45], text='Sign in', font='Medium', color=(255, 255, 255), middle=self.card)
+        self.problem = Label(self.world, [None, 395], '', 'Small', (219, 76, 76), middle=self.card, is_visible=False)
         self.question = Label(self.world, [750, 422], 'New to Volantis?', 'Regular', (21, 101, 192))
         self.sign_up_button = TextButton(self.world, [None, 455], 'images/elements/dark_blue_box.9.png', [250, 45], text='Sign up', font='Medium', color=(255, 255, 255), middle=self.card)
 
@@ -36,15 +37,18 @@ class SignIn(Screen):
     def draw_screen(self, objects=None):
         if objects is None:
             objects = []
-        Screen.draw_screen(self, [self.card, self.title, self.username_label, self.username_text_box, self.password_label, self.password_text_box, self.sign_in_button, self.question, self.sign_up_button, self.logo, self.logo_title1, self.logo_title2] + objects)
+        Screen.draw_screen(self, [self.card, self.title, self.username_label, self.username_text_box, self.password_label, self.password_text_box, self.sign_in_button, self.problem, self.question, self.sign_up_button, self.logo, self.logo_title1, self.logo_title2] + objects)
 
     def on_click(self, map_object, event):
         if map_object is self.sign_in_button:
             data = self.username_text_box.text
             if data:
-                self.world.client.connect(data)
-                print 'Player connected'
-                self.world.cur_screen = Loading(self.world, 101, None, data)
+                if self.world.client.connect(data):
+                    print 'Player connected'
+                    self.world.cur_screen = Loading(self.world, 101, None, data)
+                else:
+                    self.problem = Label(self.world, [None, 395], 'Incorrect username or password', 'Small',
+                                         (219, 76, 76), middle=self.card)
         elif map_object is self.sign_up_button:
             self.world.cur_screen = SignUp(self.world)
 
@@ -52,9 +56,12 @@ class SignIn(Screen):
         if map_object in [self.username_text_box, self.password_text_box]:
             data = map_object.on_type(event)
             if data:
-                self.world.client.connect(data)
-                print 'Player connected'
-                self.world.cur_screen = Loading(self.world, None, None, data)
+                if self.world.client.connect(data):
+                    print 'Player connected'
+                    self.world.cur_screen = Loading(self.world, 101, None, data)
+                else:
+                    self.problem = Label(self.world, [None, 395], 'Incorrect username or password', 'Small',
+                                         (219, 76, 76), middle=self.card)
 
     def layer_reorder(self):
         pass

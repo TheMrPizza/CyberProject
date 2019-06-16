@@ -93,7 +93,7 @@ class Server(object):
 
         if command == 'STORAGE':
             blob = self.bucket.get_blob(headers['item'])
-            self.add_message(client_player, 'OK', {'time-created': blob.time_created, 'command': command},
+            self.add_message(client_player, 'OK', {'time-created': blob.time_created, 'id': headers['id']},
                              blob.download_as_string())
         elif command == 'POS':
             ref = db.reference('users/' + headers['username'])
@@ -101,7 +101,7 @@ class Server(object):
             ref.update({'pos': [int(pos[0]), int(pos[1])]})
             for i in self.client_players:
                 if i == client_player:
-                    self.add_message(client_player, 'OK', {'command': command})
+                    self.add_message(client_player, 'OK', {'command': command, 'id': headers['id']})
                 elif i['room_id'] == client_player['room_id']:
                     self.add_message(i, 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
@@ -110,12 +110,13 @@ class Server(object):
             ref.child(headers['username']).set({
                 'body': headers['body'],
                 'level': 1,
+                'coins': 500,
                 'join_date': datetime.now().strftime('%d.%m.%Y'),
                 'is_admin': False,
                 'room_id': 201,
                 'pos': [23, 303]
             })
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'ADD PLAYER':
             # Delete player from the old room
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
@@ -129,7 +130,7 @@ class Server(object):
             for i in self.client_players:
                 if i is client_player:  # It's the player, send him OK
                     i['room_id'] = headers['room_id']
-                    self.add_message(client_player, 'OK', {'command': command})
+                    self.add_message(client_player, 'OK', {'id': headers['id']})
                 elif int(i['room_id']) == room_id:  # A player in the old room, say goodbye
                     self.add_message(i, 'REMOVE PLAYER', {'username': headers['username'],
                                                                     'room_id': headers['room_id'], 'command': command})
@@ -146,7 +147,7 @@ class Server(object):
                 if type(value) is unicode:
                     value = str(value)
                 info[key] = value
-            self.add_message(client_player, 'OK', {'command': command}, str(info))
+            self.add_message(client_player, 'OK', {'id': headers['id']}, str(info))
         elif command == 'ITEM INFO':
             ref = db.reference('items/' + headers['item_id']).get()
             info = {'item_id': headers['item_id']}
@@ -156,30 +157,29 @@ class Server(object):
                 if type(value) is unicode:
                     value = str(value)
                 info[key] = value
-            self.add_message(client_player, 'OK', {'command': command}, str(info))
+            self.add_message(client_player, 'OK', {'id': headers['id']}, str(info))
         elif command == 'CHANGE ITEM':
             ref = db.reference('users/' + headers['username'] + '/items/' + headers['item_id'] + '/is_used')
             ref.set(not ref.get())
             for i in self.client_players:
                 if i is client_player:
-                    self.add_message(client_player, 'OK', {'command': command})
+                    self.add_message(client_player, 'OK', {'id': headers['id']})
                 elif i['room_id'] == client_player['room_id']:
                     self.add_message(i, 'CHANGE ITEM', {'username': headers['username'], 'item_id': headers['item_id'],
                                                         'command': command})
         elif command == 'ROOM PLAYERS':
             ref = db.reference('rooms/' + headers['room_id'] + '/players').get()
-            print ref
             if ref:
-                self.add_message(client_player, 'OK', {'command': command}, ' '.join(ref))
+                self.add_message(client_player, 'OK', {'id': headers['id']}, ' '.join(ref))
             else:
-                self.add_message(client_player, 'OK', {'command': command})
+                self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'ACTIVITY REQUEST':
             for i in self.client_players:
                 if i['username'] == headers['addressee']:
                     self.add_message(i, 'ACTIVITY REQUEST', {'activity': headers['activity'], 'sender': headers['sender'],
                                                           'addressee': headers['addressee'], 'command': command})
                     break
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'ACTIVITY RESPONSE':
             for i in self.client_players:
                 if i['username'] == headers['sender']:
@@ -187,33 +187,33 @@ class Server(object):
                                                            'addressee': headers['addressee'],
                                                            'is_accepted': headers['is_accepted'], 'command': command})
                     break
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'PLACE ITEM':
             for i in self.client_players:
                 if i['username'] == headers['username']:
                     self.add_message(i, 'PLACE ITEM', {'item': headers['item']})
                     break
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'REMOVE ITEM':
             for i in self.client_players:
                 if i['username'] == headers['username']:
                     self.add_message(i, 'REMOVE ITEM', {'index': headers['index']})
                     break
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'ACCEPT TRADE':
             for i in self.client_players:
                 if i['username'] == headers['username']:
                     self.add_message(i, 'ACCEPT TRADE', {})
                     break
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'DECLINE TRADE':
             for i in self.client_players:
                 if i['username'] == headers['username']:
                     self.add_message(i, 'DECLINE TRADE', {})
                     break
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'MAKE TRADE':
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
             for i in self.client_players:
                 if i['username'] == headers['username']:
                     for j in headers['self_items'].split():
@@ -249,36 +249,54 @@ class Server(object):
                 if i['username'] == headers['username']:
                     self.add_message(i, 'XO TURN', {'letter': headers['letter'], 'row': headers['row'], 'col': headers['col']})
                     break
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
+        elif command == 'ADD REWARDS':
+            if headers['xp'] != '0':
+                xp = db.reference('users/' + headers['username'] + '/xp').get()
+                db.reference('users/' + headers['username'] + '/xp').set(xp + int(headers['xp']))
+            if headers['items'] != '0':
+                amount = db.reference('users/' + headers['username'] + '/items/' + headers['items'] + '/amount').get()
+                if amount:
+                    db.reference('users/' + headers['username'] + '/items/' + headers['items'] + '/amount').set(amount + 1)
+                else:
+                    db.reference('users/' + headers['username'] + '/items').child(headers['items']).set(
+                        {'is_used': False, 'amount': 1})
+            if headers['coins'] != '0':
+                coins = db.reference('users/' + headers['username'] + '/coins').get()
+                db.reference('users/' + headers['username'] + '/coins').set(coins + int(headers['coins']))
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'CHECK USERNAME':
             ref = db.reference('users/' + headers['username']).get()
             if ref:
-                self.add_message(client_player, 'OK', {'command': command}, 'True')
+                self.add_message(client_player, 'OK', {'id': headers['id']}, 'True')
             else:
-                self.add_message(client_player, 'OK', {'command': command}, 'False')
+                self.add_message(client_player, 'OK', {'id': headers['id']}, 'False')
         elif command == 'CONNECT':
             print 'Received connect of ' + headers['username']
             room_id = db.reference('users/' + headers['username'] + '/room_id').get()
-            ref = db.reference('rooms/' + str(room_id) + '/players')
-            ref.child(headers['username']).set(True)
-            self.add_socket_details(client_player, headers['username'], str(room_id))
-            for i in self.client_players:
-                if i is client_player:
-                    self.add_message(client_player, 'OK', {'command': command})
-                elif int(i['room_id']) == room_id:
-                    self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
-                                                       'room_id': room_id, 'command': 'ADD PLAYER'})
+            if room_id:
+                ref = db.reference('rooms/' + str(room_id) + '/players')
+                ref.child(headers['username']).set(True)
+                self.add_socket_details(client_player, headers['username'], str(room_id))
+                for i in self.client_players:
+                    if i is client_player:
+                        self.add_message(client_player, 'OK', {'id': headers['id']})
+                    elif int(i['room_id']) == room_id:
+                        self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
+                                                           'room_id': room_id, 'command': 'ADD PLAYER'})
+            else:
+                self.add_message(client_player, 'OK', {'id': headers['id']}, 'Error')
         elif command == 'QUIT':
             print 'QUITTT'
             ref = db.reference('rooms/' + headers['room_id'] + '/players/' + headers['username'])
             ref.delete()
             for i in self.client_players:
                 self.add_message(i, 'QUIT', {'username': headers['username'], 'command': command})
-            self.add_message(client_player, 'OK', {'command': command})
+            self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'CHAT':
             for i in self.client_players:
                 if i is client_player:
-                    self.add_message(client_player, 'OK', {'command': command})
+                    self.add_message(client_player, 'OK', {'id': headers['id']})
                 else:
                     self.add_message(i, 'CHAT', {'username': headers['username'],
                                                  'message': headers['message'], 'command': command})

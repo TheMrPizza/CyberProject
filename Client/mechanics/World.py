@@ -21,9 +21,11 @@ class World(object):
                       'Medium': pygame.font.SysFont('coolveticacondensedrgregular', 31),
                       'Large': pygame.font.SysFont('coolveticacondensedrgregular', 72),
                       'Big': pygame.font.SysFont('coolveticacondensedrgregular', 100),
-                      'Speech Balloon': pygame.font.SysFont('coolveticacondensedrgregular', 24),
+                      'Title': pygame.font.SysFont('coolveticacondensedrgregular', 60),
+                      'Speech Balloon': pygame.font.SysFont('coolveticacondensedrgregular', 34),
+                      'Compressed': pygame.font.SysFont('coolveticacompressedrgregular', 40),
                       'Username': pygame.font.SysFont('coolveticacondensedrgregular', 24),
-                      'Level': pygame.font.SysFont('coolveticacondensedrgregular', 40)}
+                      'NPC': pygame.font.SysFont('coolveticacondensedrgregular', 28)}
 
         self.loop_thread = threading.Thread(target=self.world_loop)
         self.loop_thread.start()
@@ -35,6 +37,9 @@ class World(object):
     def world_loop(self):
         pygame.init()
         self.SURF = pygame.display.set_mode(self.SIZE)
+        from MapObject import MapObject
+        icon = MapObject.load_image(self, 'images/elements/icon.png')
+        pygame.display.set_icon(icon)
         pygame.display.set_caption('Volantis')
         execute_thread = threading.Thread(target=self.execute_loop)
         execute_thread.start()
@@ -58,7 +63,10 @@ class World(object):
                     else:
                         self.cur_screen.check_event(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    self.cur_screen.check_event(event)
+                    if event.button in [4, 5]:
+                        self.cur_screen.check_scroll(event)
+                    else:
+                        self.cur_screen.check_event(event)
 
             # Draw the current screen and its objects
             self.cur_screen.draw_screen()
@@ -71,5 +79,5 @@ class World(object):
                 continue
             self.cur_screen.execute()
 
-    def draw(self, object_surface, pos):
-        self.SURF.blit(object_surface, pos)
+    def draw(self, object_surface, pos, **kwargs):
+        self.SURF.blit(object_surface, pos, **kwargs)

@@ -6,17 +6,16 @@ from Label import Label
 
 class PlayerInfoMenu(NinePatch):
     def __init__(self, world):
-        NinePatch.__init__(self, world, [400, -10], 'images/test_text_box.9.png', [300, 340], layer=8)
+        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [300, 340], middle=world.cur_screen.bg_image, layer=8)
         self.player = None
-        self.stage = MapObject(world, [430, -10], image='images/stage.png')
-        self.arrow = MapObject(world, [460, 280], image='images/green_arrow.png')
-        self.level = Label(world, [485, 270], '0', 'Level', (82, 175, 46))
-        self.trade_button = ImageButton(world, [600, 50], 'images/cell.9.png', [50, 50],
-                                        image='images/orange_arrows.png', square=45)
-        self.xo_button = ImageButton(world, [600, 120], 'images/cell.9.png', [50, 50],
-                                        image='images/xo.png', square=45)
-        self.x_button = ImageButton(self.world, [420, 10], 'images/red_cell.9.png', [28, 28],
-                                    image='images/x.png', square=22)
+        self.stage = MapObject(self.world, [430, -10], image='images/stage.png', layer=9)
+        self.level = Label(self.world, [500, 265], '0', 'Compressed', (0, 200, 83), layer=9)
+        self.arrow = MapObject(self.world, [500, 277], image='images/elements/level_arrow.png', square=27, layer=9)
+        self.trade_button = ImageButton(self.world, [610, 50], 'images/elements/light_blue_color.9.png', [50, 50],
+                                        image='images/elements/white_opposite_arrows.png', square=45)
+        self.xo_button = ImageButton(self.world, [610, 120], 'images/elements/light_blue_color.9.png', [50, 50],
+                                        image='images/elements/white_xo.png', square=45)
+        self.x_button = ImageButton(self.world, [393, 5], 'images/elements/light_red_color.9.png', [30, 30], image='images/elements/white_x.png', square=18)
         self.change_visible(False)
         self.change_clickable(False)
 
@@ -48,7 +47,8 @@ class PlayerInfoMenu(NinePatch):
 
     def update_player(self, player):
         self.player = player
-        self.level = Label(self.world, [485, 270], str(self.player.level), 'Level', (82, 175, 46))
+        self.level = Label(self.world, [500, 265], str(self.player.level), 'Compressed', (0, 200, 83), layer=9)
+        self.arrow = MapObject(self.world, [500 + self.world.fonts['Compressed'].size(str(self.player.level))[0] + 2, 277], image='images/elements/level_arrow.png', square=27, layer=9)
 
     def draw_object(self):
         if self.is_visible:
@@ -61,7 +61,7 @@ class PlayerInfoMenu(NinePatch):
                     for i in self.player.items:
                         if i.is_used:
                             self.world.draw(i.surface, [player_pos[0] + i.item_pos[0], player_pos[1] + i.item_pos[1]])
-                    self.world.draw(self.player.text_object.surface, [475, 225])
+                    self.world.draw(self.player.text_object.surface, [475, 222])
             self.x_button.draw_object()
             self.trade_button.draw_object()
             self.xo_button.draw_object()

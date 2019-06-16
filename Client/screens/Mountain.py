@@ -6,21 +6,20 @@ from Client.mechanics.Room import Room
 class Mountain(Room):
     def __init__(self, world):
         Room.__init__(self, world, 206, 'images/rooms/206/mountain.png', 'images/rooms/206/path.png', [])
-        self.rocks = MapObject(self.world, [0, 493], image='images/rooms/206/rocks.png', layer=4)
-
         self.out = [MapObject(self.world, [0, 0], image='images/rooms/206/out1.png', is_visible=False, layer=7),
                     MapObject(self.world, [0, 0], image='images/rooms/206/out2.png', is_visible=False, layer=7)]
+        self.rocks = MapObject(self.world, [0, 493], image='images/rooms/206/rocks.png', layer=3)
         self.layer_reorder()
 
     def check_event(self, event, objects=None):
         if objects is None:
             objects = []
-        Room.check_event(self, event, [self.rocks, self.chat_box] + objects)
+        Room.check_event(self, event, [self.rocks] + objects)
 
     def draw_screen(self, objects=None):
         if objects is None:
             objects = []
-        Room.draw_screen(self, [self.rocks, self.chat_box] + objects)
+        Room.draw_screen(self, [self.rocks] + objects)
 
     def on_click(self, map_object, event):
         if map_object in [self.path] + self.out:
@@ -36,6 +35,8 @@ class Mountain(Room):
                     self.world.cur_player.path_target = 201
                 elif map_object is self.out[1]:
                     self.world.cur_player.path_target = 204
+                else:
+                    self.world.cur_player.path_target = None
         Room.on_click(self, map_object, event)
 
     def layer_reorder(self):

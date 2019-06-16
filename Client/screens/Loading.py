@@ -12,8 +12,8 @@ import threading
 
 class Loading(Screen):
     def __init__(self, world, cur_id, next_id, player_data=None):
-        self.id = 0  # randint(0, 5)
-        Screen.__init__(self, world, id, 'images/loading_screen_' + str(self.id) + '.png')
+        self.id = randint(0, 2)
+        Screen.__init__(self, world, id, 'images/elements/loading_screen_' + str(self.id) + '.png')
         self.cur_id = cur_id
         self.next_id = next_id
         self.player_data = player_data
@@ -29,7 +29,7 @@ class Loading(Screen):
             self.world.cur_player = Player(self.world, info)
             self.next_id = self.world.cur_player.room_id
         if self.next_id == 201:
-            if self.cur_id == 202:
+            if self.cur_id in [202, 301]:
                 self.world.cur_player.update_pos([743, 343])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             elif self.cur_id == 203:
@@ -40,12 +40,12 @@ class Loading(Screen):
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             self.room = Beach(self.world)
         elif self.next_id == 202:
-            if self.cur_id == 201:
+            if self.cur_id in [201, 301]:
                 self.world.cur_player.update_pos([23, 3])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             self.room = Submarine(self.world)
         elif self.next_id == 203:
-            if self.cur_id == 201:
+            if self.cur_id in [201, 301]:
                 self.world.cur_player.update_pos([1003, 503])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             elif self.cur_id == 204:
@@ -56,7 +56,7 @@ class Loading(Screen):
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             self.room = Forest(self.world)
         elif self.next_id == 204:
-            if self.cur_id == 203:
+            if self.cur_id in [203, 301]:
                 self.world.cur_player.update_pos([43, 483])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             elif self.cur_id == 205:
@@ -67,7 +67,7 @@ class Loading(Screen):
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             self.room = Plaza(self.world)
         elif self.next_id == 205:
-            if self.cur_id == 203:
+            if self.cur_id in [203, 301]:
                 self.world.cur_player.update_pos([23, 343])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             elif self.cur_id == 204:
@@ -75,7 +75,7 @@ class Loading(Screen):
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             self.room = Market(self.world)
         elif self.next_id == 206:
-            if self.cur_id == 201:
+            if self.cur_id in [201, 301]:
                 self.world.cur_player.update_pos([23, 383])
                 self.world.client.update_player_pos(self.world.cur_player.username, self.world.cur_player.pos)
             elif self.cur_id == 204:

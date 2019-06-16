@@ -15,6 +15,7 @@ class Player(MapObject):
                     self.items.append(Item(self.world, self.world.client.item_info(i), self.pos,
                                            data['items'][i]['amount'], data['items'][i]['is_used']))
             self.level = data['level']
+            self.coins = data['coins']
             self.join_date = data['join_date']
             self.is_admin = data['is_admin']
             self.room_id = data['room_id']

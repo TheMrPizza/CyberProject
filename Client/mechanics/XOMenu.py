@@ -5,37 +5,33 @@ from ImageButton import ImageButton
 
 class XOMenu(NinePatch):
     def __init__(self, world):
-        NinePatch.__init__(self, world, [100, -10], 'images/test_text_box.9.png', [800, 340], layer=8)
-
-        self.grid = MapObject(world, [300, 30], image='images/grid.png', size=[280, 280], layer=9)
-        self.stage = MapObject(world, [130, -10], image='images/stage.png')
+        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [800, 340], middle=world.cur_screen.bg_image, layer=8)
+        self.grid = MapObject(world, [410, 20], image='images/elements/grid.png', size=[280, 280], layer=9)
+        self.stage = MapObject(world, [163, -10], image='images/stage.png', layer=9)
         self.player = None
         self.letter = ''
         self.cells = []
         for i in xrange(3):
             self.cells.append([])
             for j in xrange(3):
-                self.cells[i].append([' ', ImageButton(world, [305 + 90 * j, 35 + 90 * i], 'images/area.9.png', [90 ,90], square=60)])
+                self.cells[i].append([' ', ImageButton(world, [415 + 90 * j, 25 + 90 * i], 'images/area.9.png', [90 ,90], square=60)])
 
         self.change_visible(False)
-        self.change_clickable(True)
-        for i in self.cells:
-            for j in i:
-                j[1].change_clickable(False)
+        self.change_clickable(False)
 
     def play_turn(self, letter, row, col):
         if letter == 'X':
             self.cells[row][col][0] = 'X'
-            self.cells[row][col][1].change_front('images/x_sign.png')
+            self.cells[row][col][1].change_front('images/elements/light_red_x.png', square=60)
         else:
             self.cells[row][col][0] = 'O'
-            self.cells[row][col][1].change_front('images/o_sign.png')
+            self.cells[row][col][1].change_front('images/elements/light_blue_o.png', square=60)
         self.cells[row][col][1].change_clickable(False)
 
         if letter == self.letter:
-            self.stage.pos = [130, -10]
+            self.stage.pos = [163, -10]
         else:
-            self.stage.pos = [650, -10]
+            self.stage.pos = [738, -10]
 
         for i in self.cells:
             for j in i:
@@ -48,7 +44,7 @@ class XOMenu(NinePatch):
                 return i[0][0]
         for i in xrange(len(self.cells[0])):
             if self.cells[0][i][0] == self.cells[1][i][0] == self.cells[2][i][0] != ' ':
-                return self.cells[i][0][0]
+                return self.cells[0][i][0]
         if self.cells[0][0][0] == self.cells[1][1][0] == self.cells[2][2][0] != ' ':
             return self.cells[0][0][0]
         if self.cells[0][2][0] == self.cells[1][1][0] == self.cells[2][0][0] != ' ':
@@ -87,22 +83,31 @@ class XOMenu(NinePatch):
             for j in i:
                 j[1].change_clickable(change)
 
+    def change_cells_clickable(self, is_clickable=None):
+        if is_clickable is not None:
+            change = is_clickable
+        else:
+            change = not self.is_clickable
+        for i in self.cells:
+            for j in i:
+                j[1].change_clickable(change)
+
     def draw_object(self):
         if self.is_visible:
             NinePatch.draw_object(self)
             self.stage.draw_object()
 
             pos = self.world.cur_player.pos
-            self.world.cur_player.update_pos([700, 150])
+            self.world.cur_player.update_pos([785, 145])
             if self.world.cur_player.balloon:
-                self.world.cur_player.balloon.update([620, 210])
+                self.world.cur_player.balloon.update([705, 205])
             self.world.cur_player.draw_object()
             self.world.cur_player.update_pos(pos)
 
             pos = self.player.pos
-            self.player.update_pos([180, 150])
+            self.player.update_pos([210, 145])
             if self.player.balloon:
-                self.player.balloon.update([230, 210])
+                self.player.balloon.update([260, 205])
             self.player.draw_object()
             self.player.update_pos(pos)
 

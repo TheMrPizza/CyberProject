@@ -23,6 +23,12 @@ class Screen(object):
                 if i.is_focus:
                     self.world.cur_screen.on_type(i, event)
 
+    def check_scroll(self, event, objects=None):
+        for i in objects:
+            if i.check_collision(event.pos):
+                self.world.cur_screen.on_scroll(i, event)
+                break
+
     def draw_screen(self, objects=None):
         if not objects:
             objects = []

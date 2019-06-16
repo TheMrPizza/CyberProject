@@ -7,6 +7,8 @@ from ActivityRequest import ActivityRequest
 from ScrollBar import ScrollBar
 from TradeMenu import TradeMenu
 from XOMenu import XOMenu
+from MapMenu import MapMenu
+from MessageMenu import MessageMenu
 from Player import Player
 from Client.mechanics.AStar.Search import search_path
 from Screen import Screen
@@ -19,13 +21,15 @@ class Room(Screen):
         self.path = MapObject(self.world, [0, 0], image=path, size=world.SIZE, is_visible=False, layer=0)
         self.out = out
         self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image, layer=10)
-        self.bag_button = ImageButton(self.world, [900, 540], 'images/test_text_box.9.png', [50, 50], image='images/bag.png')
-        self.bag = MapObject(self.world, [600, 540], image='images/bag.png')
+        self.bag_button = ImageButton(self.world, [900, 540], 'images/elements/dark_blue_color.9.png', [43, 43], image='images/elements/white_person.png', square=33)
+        self.map_button = ImageButton(self.world, [122, 540], 'images/elements/light_blue_color.9.png', [43, 43], image='images/elements/white_map.png', square=33)
         self.self_info_menu = SelfInfoMenu(world)
         self.player_info_menu = PlayerInfoMenu(world)
-        self.activity_requests = ScrollBar(self.world, [20, 20], 5, True)
+        self.activity_requests = ScrollBar(self.world, [20, 20], 5, True, [180, 100])
         self.trade_menu = TradeMenu(world)
         self.xo_menu = XOMenu(world)
+        self.map_menu = MapMenu(world, room_id)
+        self.message_menu = MessageMenu(self.world, '', '')
 
         self.players = [self.world.cur_player]
         for i in self.world.client.find_players(room_id):
@@ -94,8 +98,8 @@ class Room(Screen):
             elif i['code'] == 'ACTIVITY RESPONSE':
                 for j in self.activity_requests:
                     if j.player.username == i['headers']['addressee'] and j.activity == i['headers']['activity']:
-                        self.activity_requests.remove(j)
                         if i['headers']['is_accepted'] == 'v':
+                            self.activity_requests.remove(j)
                             if i['headers']['activity'] == 'TRADE':
                                 self.player_info_menu.change_visible(False)
                                 self.player_info_menu.change_clickable(False)
@@ -111,9 +115,11 @@ class Room(Screen):
                                 self.self_info_menu.change_clickable(False)
                                 self.xo_menu.player = j.player
                                 self.xo_menu.letter = 'X'
-                                self.xo_menu.stage.pos = [650, -10]
+                                self.xo_menu.stage.pos = [738, -10]
                                 self.xo_menu.change_visible(True)
                                 self.xo_menu.change_clickable(True)
+                        else:
+                            j.decline_request()
                         break
                 update.remove(i)
             elif i['code'] == 'XO TURN':
@@ -121,11 +127,19 @@ class Room(Screen):
                 winner = self.xo_menu.check_winner()
                 if winner:
                     if winner == self.xo_menu.letter:
-                        print 'You Win!'
+                        self.message_menu = MessageMenu(self.world, 'You Win!',
+                                                        'You defeated ' + self.xo_menu.player.username + ' and got the next rewards:',
+                                                        coins=100, xp=200)
                     elif winner == 'XO':
-                        print 'A Tie!'
+                        self.message_menu = MessageMenu(self.world, 'A Tie!',
+                                                        'You tied with ' + self.xo_menu.player.username + ' and got the next rewards:',
+                                                        xp=100)
                     else:
-                        print 'You Lose!'
+                        self.message_menu = MessageMenu(self.world, 'You Lose!',
+                                                        'You lost to ' + self.xo_menu.player.username + ' and got the next rewards:',
+                                                        coins=-50, xp=50)
+                    self.message_menu.change_visible(True)
+                    self.message_menu.change_clickable(True)
                     self.xo_menu = XOMenu(self.world)
                 update.remove(i)
             elif i['code'] == 'PLACE ITEM':
@@ -196,11 +210,17 @@ class Room(Screen):
                 cells.append(j[1])
         Screen.check_event(self, event, self.out + buttons + cells + list(zip(*self.self_info_menu.cells)[1]) +
                            list(zip(*self.trade_menu.all_cells)[1]) + list(zip(*self.trade_menu.self_cells)[1]) +
-                           list(zip(*self.trade_menu.player_cells)[1]) +
-                           [self.path, self.bag_button, self.self_info_menu.x_button, self.player_info_menu.x_button,
-                            self.player_info_menu.trade_button, self.player_info_menu.xo_button,
-                            self.trade_menu.v_button, self.trade_menu.x_button]
+                           list(zip(*self.trade_menu.player_cells)[1]) + self.map_menu.buttons +
+                           [self.path, self.chat_box, self.bag_button, self.self_info_menu.x_button, self.player_info_menu.x_button,
+                            self.player_info_menu.trade_button, self.player_info_menu.xo_button, self.map_button,
+                            self.trade_menu.v_button, self.trade_menu.x_button, self.map_menu, self.xo_menu,
+                            self.self_info_menu, self.player_info_menu, self.map_menu.x_button, self.message_menu, self.message_menu.button]
                            + self.players + objects)
+
+    def check_scroll(self, event, objects=None):
+        if objects is None:
+            objects = []
+        Screen.check_scroll(self, event, [self.activity_requests] + objects)
 
     def draw_screen(self, objects=None):
         for i in self.players:
@@ -209,18 +229,36 @@ class Room(Screen):
 
         if objects is None:
             objects = []
-        Screen.draw_screen(self, self.out + [self.path, self.bag_button, self.self_info_menu, self.player_info_menu,
-                                             self.activity_requests, self.trade_menu,
-                                             self.xo_menu] + self.players + objects)
+        Screen.draw_screen(self, self.out + [self.path, self.chat_box, self.bag_button, self.self_info_menu, self.player_info_menu,
+                                             self.activity_requests, self.trade_menu, self.map_button, self.map_menu,
+                                             self.xo_menu, self.message_menu] + self.players + objects)
 
     def on_click(self, map_object, event):
         if map_object in [self.bag_button, self.self_info_menu.x_button]:
             self.self_info_menu.change_visible()
             self.self_info_menu.change_clickable()
             return
+        if map_object is self.map_button:
+            self.map_menu.change_visible()
+            self.map_menu.change_clickable()
+            return
+        if map_object in self.map_menu.buttons:
+            for i in xrange(len(self.map_menu.buttons)):
+                if map_object is self.map_menu.buttons[i]:
+                    from Client.screens.Loading import Loading
+                    self.world.cur_screen = Loading(self.world, 301, 201 + i)
+                    return
         if map_object is self.player_info_menu.x_button:
-            self.player_info_menu.change_visible()
-            self.player_info_menu.change_clickable()
+            self.player_info_menu.change_visible(False)
+            self.player_info_menu.change_clickable(False)
+            return
+        if map_object is self.map_menu.x_button:
+            self.map_menu.change_visible(False)
+            self.map_menu.change_clickable(False)
+            return
+        if map_object is self.message_menu.button:
+            self.message_menu.change_visible()
+            self.message_menu.change_clickable()
             return
         if map_object is self.player_info_menu.trade_button:
             is_found = False
@@ -233,6 +271,11 @@ class Room(Screen):
                 self.activity_requests.append(ActivityRequest(self.world, 'TRADE', self.player_info_menu.player, False))
             return
         if map_object is self.player_info_menu.xo_button:
+            if int(self.world.cur_player.coins) < 50 or int(self.player_info_menu.player.coins) < 50:
+                self.message_menu = MessageMenu(self.world, "Can't Play!", 'You and your opponent must have at least 50 coins to play.', is_warning=True)
+                self.message_menu.change_visible()
+                self.message_menu.change_clickable()
+                return
             is_found = False
             for i in self.activity_requests:
                 if i.activity == 'XO' and i.player == self.player_info_menu.player:
@@ -248,7 +291,7 @@ class Room(Screen):
                     self.world.client.activity_response(i.activity, i.player.username, self.world.cur_player.username,
                                                         j)
                     self.activity_requests.remove(i)
-                    if j == 'v':  # Start trading!
+                    if j == 'v':  # Start activity!
                         if i.activity == 'TRADE':
                             self.player_info_menu.change_visible(False)
                             self.player_info_menu.change_clickable(False)
@@ -265,6 +308,7 @@ class Room(Screen):
                             self.xo_menu.player = i.player
                             self.xo_menu.letter = 'O'
                             self.xo_menu.change_visible()
+                            self.xo_menu.change_cells_clickable(False)
                     return
         for i in self.players:
             if map_object is i and i is not self.world.cur_player:
@@ -303,15 +347,26 @@ class Room(Screen):
                     winner = self.xo_menu.check_winner()
                     if winner:
                         if winner == self.xo_menu.letter:
-                            print 'You Win!'
+                            self.message_menu = MessageMenu(self.world, 'You Win!', 'You defeated ' + self.xo_menu.player.username + ' and got the next rewards:',
+                                                            coins=50, xp=200)
                         elif winner == 'XO':
-                            print 'A Tie!'
+                            self.message_menu = MessageMenu(self.world, 'A Tie!',
+                                                            'You tied with ' + self.xo_menu.player.username + ' and got the next rewards:',
+                                                            xp=100)
                         else:
-                            print 'You Lose!'
+                            self.message_menu = MessageMenu(self.world, 'You Lose!',
+                                                            'You lost to ' + self.xo_menu.player.username + ' and got the next rewards:',
+                                                            coins=-50, xp=50)
+                        self.message_menu.change_visible(True)
+                        self.message_menu.change_clickable(True)
                         self.xo_menu = XOMenu(self.world)
 
     def on_type(self, map_object, event):
         raise NotImplementedError
+
+    def on_scroll(self, map_object, event):
+        if map_object is self.activity_requests:
+            self.activity_requests.scroll(event.button == 4)
 
     def layer_reorder(self):
         raise NotImplementedError

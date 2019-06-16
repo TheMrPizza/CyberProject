@@ -1,11 +1,10 @@
-from MapObject import MapObject
 from ImageButton import ImageButton
 from NinePatch import NinePatch
 
 
 class TradeMenu(NinePatch):
     def __init__(self, world):
-        NinePatch.__init__(self, world, [100, -10], 'images/test_text_box.9.png', [800, 340], layer=8)
+        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [800, 340], middle=world.cur_screen.bg_image, layer=8)
         self.player = None
         self.is_final = False
         # All cells
@@ -14,31 +13,29 @@ class TradeMenu(NinePatch):
             for j in xrange(4):
                 if len(self.world.cur_player.get_all_items()) > 4 * i + j:
                     self.all_cells.append([self.world.cur_player.get_all_items()[4 * i + j].item_id,
-                                           ImageButton(self.world, [630 + j * 63, 5 + i * 63], 'images/cell.9.png', [58, 58],
+                                           ImageButton(self.world, [663 + j * 63, 5 + i * 63], 'images/elements/light_blue_color.9.png', [58, 58],
                                                        image='images/items/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
                                                         '.png',
-                                                  square=50)])
+                                                        square=50)])
                 else:
-                    self.all_cells.append([-1, ImageButton(self.world, [630 + j * 63, 5 + i * 63], 'images/cell.9.png',
+                    self.all_cells.append([-1, ImageButton(self.world, [663 + j * 63, 5 + i * 63], 'images/elements/light_blue_color.9.png',
                                                        [58, 58], square=50)])
 
         # Self cells
         self.self_cells = []
         for i in xrange(3):
             for j in xrange(3):
-                self.self_cells.append([-1, ImageButton(self.world, [420 + j * 63, 130 + i * 63], 'images/cell.9.png',
+                self.self_cells.append([-1, ImageButton(self.world, [453 + j * 63, 130 + i * 63], 'images/elements/light_blue_color.9.png',
                                                         [58, 58], square=50)])
 
         # Player cells
         self.player_cells = []
         for i in xrange(3):
             for j in xrange(3):
-                self.player_cells.append([-1, ImageButton(self.world, [120 + j * 63, 130 + i * 63], 'images/cell.9.png',
+                self.player_cells.append([-1, ImageButton(self.world, [153 + j * 63, 130 + i * 63], 'images/elements/light_blue_color.9.png',
                                                           [58, 58], square=50)])
-
-        self.v_button = MapObject(world, [330, 200], image='images/v_button.png', size=[50, 33], layer=9)
-        self.x_button = MapObject(world, [330, 250], image='images/x_button.png', size=[50, 33], layer=9)
-
+        self.v_button = ImageButton(self.world, [363, 190], 'images/elements/light_green_color.9.png', [60, 30], image='images/elements/white_v.png', square=18)
+        self.x_button = ImageButton(self.world, [363, 224], 'images/elements/light_red_color.9.png', [60, 30], image='images/elements/white_x.png', square=13)
         self.change_visible(False)
         self.change_clickable(False)
 
@@ -80,12 +77,12 @@ class TradeMenu(NinePatch):
             self.world.client.accept_trade(self.player.username)
             self.is_final = True
             for i in self.self_cells:
-                i[1].change_bg('images/green_cell.9.png', [58, 58])
+                i[1].change_bg('images/elements/light_green_color.9.png', [58, 58])
 
     def player_accept_trade(self):
         self.is_final = True
         for i in self.player_cells:
-            i[1].change_bg('images/green_cell.9.png', [58, 58])
+            i[1].change_bg('images/elements/light_green_color.9.png', [58, 58])
 
     def change_visible(self, is_visible=None):
         if is_visible is not None:
@@ -114,16 +111,16 @@ class TradeMenu(NinePatch):
             NinePatch.draw_object(self)
 
             pos = self.world.cur_player.pos
-            self.world.cur_player.update_pos([480, 30])
+            self.world.cur_player.update_pos([513, 24])
             if self.world.cur_player.balloon:
-                self.world.cur_player.balloon.update([400, 90])
+                self.world.cur_player.balloon.update([433, 80])
             self.world.cur_player.draw_object()
             self.world.cur_player.update_pos(pos)
 
             pos = self.player.pos
-            self.player.update_pos([185, 30])
+            self.player.update_pos([218, 24])
             if self.player.balloon:
-                self.player.balloon.update([235, 90])
+                self.player.balloon.update([268, 80])
             self.player.draw_object()
             self.player.update_pos(pos)
 
