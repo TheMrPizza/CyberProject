@@ -1,3 +1,4 @@
+from Client.mechanics.Resources import jon_missions
 from Client.mechanics.Screen import Screen
 from Client.mechanics.Player import Player
 from Beach import Beach

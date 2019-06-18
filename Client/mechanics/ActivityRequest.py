@@ -1,4 +1,5 @@
 import pygame
+from Resources import colors, fonts
 from NinePatch import NinePatch
 from ImageButton import ImageButton
 from MapObject import MapObject
@@ -18,7 +19,7 @@ class ActivityRequest(NinePatch):
         elif self.activity == 'XO':
             self.icon = MapObject(self.world, [10, None], image='images/elements/white_xo.png', square=40, middle=self)
 
-        self.label = Label(self.world, [62, None], self.player.username, 'Username', (255, 255, 255), middle=self)
+        self.label = Label(self.world, [62, None], self.player.username, fonts['Username'], colors['white'], middle=self)
 
         if self.is_incoming:
             self.buttons['v'] = ImageButton(self.world, [152, 8], 'images/elements/light_green_color.9.png', [20, 20],

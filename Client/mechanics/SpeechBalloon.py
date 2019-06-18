@@ -1,12 +1,13 @@
 import pygame
+from Resources import colors, fonts
 from NinePatch import NinePatch
-from MapObject import MapObject
+from Label import Label
 
 
 class SpeechBalloon(NinePatch):
     def __init__(self, world, pos, text, **kwargs):
         self.MAX_WIDTH = 100  # px
-        self.FONT = world.fonts['Speech Balloon']
+        self.FONT = fonts['Speech Balloon']
         self.TTL = 5000  # ms
         self.is_alive = True
 
@@ -35,11 +36,10 @@ class SpeechBalloon(NinePatch):
         return text
 
     @staticmethod
-    def create_lines(world, pos, lines, font, text_rect):
+    def create_lines(world, pos, lines, font, middle, color=colors['black']):
         height = font.size(lines[0])[1]
         for i in xrange(len(lines)):
-            lines[i] = MapObject(world, [None, pos[1] + height * i], font.render(lines[i], False, (0, 0, 0)),
-                                 middle=text_rect, layer=5)
+            lines[i] = Label(world, [pos[0], pos[1] + height * i], lines[i], font, color, middle=middle, layer=5)
         return lines
 
     @staticmethod

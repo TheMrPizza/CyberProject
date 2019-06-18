@@ -93,6 +93,7 @@ class Server(object):
 
         if command == 'STORAGE':
             blob = self.bucket.get_blob(headers['item'])
+            print headers['item']
             self.add_message(client_player, 'OK', {'time-created': blob.time_created, 'id': headers['id']},
                              blob.download_as_string())
         elif command == 'POS':
@@ -249,6 +250,9 @@ class Server(object):
                 if i['username'] == headers['username']:
                     self.add_message(i, 'XO TURN', {'letter': headers['letter'], 'row': headers['row'], 'col': headers['col']})
                     break
+            self.add_message(client_player, 'OK', {'id': headers['id']})
+        elif command == 'UPDATE MISSION':
+            db.reference('users/' + headers['username'] + '/missions/' + headers['mission_id']).set(headers['value'] == 'True')
             self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'ADD REWARDS':
             if headers['xp'] != '0':

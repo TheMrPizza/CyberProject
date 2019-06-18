@@ -15,18 +15,6 @@ class World(object):
         self.cur_player = None
 
         self.clock = pygame.time.Clock()
-        pygame.font.init()
-        self.fonts = {'Small': pygame.font.SysFont('coolveticacondensedrgregular', 19),
-                      'Regular': pygame.font.SysFont('coolveticacondensedrgregular', 28),
-                      'Medium': pygame.font.SysFont('coolveticacondensedrgregular', 31),
-                      'Large': pygame.font.SysFont('coolveticacondensedrgregular', 72),
-                      'Big': pygame.font.SysFont('coolveticacondensedrgregular', 100),
-                      'Title': pygame.font.SysFont('coolveticacondensedrgregular', 60),
-                      'Speech Balloon': pygame.font.SysFont('coolveticacondensedrgregular', 34),
-                      'Compressed': pygame.font.SysFont('coolveticacompressedrgregular', 40),
-                      'Username': pygame.font.SysFont('coolveticacondensedrgregular', 24),
-                      'NPC': pygame.font.SysFont('coolveticacondensedrgregular', 28)}
-
         self.loop_thread = threading.Thread(target=self.world_loop)
         self.loop_thread.start()
 

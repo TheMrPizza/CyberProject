@@ -1,3 +1,4 @@
+from Resources import colors
 from MapObject import MapObject
 from ImageButton import ImageButton
 from NinePatch import NinePatch
@@ -9,13 +10,13 @@ from ShopItem import ShopItem
 class ShopMenu(NinePatch):
     def __init__(self, world):
         NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [500, 340], layer=8, middle=world.cur_screen.bg_image)
-        self.coins = Label(self.world, [312, 260], str(self.world.cur_player.coins), 'Compressed', (253, 216, 53))
+        self.coins = Label(self.world, [312, 260], str(self.world.cur_player.coins), 'Compressed', colors['coins'])
         self.coin_image = MapObject(self.world,
                                     [312 + self.world.fonts['Compressed'].size(str(self.world.cur_player.coins))[0] + 2, 273],
                                     image='images/elements/coin.png', square=25)
         self.x_button = ImageButton(self.world, [295, 5], 'images/elements/light_red_color.9.png', [30, 30], image='images/elements/white_x.png', square=18)
 
-        self.items = ScrollBar(self.world, [415, 5], 10, True, [360, 315])
+        self.items = ScrollBar(self.world, [415, 5], 5, True, [360, 315])
         self.items.append(ShopItem(self.world, 11, 400))
         self.items.append(ShopItem(self.world, 12, 400))
         self.items.append(ShopItem(self.world, 11, 400))

@@ -1,3 +1,4 @@
+from Resources import colors, fonts
 from NinePatch import NinePatch
 from Label import Label
 from TextButton import TextButton
@@ -12,16 +13,16 @@ class ShopItem(NinePatch):
         if price > world.cur_player.coins:
             NinePatch.__init__(self, world, [0, 0], 'images/elements/light_red_box.9.png', [360, 80], layer=8)
             self.button = TextButton(self.world, [280, 40], 'images/elements/white_color.9.png', [75, 35], 'Buy',
-                                     'Regular', (219, 76, 76), middle=self, layer=9)
+                                     fonts['Regular'], colors['light_red'], middle=self, layer=9)
         else:
             NinePatch.__init__(self, world, [0, 0], 'images/elements/light_blue_box.9.png', [360, 80], layer=8)
             self.button = TextButton(self.world, [280, 40], 'images/elements/white_color.9.png', [75, 35], 'Buy',
-                                     'Regular', (41, 182, 246), middle=self, layer=9)
+                                     fonts['Regular'], colors['light_blue'], middle=self, layer=9)
         self.item = Item(self.world, self.world.client.item_info(self.item_id), [10, None], 1, True, middle=self)
-        self.title = Label(self.world, [None, None], self.item.title, 'Medium', (255, 255, 255), middle=self)
-        self.coins = Label(self.world, [287, -4], str(self.price), 'Compressed', (253, 216, 53))
+        self.title = Label(self.world, [None, None], self.item.title, fonts['Medium'], colors['white'], middle=self)
+        self.coins = Label(self.world, [287, -4], str(self.price), fonts['Compressed'], colors['coins'])
         self.coin_image = MapObject(self.world,
-                                    [287 + self.world.fonts['Compressed'].size(str(self.price))[0] + 2, 9],
+                                    [287 + fonts['Compressed'].size(str(self.price))[0] + 2, 9],
                                     image='images/elements/coin.png', square=25)
 
     def change_visible(self, is_visible=None):

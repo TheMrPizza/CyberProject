@@ -1,3 +1,4 @@
+from Client.mechanics.Resources import jenny_missions
 from Client.mechanics.MapObject import MapObject
 from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
@@ -61,6 +62,8 @@ class Market(Room):
             return
         for i in self.shop_menu.items.items:
             if map_object is i.button:
+                if i.item_id == 41:
+                    self.world.cur_player.update_mission(jenny_missions[0][0][0], False)
                 self.message_menu = MessageMenu(self.world, "It's Look Great!", 'You bought a new item from the shop:', 500, i.item_id, -i.price)
                 self.message_menu.change_visible()
                 self.message_menu.change_clickable()
@@ -70,6 +73,7 @@ class Market(Room):
     def on_scroll(self, map_object, event):
         if map_object is self.shop_menu:
             self.shop_menu.items.scroll(event.button == 4)
+            return
         Room.on_scroll(self, map_object, event)
 
     def layer_reorder(self):

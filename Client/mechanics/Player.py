@@ -1,3 +1,4 @@
+from Resources import colors, fonts, jon_missions, charles_missions
 from MapObject import MapObject
 from SpeechBalloon import SpeechBalloon
 from Item import Item
@@ -5,6 +6,7 @@ from Item import Item
 
 class Player(MapObject):
     def __init__(self, world, data):
+        print 'a', data
         if data:
             # Another player. Data sent from the server
             MapObject.__init__(self, world, data['pos'], image='images/items/' + str(data['body']) + '.png', layer=5)
@@ -15,6 +17,15 @@ class Player(MapObject):
                     self.items.append(Item(self.world, self.world.client.item_info(i), self.pos,
                                            data['items'][i]['amount'], data['items'][i]['is_used']))
             self.level = data['level']
+            self.missions = {}
+            if 'missions' in data:
+                self.missions = data['missions']
+            if int(self.level) >= 3:
+                self.update_mission(charles_missions[2][0][0], False)
+            if int(self.level) >= 5:
+                self.update_mission(charles_missions[2][1][0], False)
+            if int(self.level) >= 10:
+                self.update_mission(charles_missions[2][2][0], False)
             self.coins = data['coins']
             self.join_date = data['join_date']
             self.is_admin = data['is_admin']
@@ -24,7 +35,7 @@ class Player(MapObject):
             self.msg = None
             self.balloon = None
             self.text_object = MapObject(world, [None, self.pos[1] + 75],
-                                         self.world.fonts['Username'].render(self.username, True, (0, 0, 0)),
+                                         fonts['Username'].render(self.username, True, colors['black']),
                                          middle=self, layer=6)
 
     def walk(self):
@@ -49,8 +60,34 @@ class Player(MapObject):
         if self.balloon:
             self.balloon.update(pos)
 
+    def check_mission(self, mission_id):
+        if str(mission_id) in self.missions:
+            return self.missions[str(mission_id)]
+        return None
+
+    def update_mission(self, mission_id, value):
+        # Check that the mission is relevant
+        if not value and str(mission_id) in self.missions:
+            return
+        if mission_id % 10 != 0:
+            if str(mission_id - 1) not in self.missions:
+                return
+            if not self.missions[str(mission_id - 1)]:
+                return
+
+        if str(mission_id) in self.missions:
+            if self.missions[str(mission_id)] != value:
+                self.missions[str(mission_id)] = value
+                self.world.client.update_mission(self.username, mission_id, value)
+        else:
+            self.missions[str(mission_id)] = value
+            self.world.client.update_mission(self.username, mission_id, value)
+
     def check_message(self):
         if self.msg:
+            self.update_mission(jon_missions[2][0][0], False)
+            if self.room_id == 201:
+                self.world.cur_screen.agent_menu.update_missions()
             self.balloon = SpeechBalloon(self.world, self.pos, self.msg)
             self.msg = None
         elif self.balloon and not self.balloon.is_alive:

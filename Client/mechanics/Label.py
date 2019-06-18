@@ -1,9 +1,10 @@
+from Resources import colors
 from MapObject import MapObject
 
 
 class Label(MapObject):
-    def __init__(self, world, pos, text, font, color=(0, 0, 0), **kwargs):
-        self.text_surface = world.fonts[font].render(text, True, color)
+    def __init__(self, world, pos, text, font, color=colors['black'], **kwargs):
+        self.text_surface = font.render(text, True, color)
         MapObject.__init__(self, world, pos, self.text_surface, **kwargs)
         self.text = text
         self.font = font

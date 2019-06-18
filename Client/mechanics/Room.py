@@ -1,3 +1,4 @@
+from Resources import jon_missions, jenny_missions, charles_missions
 from MapObject import MapObject
 from TextBox import TextBox
 from ImageButton import ImageButton
@@ -16,6 +17,9 @@ from Item import Item
 
 
 class Room(Screen):
+    jon_mission = set()
+    charles_mission = 0
+
     def __init__(self, world, room_id, bg_image, path, out):
         Screen.__init__(self, world, room_id, bg_image)
         self.path = MapObject(self.world, [0, 0], image=path, size=world.SIZE, is_visible=False, layer=0)
@@ -30,11 +34,24 @@ class Room(Screen):
         self.xo_menu = XOMenu(world)
         self.map_menu = MapMenu(world, room_id)
         self.message_menu = MessageMenu(self.world, '', '')
+        self.message_menu.change_visible()
+        self.message_menu.change_clickable()
+
+        if self.world.cur_player.check_mission(jon_missions[0][0][0]):
+            Room.jon_mission.add(room_id)
+            if len(Room.jon_mission) == 6:
+                self.world.cur_player.update_mission(jon_missions[0][1][0], False)
 
         self.players = [self.world.cur_player]
         for i in self.world.client.find_players(room_id):
             if i != self.world.cur_player.username:
                 self.players.append(Player(world, data=self.world.client.player_info(i)))
+        if len(self.players) >= 3:
+            self.world.cur_player.update_mission(jon_missions[1][0][0], False)
+        if len(self.players) >= 5:
+            self.world.cur_player.update_mission(jon_missions[1][0][0], False)
+        if len(self.players) >= 10:
+            self.world.cur_player.update_mission(jon_missions[1][0][0], False)
 
     def execute(self):
         update = self.world.client.updates
@@ -138,8 +155,6 @@ class Room(Screen):
                         self.message_menu = MessageMenu(self.world, 'You Lose!',
                                                         'You lost to ' + self.xo_menu.player.username + ' and got the next rewards:',
                                                         coins=-50, xp=50)
-                    self.message_menu.change_visible(True)
-                    self.message_menu.change_clickable(True)
                     self.xo_menu = XOMenu(self.world)
                 update.remove(i)
             elif i['code'] == 'PLACE ITEM':
@@ -158,6 +173,7 @@ class Room(Screen):
                 self.trade_menu = TradeMenu(self.world)
                 update.remove(i)
             elif i['code'] == 'MAKE TRADE':
+                self.world.cur_player.update_mission(jenny_missions[1][0][0], False)
                 for j in self.players:
                     if i['headers']['user1'] == j.username:
                         for k in j.items:
@@ -247,6 +263,8 @@ class Room(Screen):
                 if map_object is self.map_menu.buttons[i]:
                     from Client.screens.Loading import Loading
                     self.world.cur_screen = Loading(self.world, 301, 201 + i)
+                    self.world.cur_player.path_target = None
+                    self.world.cur_player.update_mission(jon_missions[0][2][0], False)
                     return
         if map_object is self.player_info_menu.x_button:
             self.player_info_menu.change_visible(False)
@@ -273,8 +291,6 @@ class Room(Screen):
         if map_object is self.player_info_menu.xo_button:
             if int(self.world.cur_player.coins) < 50 or int(self.player_info_menu.player.coins) < 50:
                 self.message_menu = MessageMenu(self.world, "Can't Play!", 'You and your opponent must have at least 50 coins to play.', is_warning=True)
-                self.message_menu.change_visible()
-                self.message_menu.change_clickable()
                 return
             is_found = False
             for i in self.activity_requests:
@@ -301,6 +317,11 @@ class Room(Screen):
                             self.trade_menu.change_visible()
                             self.trade_menu.change_clickable()
                         elif i.activity == 'XO':
+                            self.world.cur_player.update_mission(charles_missions[0][0][0], False)
+                            if self.world.cur_player.check_mission(jon_missions[0][2][0]):
+                                Room.charles_mission += 1
+                                if Room.charles_mission == 5:
+                                    self.world.cur_player.update_mission(jon_missions[0][2][0], False)
                             self.player_info_menu.change_visible(False)
                             self.player_info_menu.change_clickable(False)
                             self.self_info_menu.change_visible(False)
@@ -347,6 +368,7 @@ class Room(Screen):
                     winner = self.xo_menu.check_winner()
                     if winner:
                         if winner == self.xo_menu.letter:
+                            self.world.cur_player.update_mission(charles_missions[0][1][0], False)
                             self.message_menu = MessageMenu(self.world, 'You Win!', 'You defeated ' + self.xo_menu.player.username + ' and got the next rewards:',
                                                             coins=50, xp=200)
                         elif winner == 'XO':
@@ -357,8 +379,6 @@ class Room(Screen):
                             self.message_menu = MessageMenu(self.world, 'You Lose!',
                                                             'You lost to ' + self.xo_menu.player.username + ' and got the next rewards:',
                                                             coins=-50, xp=50)
-                        self.message_menu.change_visible(True)
-                        self.message_menu.change_clickable(True)
                         self.xo_menu = XOMenu(self.world)
 
     def on_type(self, map_object, event):

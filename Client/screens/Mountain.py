@@ -37,6 +37,7 @@ class Mountain(Room):
                     self.world.cur_player.path_target = 204
                 else:
                     self.world.cur_player.path_target = None
+            return
         Room.on_click(self, map_object, event)
 
     def layer_reorder(self):

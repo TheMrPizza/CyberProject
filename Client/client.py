@@ -25,6 +25,7 @@ class Client(object):
         except (socket.error, socket.timeout):
             print 'Error: No server communication!'
             sys.exit()
+        self.lock = threading.Lock()
         self.updates = []
         self.thread = threading.Thread(target=self.receive_message)
         self.thread.start()
@@ -37,9 +38,12 @@ class Client(object):
 
     def send_and_receive(self, command, headers, data, is_waiting):
         # Protocol
-        global msg_id
         headers['length'] = len(data)
+        self.lock.acquire()
+        global msg_id
         headers['id'] = msg_id
+        msg_id += 1
+        self.lock.release()
         request = Client.message_format(command, headers, data)
         while request != '':
             try:
@@ -48,8 +52,7 @@ class Client(object):
                 print 'Error: No server communication!'
                 sys.exit()
             request = request[KB:]
-        print 'Sent ' + command + '...'
-        msg_id += 1
+        print 'Sent ' + command + ' ' + str(headers['id']) + '...'
 
         while True:
             for i in self.updates:
@@ -173,6 +176,9 @@ class Client(object):
 
     def xo_turn(self, username, letter, row, col):
         self.send_message('XO TURN', {'username': username, 'letter': letter, 'row': row, 'col': col})
+
+    def update_mission(self, username, mission_id, value):
+        self.send_message('UPDATE MISSION', {'username': username, 'mission_id': mission_id, 'value': value})
 
     def add_rewards(self, username, xp=0, items=0, coins=0):
         self.send_message('ADD REWARDS', {'username': username, 'xp': xp, 'items': items, 'coins': coins}, is_waiting=True)

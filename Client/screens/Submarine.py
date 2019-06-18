@@ -1,13 +1,14 @@
+from Client.mechanics.Resources import jon_missions
 from Client.mechanics.MapObject import MapObject
 from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
-from Client.mechanics.TextBox import TextBox
 
 
 class Submarine(Room):
     def __init__(self, world):
         Room.__init__(self, world, 202, 'images/rooms/202/submarine.png', 'images/rooms/202/path.png', [])
         self.out = [MapObject(self.world, [0, 0], image='images/rooms/202/out1.png', is_visible=False, layer=7)]
+        self.world.cur_player.update_mission(jon_missions[0][0][0], False)
         self.layer_reorder()
 
     def check_event(self, event, objects=None):
@@ -34,6 +35,7 @@ class Submarine(Room):
                     self.world.cur_player.path_target = 201
                 else:
                     self.world.cur_player.path_target = None
+            return
         Room.on_click(self, map_object, event)
 
     def layer_reorder(self):
