@@ -28,6 +28,7 @@ class Client(object):
         self.lock = threading.Lock()
         self.updates = []
         self.thread = threading.Thread(target=self.receive_message)
+        self.thread.daemon = True
         self.thread.start()
 
     def send_message(self, command, headers, data='', is_waiting=False):
@@ -52,7 +53,7 @@ class Client(object):
                 print 'Error: No server communication!'
                 sys.exit()
             request = request[KB:]
-        print 'Sent ' + command + ' ' + str(headers['id']) + '...'
+        print 'Sent ' + command + '...'
 
         while True:
             for i in self.updates:
@@ -126,7 +127,7 @@ class Client(object):
             item_file.close()
 
     def create_player(self, username, password, body):
-        self.send_message('CREATE PLAYER', {'username': username, 'body': body}, is_waiting=True)  # TODO: Add password
+        self.send_message('CREATE PLAYER', {'username': username, 'password': password, 'body': body}, is_waiting=True)
 
     def add_player(self, room_id, username):
         self.send_message('ADD PLAYER', {'room_id': room_id, 'username': username})
@@ -181,18 +182,19 @@ class Client(object):
         self.send_message('UPDATE MISSION', {'username': username, 'mission_id': mission_id, 'value': value})
 
     def add_rewards(self, username, xp=0, items=0, coins=0):
-        self.send_message('ADD REWARDS', {'username': username, 'xp': xp, 'items': items, 'coins': coins}, is_waiting=True)
+        self.send_message('ADD REWARDS', {'username': username, 'xp': xp, 'items': items, 'coins': coins},
+                          is_waiting=True)
 
     def check_username(self, username):
         headers, data = self.send_message('CHECK USERNAME', {'username': username}, is_waiting=True)
         return data == 'True'
 
-    def connect(self, username):
-        headers, data = self.send_message('CONNECT', {'username': username}, is_waiting=True)
+    def connect(self, username, password):
+        headers, data = self.send_message('CONNECT', {'username': username, 'password': password}, is_waiting=True)
         return data != 'Error'
 
     def quit(self, username, room_id):
-        self.send_message('QUIT', {'username': username, 'room_id': room_id})
+        self.send_message('QUIT', {'username': username, 'room_id': room_id}, is_waiting=True)
 
     def chat(self, username, message):
         self.send_message('CHAT', {'username': username, 'message': message})

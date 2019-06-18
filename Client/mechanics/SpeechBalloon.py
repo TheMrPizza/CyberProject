@@ -7,18 +7,17 @@ from Label import Label
 class SpeechBalloon(NinePatch):
     def __init__(self, world, pos, text, **kwargs):
         self.MAX_WIDTH = 100  # px
-        self.FONT = fonts['Speech Balloon']
+        self.FONT = fonts['Username']
         self.TTL = 5000  # ms
         self.is_alive = True
 
         text = SpeechBalloon.size_adjustment(text, self.FONT, self.MAX_WIDTH)
         text_size = SpeechBalloon.calc_text_size(text, self.FONT)
-        pos = [pos[0] + 60 - text_size[0], pos[1] - 50 - text_size[1]]
-        NinePatch.__init__(self, world, pos, 'images/test_speech_balloon.9.png',
+        pos = [pos[0] + 70 - text_size[0], pos[1] - 40 - text_size[1]]
+        NinePatch.__init__(self, world, pos, 'images/elements/speech_balloon.9.png',
                            text_size=text_size, layer=4, **kwargs)
-        self.lines = SpeechBalloon.create_lines(world, [self.text_rect.x, self.text_rect.y], text, self.FONT,
-                                                self.text_rect)
-
+        self.lines = SpeechBalloon.create_lines(world, [None, self.pos[1] + 5], text, self.FONT,
+                                                middle=self.text_rect)
         self.start_time = pygame.time.get_ticks()
 
     @staticmethod

@@ -5,16 +5,18 @@ from ImageButton import ImageButton
 
 class XOMenu(NinePatch):
     def __init__(self, world):
-        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [800, 340], middle=world.cur_screen.bg_image, layer=8)
+        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [800, 340],
+                           middle=world.cur_screen.bg_image, layer=8)
         self.grid = MapObject(world, [410, 20], image='images/elements/grid.png', size=[280, 280], layer=9)
-        self.stage = MapObject(world, [163, -10], image='images/stage.png', layer=9)
+        self.stage = MapObject(world, [163, -10], image='images/elements/stage.png', layer=9)
         self.player = None
         self.letter = ''
         self.cells = []
         for i in xrange(3):
             self.cells.append([])
             for j in xrange(3):
-                self.cells[i].append([' ', ImageButton(world, [415 + 90 * j, 25 + 90 * i], 'images/area.9.png', [90 ,90], square=60)])
+                self.cells[i].append([' ', ImageButton(world, [415 + 90 * j, 25 + 90 * i], 'images/elements/white_color.9.png',
+                                                       [90 ,90], square=60)])
 
         self.change_visible(False)
         self.change_clickable(False)

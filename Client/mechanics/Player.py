@@ -6,9 +6,8 @@ from Item import Item
 
 class Player(MapObject):
     def __init__(self, world, data):
-        print 'a', data
         if data:
-            # Another player. Data sent from the server
+            # Data sent from the server
             MapObject.__init__(self, world, data['pos'], image='images/items/' + str(data['body']) + '.png', layer=5)
             self.username = data['username']
             self.items = []
@@ -19,6 +18,7 @@ class Player(MapObject):
             self.level = data['level']
             self.missions = {}
             if 'missions' in data:
+                print data['missions']
                 self.missions = data['missions']
             if int(self.level) >= 3:
                 self.update_mission(charles_missions[2][0][0], False)
@@ -27,6 +27,7 @@ class Player(MapObject):
             if int(self.level) >= 10:
                 self.update_mission(charles_missions[2][2][0], False)
             self.coins = data['coins']
+            self.xp = data['xp']
             self.join_date = data['join_date']
             self.is_admin = data['is_admin']
             self.room_id = data['room_id']
@@ -59,6 +60,13 @@ class Player(MapObject):
         self.pos = pos
         if self.balloon:
             self.balloon.update(pos)
+
+    def add_item(self, item_id):
+        for i in self.items:
+            if i.item_id == str(item_id):
+                i.amount += 1
+                return
+        self.items.append(Item(self.world, self.world.client.item_info(item_id), self.pos, 1, False))
 
     def check_mission(self, mission_id):
         if str(mission_id) in self.missions:

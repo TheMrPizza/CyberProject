@@ -23,7 +23,8 @@ class Market(Room):
         if objects is None:
             objects = []
         buttons = [i.button for i in self.shop_menu.items.items]
-        Room.check_event(self, event, buttons + [self.hut1, self.hut2, self.hut3, self.hut4, self.hut5, self.shop_menu, self.shop_menu.x_button] + objects)
+        Room.check_event(self, event, buttons + [self.hut1, self.hut2, self.hut3, self.hut4, self.hut5,
+                                                 self.shop_menu, self.shop_menu.x_button] + objects)
 
     def check_scroll(self, event, objects=None):
         if objects is None:
@@ -64,7 +65,8 @@ class Market(Room):
             if map_object is i.button:
                 if i.item_id == 41:
                     self.world.cur_player.update_mission(jenny_missions[0][0][0], False)
-                self.message_menu = MessageMenu(self.world, "It's Look Great!", 'You bought a new item from the shop:', 500, i.item_id, -i.price)
+                self.message_menu = MessageMenu(self.world, 'It Looks Great!', 'You bought a new item from the shop:',
+                                                500, i.item_id, -i.price)
                 self.message_menu.change_visible()
                 self.message_menu.change_clickable()
                 return

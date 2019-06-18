@@ -28,7 +28,8 @@ class Plaza(Room):
         for i in self.agent_menu.missions.items:
             buttons.append(i.button)
             buttons.append(i.reward_button)
-        Room.check_event(self, event, buttons + [self.gate1, self.gate2, self.sign, self.charles, self.agent_menu, self.agent_menu.x_button] + objects)
+        Room.check_event(self, event, buttons + [self.gate1, self.gate2, self.sign, self.charles, self.agent_menu,
+                                                 self.agent_menu.x_button] + objects)
 
     def draw_screen(self, objects=None):
         if objects is None:
@@ -71,7 +72,8 @@ class Plaza(Room):
                 print i.mission_id
                 if i.is_completed:
                     self.world.cur_screen.message_menu = MessageMenu(self.world, 'Mission Completed!',
-                                                                     'You have completed the mission and got the next rewards:',
+                                                                     'You have completed the mission and got the next'
+                                                                     ' rewards:',
                                                                      i.xp, i.items, i.coins)
                     self.world.cur_player.update_mission(i.mission_id, True)
                     self.agent_menu.update_missions()

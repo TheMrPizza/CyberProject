@@ -4,14 +4,16 @@ from MapObject import MapObject
 
 class MapMenu(ImageButton):
     def __init__(self, world, room_id):
-        ImageButton.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [949, 544], image='images/elements/map.png', middle=world.cur_screen.bg_image, layer=8)
+        ImageButton.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [949, 544],
+                             image='images/elements/map.png', middle=world.cur_screen.bg_image, layer=8)
         self.buttons = [MapObject(self.world, [630, 387], image='images/elements/beach_button.png', layer=9),
                         MapObject(self.world, [760, 440], image='images/elements/submarine_button.png', layer=9),
                         MapObject(self.world, [307, 260], image='images/elements/forest_button.png', layer=9),
                         MapObject(self.world, [338, 117], image='images/elements/plaza_button.png', layer=9),
                         MapObject(self.world, [415, 192], image='images/elements/market_button.png', layer=9),
                         MapObject(self.world, [775, 67], image='images/elements/mountain_button.png', layer=9)]
-        self.x_button = ImageButton(self.world, [68, 5], 'images/elements/light_red_color.9.png', [30, 30], image='images/elements/white_x.png', square=18)
+        self.x_button = ImageButton(self.world, [68, 5], 'images/elements/light_red_color.9.png', [30, 30],
+                                    image='images/elements/white_x.png', square=18)
         self.room_id = room_id
         self.change_visible(False)
         self.change_clickable(False)

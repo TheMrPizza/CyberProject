@@ -4,6 +4,7 @@ from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
 from Client.mechanics.Label import Label
 from Client.mechanics.AgentMenu import AgentMenu
+from Client.mechanics.MessageMenu import MessageMenu
 
 
 class Forest(Room):
@@ -30,12 +31,14 @@ class Forest(Room):
             buttons.append(i.button)
             buttons.append(i.reward_button)
         Room.check_event(self, event,
-                         buttons + [self.tree, self.bush1, self.bush2, self.trunk, self.sign, self.jenny, self.agent_menu, self.agent_menu.x_button] + objects)
+                         buttons + [self.tree, self.bush1, self.bush2, self.trunk, self.sign, self.jenny,
+                                    self.agent_menu, self.agent_menu.x_button] + objects)
 
     def draw_screen(self, objects=None):
         if objects is None:
             objects = []
-        Room.draw_screen(self, [self.tree, self.bush1, self.bush2, self.trunk, self.sign, self.jenny, self.name, self.agent_menu] + objects)
+        Room.draw_screen(self, [self.tree, self.bush1, self.bush2, self.trunk, self.sign, self.jenny, self.name,
+                                self.agent_menu] + objects)
 
     def on_click(self, map_object, event):
         if map_object in [self.path] + self.out:
@@ -72,7 +75,8 @@ class Forest(Room):
             if map_object is i.reward_button:
                 if i.is_completed:
                     self.world.cur_screen.message_menu = MessageMenu(self.world, 'Mission Completed!',
-                                                                     'You have completed the mission and got the next rewards:',
+                                                                     'You have completed the mission and got the next'
+                                                                     ' rewards:',
                                                                      i.xp, i.items, i.coins)
                     self.world.cur_player.update_mission(i.mission_id, True)
                     self.agent_menu.update_missions()

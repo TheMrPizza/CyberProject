@@ -30,6 +30,7 @@ class World(object):
         pygame.display.set_icon(icon)
         pygame.display.set_caption('Volantis')
         execute_thread = threading.Thread(target=self.execute_loop)
+        execute_thread.daemon = True
         execute_thread.start()
 
         while True:
@@ -40,7 +41,8 @@ class World(object):
             self.SURF.fill((255, 255, 255))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.client.quit(self.cur_player.username, self.cur_player.room_id)
+                    if self.cur_player:
+                        self.client.quit(self.cur_player.username, self.cur_player.room_id)
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:

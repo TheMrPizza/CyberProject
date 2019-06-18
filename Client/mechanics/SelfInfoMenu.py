@@ -7,27 +7,33 @@ from Label import Label
 
 class SelfInfoMenu(NinePatch):
     def __init__(self, world):
-        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [480, 340], layer=8, middle=world.cur_screen.bg_image)
-        self.stage = MapObject(world, [323, -10], image='images/stage.png', layer=9)
-        self.coins = Label(self.world, [343, 265], str(self.world.cur_player.coins), fonts['Compressed'], colors['coins'])
+        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [480, 340], layer=8,
+                           middle=world.cur_screen.bg_image)
+        self.stage = MapObject(world, [323, -10], image='images/elements/stage.png', layer=9)
+        self.coins = Label(self.world, [343, 265], str(self.world.cur_player.coins), fonts['Compressed'],
+                           colors['coins'])
         self.coin_image = MapObject(self.world,
                                     [343 + fonts['Compressed'].size(str(self.world.cur_player.coins))[0] + 2, 278],
                                     image='images/elements/coin.png', square=25)
-        self.level = Label(world, [428, 265], str(self.world.cur_player.level), fonts['Compressed'], colors['level'], layer=9)
-        self.arrow = MapObject(world, [428 + fonts['Compressed'].size(str(self.world.cur_player.level))[0] + 2, 277], image='images/elements/level_arrow.png', square=27, layer=9)
-        self.x_button = ImageButton(self.world, [303, 5], 'images/elements/light_red_color.9.png', [30, 30], image='images/elements/white_x.png', square=18)
+        self.level = Label(world, [428, 265], str(self.world.cur_player.level), fonts['Compressed'], colors['level'],
+                           layer=9)
+        self.arrow = MapObject(world, [428 + fonts['Compressed'].size(str(self.world.cur_player.level))[0] + 2, 277],
+                               image='images/elements/level_arrow.png', square=27, layer=9)
+        self.x_button = ImageButton(self.world, [303, 5], 'images/elements/light_red_color.9.png', [30, 30],
+                                    image='images/elements/white_x.png', square=18)
         self.cells = []
         for i in xrange(5):
             for j in xrange(4):
                 if len(self.world.cur_player.get_all_items()) > 4 * i + j:
                     self.cells.append([self.world.cur_player.get_all_items()[4 * i + j].item_id,
-                                      ImageButton(self.world, [513 + j * 63, 5 + i * 63], 'images/elements/light_blue_color.9.png', [58, 58],
-                                                  image='images/items/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
-                                                        '.png',
-                                                  square=50)])
+                                      ImageButton(self.world, [513 + j * 63, 5 + i * 63],
+                                                  'images/elements/light_blue_color.9.png', [58, 58],
+                                                  image='images/items/' +
+                                                        self.world.cur_player.get_all_items()[4 * i + j].item_id +
+                                                        '.png', square=50)])
                 else:
-                    self.cells.append([-1, ImageButton(self.world, [513 + j * 63, 5 + i * 63], 'images/elements/light_blue_color.9.png',
-                                                       [58, 58])])
+                    self.cells.append([-1, ImageButton(self.world, [513 + j * 63, 5 + i * 63],
+                                                       'images/elements/light_blue_color.9.png', [58, 58])])
         self.change_visible(False)
         self.change_clickable(False)
 

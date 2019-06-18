@@ -25,8 +25,10 @@ class Room(Screen):
         self.path = MapObject(self.world, [0, 0], image=path, size=world.SIZE, is_visible=False, layer=0)
         self.out = out
         self.chat_box = TextBox(self.world, [None, 540], 720, middle=self.bg_image, layer=10)
-        self.bag_button = ImageButton(self.world, [900, 540], 'images/elements/dark_blue_color.9.png', [43, 43], image='images/elements/white_person.png', square=33)
-        self.map_button = ImageButton(self.world, [122, 540], 'images/elements/light_blue_color.9.png', [43, 43], image='images/elements/white_map.png', square=33)
+        self.bag_button = ImageButton(self.world, [900, 540], 'images/elements/dark_blue_color.9.png', [43, 43],
+                                      image='images/elements/white_person.png', square=33)
+        self.map_button = ImageButton(self.world, [122, 540], 'images/elements/light_blue_color.9.png', [43, 43],
+                                      image='images/elements/white_map.png', square=33)
         self.self_info_menu = SelfInfoMenu(world)
         self.player_info_menu = PlayerInfoMenu(world)
         self.activity_requests = ScrollBar(self.world, [20, 20], 5, True, [180, 100])
@@ -145,16 +147,16 @@ class Room(Screen):
                 if winner:
                     if winner == self.xo_menu.letter:
                         self.message_menu = MessageMenu(self.world, 'You Win!',
-                                                        'You defeated ' + self.xo_menu.player.username + ' and got the next rewards:',
-                                                        coins=100, xp=200)
+                                                        'You defeated ' + self.xo_menu.player.username +
+                                                        ' and got the next rewards:', coins=100, xp=200)
                     elif winner == 'XO':
                         self.message_menu = MessageMenu(self.world, 'A Tie!',
-                                                        'You tied with ' + self.xo_menu.player.username + ' and got the next rewards:',
-                                                        xp=100)
+                                                        'You tied with ' + self.xo_menu.player.username +
+                                                        ' and got the next rewards:', xp=100)
                     else:
                         self.message_menu = MessageMenu(self.world, 'You Lose!',
-                                                        'You lost to ' + self.xo_menu.player.username + ' and got the next rewards:',
-                                                        coins=-50, xp=50)
+                                                        'You lost to ' + self.xo_menu.player.username +
+                                                        ' and got the next rewards:', coins=-50, xp=50)
                     self.xo_menu = XOMenu(self.world)
                 update.remove(i)
             elif i['code'] == 'PLACE ITEM':
@@ -173,7 +175,7 @@ class Room(Screen):
                 self.trade_menu = TradeMenu(self.world)
                 update.remove(i)
             elif i['code'] == 'MAKE TRADE':
-                self.world.cur_player.update_mission(jenny_missions[1][0][0], False)
+                # self.world.cur_player.update_mission(jenny_missions[1][0][0], False)
                 for j in self.players:
                     if i['headers']['user1'] == j.username:
                         for k in j.items:
@@ -227,10 +229,11 @@ class Room(Screen):
         Screen.check_event(self, event, self.out + buttons + cells + list(zip(*self.self_info_menu.cells)[1]) +
                            list(zip(*self.trade_menu.all_cells)[1]) + list(zip(*self.trade_menu.self_cells)[1]) +
                            list(zip(*self.trade_menu.player_cells)[1]) + self.map_menu.buttons +
-                           [self.path, self.chat_box, self.bag_button, self.self_info_menu.x_button, self.player_info_menu.x_button,
-                            self.player_info_menu.trade_button, self.player_info_menu.xo_button, self.map_button,
-                            self.trade_menu.v_button, self.trade_menu.x_button, self.map_menu, self.xo_menu,
-                            self.self_info_menu, self.player_info_menu, self.map_menu.x_button, self.message_menu, self.message_menu.button]
+                           [self.path, self.chat_box, self.bag_button, self.self_info_menu.x_button,
+                            self.player_info_menu.x_button, self.player_info_menu.trade_button,
+                            self.player_info_menu.xo_button, self.map_button, self.trade_menu.v_button,
+                            self.trade_menu.x_button, self.map_menu, self.xo_menu, self.self_info_menu,
+                            self.player_info_menu, self.map_menu.x_button, self.message_menu, self.message_menu.button]
                            + self.players + objects)
 
     def check_scroll(self, event, objects=None):
@@ -245,9 +248,10 @@ class Room(Screen):
 
         if objects is None:
             objects = []
-        Screen.draw_screen(self, self.out + [self.path, self.chat_box, self.bag_button, self.self_info_menu, self.player_info_menu,
-                                             self.activity_requests, self.trade_menu, self.map_button, self.map_menu,
-                                             self.xo_menu, self.message_menu] + self.players + objects)
+        Screen.draw_screen(self, self.out + [self.path, self.chat_box, self.bag_button, self.self_info_menu,
+                                             self.player_info_menu, self.activity_requests, self.trade_menu,
+                                             self.map_button, self.map_menu, self.xo_menu, self.message_menu]
+                           + self.players + objects)
 
     def on_click(self, map_object, event):
         if map_object in [self.bag_button, self.self_info_menu.x_button]:
@@ -290,7 +294,9 @@ class Room(Screen):
             return
         if map_object is self.player_info_menu.xo_button:
             if int(self.world.cur_player.coins) < 50 or int(self.player_info_menu.player.coins) < 50:
-                self.message_menu = MessageMenu(self.world, "Can't Play!", 'You and your opponent must have at least 50 coins to play.', is_warning=True)
+                self.message_menu = MessageMenu(self.world, "Can't Play!",
+                                                'You and your opponent must have at least 50 coins to play.',
+                                                is_warning=True)
                 return
             is_found = False
             for i in self.activity_requests:
@@ -369,16 +375,17 @@ class Room(Screen):
                     if winner:
                         if winner == self.xo_menu.letter:
                             self.world.cur_player.update_mission(charles_missions[0][1][0], False)
-                            self.message_menu = MessageMenu(self.world, 'You Win!', 'You defeated ' + self.xo_menu.player.username + ' and got the next rewards:',
+                            self.message_menu = MessageMenu(self.world, 'You Win!', 'You defeated ' +
+                                                            self.xo_menu.player.username + ' and got the next rewards:',
                                                             coins=50, xp=200)
                         elif winner == 'XO':
                             self.message_menu = MessageMenu(self.world, 'A Tie!',
-                                                            'You tied with ' + self.xo_menu.player.username + ' and got the next rewards:',
-                                                            xp=100)
+                                                            'You tied with ' + self.xo_menu.player.username +
+                                                            ' and got the next rewards:', xp=100)
                         else:
                             self.message_menu = MessageMenu(self.world, 'You Lose!',
-                                                            'You lost to ' + self.xo_menu.player.username + ' and got the next rewards:',
-                                                            coins=-50, xp=50)
+                                                            'You lost to ' + self.xo_menu.player.username +
+                                                            ' and got the next rewards:', coins=-50, xp=50)
                         self.xo_menu = XOMenu(self.world)
 
     def on_type(self, map_object, event):

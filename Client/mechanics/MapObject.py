@@ -5,7 +5,8 @@ import os
 
 
 class MapObject(object):
-    def __init__(self, world, pos, surface=None, image=None, size=None, square=None, middle=None, is_visible=True, is_clickable=True, layer=2):
+    def __init__(self, world, pos, surface=None, image=None, size=None, square=None, middle=None, is_visible=True,
+                 is_clickable=True, layer=2):
         self.world = world
         if not surface:
             if image:
@@ -79,7 +80,7 @@ class MapObject(object):
             print 'No!'  # TODO: Add error
 
     @staticmethod
-    def load_image(world, image, size=None, square=None): # TODO: CHANGE THIS WHOLE FUNCTION
+    def load_image(world, image, size=None, square=None):
         if not os.path.exists(world.PATH + '/images'):
             os.makedirs(world.PATH + '/images')
         world.client.get_from_storage(image)

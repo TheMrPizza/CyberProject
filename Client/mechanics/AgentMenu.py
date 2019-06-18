@@ -9,9 +9,11 @@ from MissionItem import MissionItem
 
 class AgentMenu(NinePatch):
     def __init__(self, world, agent_name):
-        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [700, 340], layer=8, middle=world.cur_screen.bg_image)
+        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [700, 340], layer=8,
+                           middle=world.cur_screen.bg_image)
         self.agent_name = agent_name
-        self.x_button = ImageButton(self.world, [195, 5], 'images/elements/light_red_color.9.png', [30, 30], image='images/elements/white_x.png', square=18)
+        self.x_button = ImageButton(self.world, [195, 5], 'images/elements/light_red_color.9.png', [30, 30],
+                                    image='images/elements/white_x.png', square=18)
         self.missions = ScrollBar(self.world, [320, 5], 5, True, [550, 315])
         if self.agent_name == 'Jenny':
             self.agent = MapObject(self.world, [210, 108], image='images/rooms/203/Jenny.png', layer=9)
@@ -20,7 +22,8 @@ class AgentMenu(NinePatch):
         elif self.agent_name == 'Charles':
             self.agent = MapObject(self.world, [210, 108], image='images/rooms/204/Charles.png', layer=9)
         self.update_missions()
-        self.name = Label(self.world, [None, 210], agent_name, fonts['NPC'], colors[agent_name.lower()], middle=self.agent)
+        self.name = Label(self.world, [None, 210], agent_name, fonts['NPC'], colors[agent_name.lower()],
+                          middle=self.agent)
         self.change_visible(False)
         self.change_clickable(False)
 

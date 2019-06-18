@@ -67,7 +67,8 @@ class Beach(Room):
             if map_object is i.reward_button:
                 if i.is_completed:
                     self.world.cur_screen.message_menu = MessageMenu(self.world, 'Mission Completed!',
-                                                                     'You have completed the mission and got the next rewards:',
+                                                                     'You have completed the mission and got the next'
+                                                                     ' rewards:',
                                                                      i.xp, i.items, i.coins)
                     self.world.cur_player.update_mission(i.mission_id, True)
                     self.agent_menu.update_missions()

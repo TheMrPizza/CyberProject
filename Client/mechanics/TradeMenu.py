@@ -4,7 +4,8 @@ from NinePatch import NinePatch
 
 class TradeMenu(NinePatch):
     def __init__(self, world):
-        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [800, 340], middle=world.cur_screen.bg_image, layer=8)
+        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [800, 340],
+                           middle=world.cur_screen.bg_image, layer=8)
         self.player = None
         self.is_final = False
         # All cells
@@ -13,29 +14,35 @@ class TradeMenu(NinePatch):
             for j in xrange(4):
                 if len(self.world.cur_player.get_all_items()) > 4 * i + j:
                     self.all_cells.append([self.world.cur_player.get_all_items()[4 * i + j].item_id,
-                                           ImageButton(self.world, [663 + j * 63, 5 + i * 63], 'images/elements/light_blue_color.9.png', [58, 58],
-                                                       image='images/items/' + self.world.cur_player.get_all_items()[4 * i + j].item_id +
-                                                        '.png',
-                                                        square=50)])
+                                           ImageButton(self.world, [663 + j * 63, 5 + i * 63],
+                                                       'images/elements/light_blue_color.9.png', [58, 58],
+                                                       image='images/items/' +
+                                                             self.world.cur_player.get_all_items()[4 * i + j].item_id +
+                                                             '.png',
+                                                       square=50)])
                 else:
-                    self.all_cells.append([-1, ImageButton(self.world, [663 + j * 63, 5 + i * 63], 'images/elements/light_blue_color.9.png',
-                                                       [58, 58], square=50)])
+                    self.all_cells.append([-1, ImageButton(self.world, [663 + j * 63, 5 + i * 63],
+                                                           'images/elements/light_blue_color.9.png', [58, 58],
+                                                           square=50)])
 
         # Self cells
         self.self_cells = []
         for i in xrange(3):
             for j in xrange(3):
-                self.self_cells.append([-1, ImageButton(self.world, [453 + j * 63, 130 + i * 63], 'images/elements/light_blue_color.9.png',
-                                                        [58, 58], square=50)])
+                self.self_cells.append([-1, ImageButton(self.world, [453 + j * 63, 130 + i * 63],
+                                                        'images/elements/light_blue_color.9.png', [58, 58], square=50)])
 
         # Player cells
         self.player_cells = []
         for i in xrange(3):
             for j in xrange(3):
-                self.player_cells.append([-1, ImageButton(self.world, [153 + j * 63, 130 + i * 63], 'images/elements/light_blue_color.9.png',
-                                                          [58, 58], square=50)])
-        self.v_button = ImageButton(self.world, [363, 190], 'images/elements/light_green_color.9.png', [60, 30], image='images/elements/white_v.png', square=18)
-        self.x_button = ImageButton(self.world, [363, 224], 'images/elements/light_red_color.9.png', [60, 30], image='images/elements/white_x.png', square=13)
+                self.player_cells.append([-1, ImageButton(self.world, [153 + j * 63, 130 + i * 63],
+                                                          'images/elements/light_blue_color.9.png', [58, 58],
+                                                          square=50)])
+        self.v_button = ImageButton(self.world, [363, 190], 'images/elements/light_green_color.9.png', [60, 30],
+                                    image='images/elements/white_v.png', square=18)
+        self.x_button = ImageButton(self.world, [363, 224], 'images/elements/light_red_color.9.png', [60, 30],
+                                    image='images/elements/white_x.png', square=13)
         self.change_visible(False)
         self.change_clickable(False)
 

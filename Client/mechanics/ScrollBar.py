@@ -4,7 +4,8 @@ import pygame
 
 class ScrollBar(NinePatch):
     def __init__(self, world, pos, margin, is_vertical, size):
-        NinePatch.__init__(self, world, pos, 'images/elements/light_blue_cell.9.png', size, is_visible=False, is_clickable=False, layer=8)
+        NinePatch.__init__(self, world, pos, 'images/elements/light_blue_cell.9.png', size, is_visible=False,
+                           is_clickable=False, layer=8)
         self.RATE = 25
         self.margin = margin
         self.is_vertical = is_vertical
@@ -60,7 +61,8 @@ class ScrollBar(NinePatch):
                 i.update_pos([i.pos[0], i.pos[1] + change])
         else:
             if is_up:
-                change = -self.RATE if self.items[-1].pos[0] + self.items[-1].width - self.RATE > self.size[0] else self.size[0] - (self.items[-1].pos[0] + self.items[-1].width)
+                change = -self.RATE if self.items[-1].pos[0] + self.items[-1].width - self.RATE > self.size[0]\
+                    else self.size[0] - (self.items[-1].pos[0] + self.items[-1].width)
             else:
                 change = self.RATE if self.items[0].pos[0] + self.RATE < 0 else -self.items[0].pos[0]
             for i in self.items:

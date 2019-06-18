@@ -15,11 +15,13 @@ class ActivityRequest(NinePatch):
         self.is_incoming = is_incoming
         self.buttons = {}
         if self.activity == 'TRADE':
-            self.icon = MapObject(self.world, [10, None], image='images/elements/white_opposite_arrows.png', square=40, middle=self)
+            self.icon = MapObject(self.world, [10, None], image='images/elements/white_opposite_arrows.png', square=40,
+                                  middle=self)
         elif self.activity == 'XO':
             self.icon = MapObject(self.world, [10, None], image='images/elements/white_xo.png', square=40, middle=self)
 
-        self.label = Label(self.world, [62, None], self.player.username, fonts['Username'], colors['white'], middle=self)
+        self.label = Label(self.world, [62, None], self.player.username, fonts['Username'], colors['white'],
+                           middle=self)
 
         if self.is_incoming:
             self.buttons['v'] = ImageButton(self.world, [152, 8], 'images/elements/light_green_color.9.png', [20, 20],

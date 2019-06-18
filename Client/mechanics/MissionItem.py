@@ -23,33 +23,38 @@ class MissionItem(NinePatch):
         self.coins = coins
         self.is_completed = is_completed
         self.text = SpeechBalloon.size_adjustment(text, fonts['Little'], 520)
-        self.lines = SpeechBalloon.create_lines(self.world, [None, 50], self.text, fonts['Little'], self, colors['white'])
+        self.lines = SpeechBalloon.create_lines(self.world, [None, 50], self.text, fonts['Little'], self,
+                                                colors['white'])
         self.title = Label(self.world, [51, None], title, fonts['Medium'], colors['white'], middle=self)
-        self.reward_button = TextButton(self.world, [None, self.lines[-1].pos[1] + self.lines[-1].height + 5], 'images/elements/white_color.9.png', [125, 35], 'Claim Reward',
-                                    fonts['Regular'], (76, 219, 110), middle=self, layer=11)
+        self.reward_button = TextButton(self.world, [None, self.lines[-1].pos[1] + self.lines[-1].height + 5],
+                                        'images/elements/white_color.9.png', [125, 35], 'Claim Reward',
+                                        fonts['Regular'], (76, 219, 110), middle=self, layer=11)
         self.reward_button.change_visible(False)
         self.reward_button.change_clickable(False)
         if self.items == '0':
-            self.xp_label = Label(self.world, [400, None], str(xp) + ' XP', fonts['Compressed'], colors['dark_blue'], middle=self, layer=11)
+            self.xp_label = Label(self.world, [400, None], str(xp) + ' XP', fonts['Compressed'], colors['dark_blue'],
+                                  middle=self, layer=11)
         else:
-            self.xp_label = Label(self.world, [300, None], str(xp) + ' XP', fonts['Compressed'], colors['dark_blue'], middle=self, layer=11)
-            self.items_image = MapObject(self.world, [380, None], image='images/items/' + str(items) + '.png', middle=self,
-                                         layer=9)
+            self.xp_label = Label(self.world, [300, None], str(xp) + ' XP', fonts['Compressed'], colors['dark_blue'],
+                                  middle=self, layer=11)
+            self.items_image = MapObject(self.world, [380, None], image='images/items/' + str(items) + '.png',
+                                         middle=self, layer=9)
         self.coins_label = Label(self.world, [490, None], str(coins), fonts['Compressed'], colors['coins'], middle=self)
-        self.coin_image = MapObject(self.world,
-                                    [490 + fonts['Compressed'].size(str(coins))[0] + 2, None],
+        self.coin_image = MapObject(self.world, [490 + fonts['Compressed'].size(str(coins))[0] + 2, None],
                                     image='images/elements/coin.png', middle=self, square=25)
         self.is_expanded = False
 
     def change_state(self):
         if self.is_expanded:  # Contract
             if self.is_completed:
-                NinePatch.__init__(self, self.world, self.pos, 'images/elements/light_green_box.9.png', [550, 50], layer=8)
+                NinePatch.__init__(self, self.world, self.pos, 'images/elements/light_green_box.9.png', [550, 50],
+                                   layer=8)
                 self.button.change_front('images/elements/light_green_plus.png', square=25)
                 self.reward_button.change_visible(False)
                 self.reward_button.change_clickable(False)
             else:
-                NinePatch.__init__(self, self.world, self.pos, 'images/elements/light_blue_box.9.png', [550, 50], layer=8)
+                NinePatch.__init__(self, self.world, self.pos, 'images/elements/light_blue_box.9.png', [550, 50],
+                                   layer=8)
                 self.button.change_bg('images/elements/light_green_color.9.png', [35, 35])
                 self.button.change_front('images/elements/white_plus.png', square=25)
             for i in self.lines:
@@ -58,13 +63,15 @@ class MissionItem(NinePatch):
         else:  # Expand
             if self.is_completed:
                 height = self.reward_button.pos[1] + self.reward_button.height - self.pos[1] + 10
-                NinePatch.__init__(self, self.world, self.pos, 'images/elements/light_green_box.9.png', [550, height], layer=8)
+                NinePatch.__init__(self, self.world, self.pos, 'images/elements/light_green_box.9.png', [550, height],
+                                   layer=8)
                 self.button.change_front('images/elements/light_red_minus.png', square=25)
                 self.reward_button.change_visible(True)
                 self.reward_button.change_clickable(True)
             else:
                 height = self.lines[-1].pos[1] + self.lines[-1].height - self.pos[1] + 5
-                NinePatch.__init__(self, self.world, self.pos, 'images/elements/light_blue_box.9.png', [550, height], layer=8)
+                NinePatch.__init__(self, self.world, self.pos, 'images/elements/light_blue_box.9.png', [550, height],
+                                   layer=8)
                 self.button.change_bg('images/elements/light_red_color.9.png', [35, 35])
                 self.button.change_front('images/elements/white_minus.png', square=25)
             for i in self.lines:

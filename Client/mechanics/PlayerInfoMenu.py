@@ -7,16 +7,18 @@ from Label import Label
 
 class PlayerInfoMenu(NinePatch):
     def __init__(self, world):
-        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [300, 340], middle=world.cur_screen.bg_image, layer=8)
+        NinePatch.__init__(self, world, [None, -10], 'images/elements/light_blue_cell.9.png', [300, 340],
+                           middle=world.cur_screen.bg_image, layer=8)
         self.player = None
-        self.stage = MapObject(self.world, [430, -10], image='images/stage.png', layer=9)
+        self.stage = MapObject(self.world, [430, -10], image='images/elements/stage.png', layer=9)
         self.level = Label(self.world, [500, 265], '0', fonts['Compressed'], colors['level'], layer=9)
         self.arrow = MapObject(self.world, [500, 277], image='images/elements/level_arrow.png', square=27, layer=9)
         self.trade_button = ImageButton(self.world, [610, 50], 'images/elements/light_blue_color.9.png', [50, 50],
                                         image='images/elements/white_opposite_arrows.png', square=45)
         self.xo_button = ImageButton(self.world, [610, 120], 'images/elements/light_blue_color.9.png', [50, 50],
-                                        image='images/elements/white_xo.png', square=45)
-        self.x_button = ImageButton(self.world, [393, 5], 'images/elements/light_red_color.9.png', [30, 30], image='images/elements/white_x.png', square=18)
+                                     image='images/elements/white_xo.png', square=45)
+        self.x_button = ImageButton(self.world, [393, 5], 'images/elements/light_red_color.9.png', [30, 30],
+                                    image='images/elements/white_x.png', square=18)
         self.change_visible(False)
         self.change_clickable(False)
 
@@ -48,8 +50,10 @@ class PlayerInfoMenu(NinePatch):
 
     def update_player(self, player):
         self.player = player
-        self.level = Label(self.world, [500, 265], str(self.player.level), fonts['Compressed'], colors['level'], layer=9)
-        self.arrow = MapObject(self.world, [500 + fonts['Compressed'].size(str(self.player.level))[0] + 2, 277], image='images/elements/level_arrow.png', square=27, layer=9)
+        self.level = Label(self.world, [500, 265], str(self.player.level), fonts['Compressed'], colors['level'],
+                           layer=9)
+        self.arrow = MapObject(self.world, [500 + fonts['Compressed'].size(str(self.player.level))[0] + 2, 277],
+                               image='images/elements/level_arrow.png', square=27, layer=9)
 
     def draw_object(self):
         if self.is_visible:

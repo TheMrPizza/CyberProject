@@ -14,7 +14,8 @@ KB = 1024
 class Server(object):
     def __init__(self):
         # Initialize Firebase database and storage
-        cred = credentials.Certificate(r'C:\Users\Guy\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
+        cred = credentials.Certificate(
+            r'C:\Users\Guy\Downloads\cyberproject-ec385-firebase-adminsdk-sxzt7-5b7e34d38f.json')
         firebase_admin.initialize_app(cred, {'databaseURL': 'https://cyberproject-ec385.firebaseio.com',
                                              'storageBucket': 'cyberproject-ec385.appspot.com'})
         self.bucket = storage.bucket()
@@ -24,7 +25,7 @@ class Server(object):
         self.socket.bind(SERVER_ADDRESS)
         self.socket.listen(5)
 
-        self.remove_all_players()
+        Server.remove_all_players()
 
         self.client_players = []  # The client socket and client's player username and room id
         self.waiting_data = []  # Data to send to clients
@@ -107,14 +108,15 @@ class Server(object):
                     self.add_message(i, 'POS', {'username': headers['username'], 'command': command}, headers['pos'])
         elif command == 'CREATE PLAYER':
             ref = db.reference('users/')
-            print headers['username']
             ref.child(headers['username']).set({
                 'body': headers['body'],
                 'level': 1,
-                'coins': 500,
+                'password': headers['password'],
+                'coins': 200,
                 'join_date': datetime.now().strftime('%d.%m.%Y'),
                 'is_admin': False,
                 'room_id': 201,
+                'xp': 0,
                 'pos': [23, 303]
             })
             self.add_message(client_player, 'OK', {'id': headers['id']})
@@ -134,10 +136,10 @@ class Server(object):
                     self.add_message(client_player, 'OK', {'id': headers['id']})
                 elif int(i['room_id']) == room_id:  # A player in the old room, say goodbye
                     self.add_message(i, 'REMOVE PLAYER', {'username': headers['username'],
-                                                                    'room_id': headers['room_id'], 'command': command})
+                                                          'room_id': headers['room_id'], 'command': command})
                 elif i['room_id'] == headers['room_id']:  # A player in the new room, say hello
                     self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
-                                                                 'room_id': headers['room_id'], 'command': command})
+                                                       'room_id': headers['room_id'], 'command': command})
         elif command == 'PLAYER INFO':
             print headers['username']
             ref = db.reference('users/' + headers['username']).get()
@@ -177,16 +179,18 @@ class Server(object):
         elif command == 'ACTIVITY REQUEST':
             for i in self.client_players:
                 if i['username'] == headers['addressee']:
-                    self.add_message(i, 'ACTIVITY REQUEST', {'activity': headers['activity'], 'sender': headers['sender'],
-                                                          'addressee': headers['addressee'], 'command': command})
+                    self.add_message(i, 'ACTIVITY REQUEST',
+                                     {'activity': headers['activity'], 'sender': headers['sender'],
+                                      'addressee': headers['addressee'], 'command': command})
                     break
             self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'ACTIVITY RESPONSE':
             for i in self.client_players:
                 if i['username'] == headers['sender']:
-                    self.add_message(i, 'ACTIVITY RESPONSE', {'activity': headers['activity'], 'sender': headers['sender'],
-                                                           'addressee': headers['addressee'],
-                                                           'is_accepted': headers['is_accepted'], 'command': command})
+                    self.add_message(i, 'ACTIVITY RESPONSE',
+                                     {'activity': headers['activity'], 'sender': headers['sender'],
+                                      'addressee': headers['addressee'],
+                                      'is_accepted': headers['is_accepted'], 'command': command})
                     break
             self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'PLACE ITEM':
@@ -242,17 +246,20 @@ class Server(object):
                         else:
                             db.reference('users/' + client_player['username'] + '/items').child(j).set({'is_used': False, 'amount': 1})
                 if i['room_id'] == client_player['room_id']:
-                    self.add_message(i, 'MAKE TRADE', {'user1': client_player['username'], 'user2': headers['username'],
-                                                       'items1': headers['self_items'], 'items2': headers['player_items'],
-                                                       'command': command})
+                    self.add_message(i, 'MAKE TRADE',
+                                     {'user1': client_player['username'], 'user2': headers['username'],
+                                      'items1': headers['self_items'], 'items2': headers['player_items'],
+                                      'command': command})
         elif command == 'XO TURN':
             for i in self.client_players:
                 if i['username'] == headers['username']:
-                    self.add_message(i, 'XO TURN', {'letter': headers['letter'], 'row': headers['row'], 'col': headers['col']})
+                    self.add_message(i, 'XO TURN', {'letter': headers['letter'], 'row': headers['row'],
+                                                    'col': headers['col']})
                     break
             self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'UPDATE MISSION':
-            db.reference('users/' + headers['username'] + '/missions/' + headers['mission_id']).set(headers['value'] == 'True')
+            db.reference('users/' + headers['username'] + '/missions/' +
+                         headers['mission_id']).set(headers['value'] == 'True')
             self.add_message(client_player, 'OK', {'id': headers['id']})
         elif command == 'ADD REWARDS':
             if headers['xp'] != '0':
@@ -261,10 +268,11 @@ class Server(object):
             if headers['items'] != '0':
                 amount = db.reference('users/' + headers['username'] + '/items/' + headers['items'] + '/amount').get()
                 if amount:
-                    db.reference('users/' + headers['username'] + '/items/' + headers['items'] + '/amount').set(amount + 1)
+                    db.reference('users/' + headers['username'] + '/items/' + headers['items'] +
+                                 '/amount').set(amount + 1)
                 else:
-                    db.reference('users/' + headers['username'] + '/items').child(headers['items']).set(
-                        {'is_used': False, 'amount': 1})
+                    db.reference('users/' + headers['username'] +
+                                 '/items').child(headers['items']).set({'is_used': False, 'amount': 1})
             if headers['coins'] != '0':
                 coins = db.reference('users/' + headers['username'] + '/coins').get()
                 db.reference('users/' + headers['username'] + '/coins').set(coins + int(headers['coins']))
@@ -277,11 +285,12 @@ class Server(object):
                 self.add_message(client_player, 'OK', {'id': headers['id']}, 'False')
         elif command == 'CONNECT':
             print 'Received connect of ' + headers['username']
-            room_id = db.reference('users/' + headers['username'] + '/room_id').get()
-            if room_id:
+            password = db.reference('users/' + headers['username'] + '/password').get()
+            if password and str(password) == headers['password']:
+                room_id = db.reference('users/' + headers['username'] + '/room_id').get()
                 ref = db.reference('rooms/' + str(room_id) + '/players')
                 ref.child(headers['username']).set(True)
-                self.add_socket_details(client_player, headers['username'], str(room_id))
+                Server.add_socket_details(client_player, headers['username'], str(room_id))
                 for i in self.client_players:
                     if i is client_player:
                         self.add_message(client_player, 'OK', {'id': headers['id']})
@@ -291,7 +300,6 @@ class Server(object):
             else:
                 self.add_message(client_player, 'OK', {'id': headers['id']}, 'Error')
         elif command == 'QUIT':
-            print 'QUITTT'
             ref = db.reference('rooms/' + headers['room_id'] + '/players/' + headers['username'])
             ref.delete()
             for i in self.client_players:
@@ -305,10 +313,6 @@ class Server(object):
                     self.add_message(i, 'CHAT', {'username': headers['username'],
                                                  'message': headers['message'], 'command': command})
 
-    def add_socket_details(self, client_player, username, room_id):
-        client_player['username'] = username
-        client_player['room_id'] = room_id
-
     def quit_socket(self, client_player):
         self.client_players.remove(client_player)
         print 'Error: No client communication!'
@@ -317,7 +321,13 @@ class Server(object):
         for i in self.client_players:
             self.add_message(i, 'QUIT', {'username': client_player['username']})
 
-    def remove_all_players(self):
+    @staticmethod
+    def add_socket_details(client_player, username, room_id):
+        client_player['username'] = username
+        client_player['room_id'] = room_id
+
+    @staticmethod
+    def remove_all_players():
         db.reference('rooms').delete()
 
     @staticmethod
@@ -330,7 +340,7 @@ class Server(object):
 
 
 def main():
-    server = Server()
+    Server()
 
 
 if __name__ == '__main__':
