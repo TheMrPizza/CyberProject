@@ -13,7 +13,7 @@ import threading
 class Loading(Screen):
     def __init__(self, world, cur_id, next_id, player_data=None):
         self.id = randint(0, 2)
-        Screen.__init__(self, world, id, 'images/elements/loading_screen_' + str(self.id) + '.png')
+        Screen.__init__(self, world, self.id, 'images/elements/loading_screen_' + str(self.id) + '.png')
         self.cur_id = cur_id
         self.next_id = next_id
         self.player_data = player_data

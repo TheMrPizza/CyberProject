@@ -4,14 +4,13 @@ from Client.mechanics.TextBox import TextBox
 from Client.mechanics.Label import Label
 from Client.mechanics.NinePatch import NinePatch
 from Client.mechanics.TextButton import TextButton
-from Client.mechanics.MapObject import MapObject
 from Loading import Loading
 from SignUp import SignUp
 
 
 class SignIn(Screen):
     def __init__(self, world):
-        Screen.__init__(self, world, 101, 'images/elements/collage_background.png')
+        Screen.__init__(self, world, 101, 'images/elements/collage_background_2.png')
         self.card = NinePatch(self.world, [700, None], 'images/elements/white_cell.9.png', [345, 570],
                               middle=self.bg_image, layer=1)
         self.title = Label(self.world, [None, 70], 'Sign in', fonts['Large'], colors['light_blue'], middle=self.card)
@@ -29,7 +28,6 @@ class SignIn(Screen):
         self.sign_up_button = TextButton(self.world, [None, 455], 'images/elements/dark_blue_box.9.png', [250, 45],
                                          text='Sign up', font=fonts['Medium'], color=colors['white'], middle=self.card)
 
-        self.logo = MapObject(self.world, [40, 40], image='images/elements/logo.png')
         self.logo_title1 = Label(self.world, [40, 179], 'Your adventure', fonts['Big'], colors['sign_in'])
         self.logo_title2 = Label(self.world, [40, 250], 'starts now.', fonts['Big'], colors['sign_in'])
 
@@ -47,7 +45,7 @@ class SignIn(Screen):
             objects = []
         Screen.draw_screen(self, [self.card, self.title, self.username_label, self.username_text_box,
                                   self.password_label, self.password_text_box, self.sign_in_button, self.problem,
-                                  self.question, self.sign_up_button, self.logo, self.logo_title1, self.logo_title2]
+                                  self.question, self.sign_up_button, self.logo_title1, self.logo_title2]
                            + objects)
 
     def on_click(self, map_object, event):

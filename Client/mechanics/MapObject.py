@@ -35,6 +35,11 @@ class MapObject(object):
         self.is_focus = False
 
     def check_collision(self, pos):
+        """
+        Checks if the given position is in the object.
+        :param pos: Given position to check;
+        :return: True if the position is in the object, otherwise False;
+        """
         if self.pos[0] <= pos[0] < self.pos[0] + self.width:
             if self.pos[1] <= pos[1] < self.pos[1] + self.height:
                 return True
@@ -58,6 +63,11 @@ class MapObject(object):
 
     @staticmethod
     def merge_surfaces_horizontal(surfaces):
+        """
+        Merges the surfaces one by one into a surface in horizontal direction.
+        :param surfaces: The surfaces to merge.
+        :return: The merged surface.
+        """
         merged = pygame.Surface((sum(map(lambda s: s.get_size()[0], surfaces)),
                                  surfaces[0].get_size()[1]), pygame.SRCALPHA)
         width = 0
@@ -68,6 +78,12 @@ class MapObject(object):
 
     @staticmethod
     def find_middle(surface, parent):
+        """
+        Finds the left-top point of the surface position so it would be in the middle of its parent.
+        :param surface: The surface to find its position.
+        :param parent: The parent MapObject or pygame.Rect to find its middle.
+        :return: List of x and y of the surface position.
+        """
         if isinstance(parent, MapObject):
             x = parent.pos[0] + parent.width / 2 - surface.get_size()[0] / 2
             y = parent.pos[1] + parent.height / 2 - surface.get_size()[1] / 2
@@ -76,11 +92,18 @@ class MapObject(object):
             x = parent.x + parent.width / 2 - surface.get_size()[0] / 2
             y = parent.y + parent.height / 2 - surface.get_size()[1] / 2
             return [x, y]
-        else:
-            print 'No!'  # TODO: Add error
 
     @staticmethod
     def load_image(world, image, size=None, square=None):
+        """
+        Loads the given image path from the computer or the server in the given sizes.
+        :param world: World object.
+        :param image: Image path to load.
+        :param size: List of width and height of the image. If one of them is None, it will be calculated
+        proportionally.
+        :param square: Width or height limit of the image.
+        :return: The image surface.
+        """
         if not os.path.exists(world.PATH + '/images'):
             os.makedirs(world.PATH + '/images')
         world.client.get_from_storage(image)

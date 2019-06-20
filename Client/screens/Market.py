@@ -1,9 +1,10 @@
-from Client.mechanics.Resources import jenny_missions
+from Client.mechanics.Resources import fonts, colors, jenny_missions
 from Client.mechanics.MapObject import MapObject
 from Client.mechanics.AStar.Search import search_path
 from Client.mechanics.Room import Room
 from Client.mechanics.ShopMenu import ShopMenu
 from Client.mechanics.MessageMenu import MessageMenu
+from Client.mechanics.Label import Label
 
 
 class Market(Room):
@@ -23,8 +24,8 @@ class Market(Room):
         if objects is None:
             objects = []
         buttons = [i.button for i in self.shop_menu.items.items]
-        Room.check_event(self, event, buttons + [self.hut1, self.hut2, self.hut3, self.hut4, self.hut5,
-                                                 self.shop_menu, self.shop_menu.x_button] + objects)
+        Room.check_event(self, event, buttons + [self.hut1, self.hut2, self.hut3, self.hut4, self.hut5, self.shop_menu,
+                                                 self.shop_menu.x_button] + objects)
 
     def check_scroll(self, event, objects=None):
         if objects is None:
@@ -66,9 +67,11 @@ class Market(Room):
                 if i.item_id == 41:
                     self.world.cur_player.update_mission(jenny_missions[0][0][0], False)
                 self.message_menu = MessageMenu(self.world, 'It Looks Great!', 'You bought a new item from the shop:',
-                                                500, i.item_id, -i.price)
-                self.message_menu.change_visible()
-                self.message_menu.change_clickable()
+                                                300, i.item_id, -i.price)
+                self.message_menu.change_visible(True)
+                self.message_menu.change_clickable(True)
+                self.shop_menu.coins = Label(self.world, [312, 260], str(self.world.cur_player.coins),
+                                             fonts['Compressed'], colors['coins'])
                 return
         Room.on_click(self, map_object, event)
 

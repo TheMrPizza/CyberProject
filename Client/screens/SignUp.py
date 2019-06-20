@@ -10,7 +10,7 @@ from Client.mechanics.MapObject import MapObject
 
 class SignUp(Screen):
     def __init__(self, world):
-        Screen.__init__(self, world, 102, 'images/elements/collage_background.png')
+        Screen.__init__(self, world, 102, 'images/elements/collage_background_1.png')
         self.card = NinePatch(self.world, [None, None], 'images/elements/white_cell.9.png', [345, 570],
                               middle=self.bg_image, layer=1)
         self.title = Label(self.world, [None, 70], 'Sign up', fonts['Large'], colors['light_blue'], middle=self.card)
@@ -82,10 +82,11 @@ class SignUp(Screen):
                 self.problem = Label(self.world, [None, 495], 'Username already exists', fonts['Small'],
                                      colors['light_red'], middle=self.card)
             else:
-                self.username_status = MapObject(self.world, [500, 175], image='images/elements/light_green_v.png', square=16)
-
+                self.username_status = MapObject(self.world, [500, 175], image='images/elements/light_green_v.png',
+                                                 square=16)
                 data = self.password_text_box.text
                 if len(data) < 6 or len(data) > 20:
+                    print self.chosen_color
                     self.password_status = MapObject(self.world, [500, 257], image='images/elements/light_red_x.png',
                                                      square=16)
                     self.password_text_box.change_background('images/elements/light_red_cell.9.png')
@@ -94,7 +95,7 @@ class SignUp(Screen):
                 else:
                     self.password_status = MapObject(self.world, [500, 260], image='images/elements/light_green_v.png',
                                                      square=16)
-                    if not self.chosen_color:
+                    if self.chosen_color is None:
                         self.problem = Label(self.world, [None, 495], 'You must pick a color',
                                              fonts['Small'],
                                              colors['light_red'], middle=self.card)

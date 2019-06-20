@@ -4,8 +4,7 @@ from StarNode import StarNode
 
 def search_path(world, start, goal):
     """
-    Finding the shortest path without colliding with obstacles. The function uses A* algorithm, in a grid of 10x10 px.
-
+    Finding the shortest path without colliding with obstacles. The function uses A* algorithm, in a grid of 20x20 px.
     :param world: The game's world
     :param start: Start point
     :param goal: End point

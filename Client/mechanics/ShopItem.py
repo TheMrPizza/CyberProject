@@ -13,7 +13,7 @@ class ShopItem(NinePatch):
         if price > world.cur_player.coins:
             NinePatch.__init__(self, world, [0, 0], 'images/elements/light_red_box.9.png', [360, 80], layer=8)
             self.button = TextButton(self.world, [280, 40], 'images/elements/white_color.9.png', [75, 35], 'Buy',
-                                     fonts['Regular'], colors['light_red'], middle=self, layer=9)
+                                     fonts['Regular'], colors['light_red'], middle=self, layer=9, is_clickable=False)
         else:
             NinePatch.__init__(self, world, [0, 0], 'images/elements/light_blue_box.9.png', [360, 80], layer=8)
             self.button = TextButton(self.world, [280, 40], 'images/elements/white_color.9.png', [75, 35], 'Buy',
@@ -43,7 +43,8 @@ class ShopItem(NinePatch):
         else:
             change = not self.is_clickable
         self.is_clickable = change
-        self.button.change_clickable(change)
+        if self.price <= self.world.cur_player.coins:
+            self.button.change_clickable(change)
         self.item.change_clickable(change)
         self.title.change_clickable(change)
         self.coins.change_clickable(change)

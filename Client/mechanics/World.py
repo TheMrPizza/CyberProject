@@ -24,10 +24,10 @@ class World(object):
 
     def world_loop(self):
         pygame.init()
-        self.SURF = pygame.display.set_mode(self.SIZE)
         from MapObject import MapObject
         icon = MapObject.load_image(self, 'images/elements/icon.png')
         pygame.display.set_icon(icon)
+        self.SURF = pygame.display.set_mode(self.SIZE)
         pygame.display.set_caption('Volantis')
         execute_thread = threading.Thread(target=self.execute_loop)
         execute_thread.daemon = True

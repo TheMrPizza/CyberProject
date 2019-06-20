@@ -28,7 +28,6 @@ class Screen(object):
         if not objects:
             objects = []
         for i in objects:
-            print i.pos, i.height, i.width, event.pos
             if i.check_collision(event.pos):
                 self.world.cur_screen.on_scroll(i, event)
                 break

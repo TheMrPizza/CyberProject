@@ -5,13 +5,16 @@ from MapObject import MapObject
 
 class TextButton(NinePatch):
     def __init__(self, world, pos, bg, bg_size, text=None, font=None, color=colors['black'], **kwargs):
-        middle, layer = None, 10
+        middle, layer, is_clickable = None, 10, True
         if 'middle' in kwargs:
             middle = kwargs['middle']
             kwargs.pop('middle')
         if 'layer' in kwargs:
             layer = kwargs['layer']
-        NinePatch.__init__(self, world, pos, bg, image_size=bg_size, middle=middle, layer=layer)
+        if 'is_clickable' in kwargs:
+            is_clickable = kwargs['is_clickable']
+            kwargs.pop('is_clickable')
+        NinePatch.__init__(self, world, pos, bg, image_size=bg_size, middle=middle, layer=layer, is_clickable=is_clickable)
         if text and font:
             self.front = MapObject(world, [None, None], font.render(text, True, color), middle=self.text_rect, **kwargs)
         else:

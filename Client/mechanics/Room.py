@@ -64,6 +64,11 @@ class Room(Screen):
                         pos = [int(i['data'].split(' ')[0]) + j.width / 2, int(i['data'].split(' ')[1]) + j.height / 2]
                         path = search_path(self.world, (j.pos[0] + j.width / 2, j.pos[1] + j.height / 2), pos)
                         j.walking_path = path
+                        for k in self.out:
+                            if k.check_collision(pos):
+                                if k.surface.get_at([pos[0] - k.pos[0], pos[1] - k.pos[1]]).a != 0:
+                                    j.path_target = 0
+                                    break
                         update.remove(i)
                         break
             elif i['code'] == 'CONNECT':
@@ -75,8 +80,8 @@ class Room(Screen):
                 for j in self.players:
                     if i['headers']['username'] == j.username:
                         self.players.remove(j)
-                        update.remove(i)
                         break
+                update.remove(i)
             elif i['code'] == 'CHAT':
                 for j in self.players:
                     if i['headers']['username'] == j.username:
@@ -99,6 +104,7 @@ class Room(Screen):
                         self.players.remove(j)
                         update.remove(i)
                         break
+                update.remove(i)
             elif i['code'] == 'CHANGE ITEM':
                 for j in self.players:
                     if i['headers']['username'] == j.username:
@@ -175,7 +181,7 @@ class Room(Screen):
                 self.trade_menu = TradeMenu(self.world)
                 update.remove(i)
             elif i['code'] == 'MAKE TRADE':
-                # self.world.cur_player.update_mission(jenny_missions[1][0][0], False)
+                self.world.cur_player.update_mission(jenny_missions[1][0][0], False)
                 for j in self.players:
                     if i['headers']['user1'] == j.username:
                         for k in j.items:

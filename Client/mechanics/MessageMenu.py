@@ -47,7 +47,7 @@ class MessageMenu(NinePatch):
         self.world.cur_screen.self_info_menu = SelfInfoMenu(self.world)
         if self.world.cur_player.coins >= 5000:
             self.world.cur_player.update_mission(jenny_missions[2][0][0], False)
-            if self.world.cur_screen.room_id == 203:
+            if self.world.cur_screen.screen_id == 203:
                 self.world.cur_screen.agent_menu.update_missions()
 
     def change_visible(self, is_visible=None):

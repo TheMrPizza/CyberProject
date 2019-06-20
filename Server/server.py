@@ -67,7 +67,13 @@ class Server(object):
 
     def receive_message(self, client_player):
         try:
-            msg = client_player['socket'].recv(KB)
+            length = int(client_player['socket'].recv(10))
+            msg = ''
+            while len(msg) != length:
+                if length - len(msg) < KB:
+                    msg += client_player['socket'].recv(length - len(msg))
+                else:
+                    msg += client_player['socket'].recv(KB)
         except (socket.error, socket.timeout):
             self.quit_socket(client_player)
             return
@@ -83,13 +89,6 @@ class Server(object):
                 break
             parts = lines[i].split(': ')
             headers[parts[0]] = parts[1]
-
-        while int(headers['length']) != len(data):
-            try:
-                data += client_player['socket'].recv(KB)
-            except (socket.error, socket.timeout):
-                self.quit_socket(client_player)
-                return
         print command
 
         if command == 'STORAGE':
@@ -134,14 +133,10 @@ class Server(object):
                 if i is client_player:  # It's the player, send him OK
                     i['room_id'] = headers['room_id']
                     self.add_message(client_player, 'OK', {'id': headers['id']})
-                elif int(i['room_id']) == room_id:  # A player in the old room, say goodbye
-                    self.add_message(i, 'REMOVE PLAYER', {'username': headers['username'],
-                                                          'room_id': headers['room_id'], 'command': command})
                 elif i['room_id'] == headers['room_id']:  # A player in the new room, say hello
                     self.add_message(i, 'ADD PLAYER', {'username': headers['username'],
-                                                       'room_id': headers['room_id'], 'command': command})
+                                                       'room_id': headers['room_id'], 'id': headers['id']})
         elif command == 'PLAYER INFO':
-            print headers['username']
             ref = db.reference('users/' + headers['username']).get()
             info = {'username': headers['username']}
             for key, value in ref.iteritems():
@@ -336,7 +331,7 @@ class Server(object):
         for i in headers:
             msg += str(i) + ': ' + str(headers[i]) + '\r\n'
         msg += '\r\n' + data
-        return msg
+        return str(len(msg)).rjust(10, '0') + msg
 
 
 def main():

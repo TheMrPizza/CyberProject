@@ -72,7 +72,13 @@ class Client(object):
         print 'Receiving messages'
         while True:
             try:
-                msg = self.socket.recv(KB)
+                length = int(self.socket.recv(10))
+                msg = ''
+                while len(msg) != length:
+                    if length - len(msg) < KB:
+                        msg += self.socket.recv(length - len(msg))
+                    else:
+                        msg += self.socket.recv(KB)
             except (socket.error, socket.timeout):
                 print 'Error: No server communication!'
                 sys.exit()
@@ -86,14 +92,6 @@ class Client(object):
                     break
                 parts = lines[i].split(': ')
                 headers[parts[0]] = parts[1]
-
-            while int(headers['length']) != len(data):
-                try:
-                    data += self.socket.recv(KB)
-                except (socket.error, socket.timeout):
-                    print 'Error: No server communication!'
-                    sys.exit()
-
             self.updates.append({'code': code, 'headers': headers, 'data': data})
 
     @staticmethod
@@ -102,7 +100,7 @@ class Client(object):
         for i in headers:
             msg += str(i) + ': ' + str(headers[i]) + '\r\n'
         msg += '\r\n' + data
-        return msg
+        return str(len(msg)).rjust(10, '0') + msg
 
     def get_from_storage(self, item):
         item_path = self.FILE_PATH + item

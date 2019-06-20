@@ -18,7 +18,6 @@ class Player(MapObject):
             self.level = data['level']
             self.missions = {}
             if 'missions' in data:
-                print data['missions']
                 self.missions = data['missions']
             if int(self.level) >= 3:
                 self.update_mission(charles_missions[2][0][0], False)
@@ -47,7 +46,9 @@ class Player(MapObject):
             self.world.cur_screen.layer_reorder()
 
             if not self.walking_path:  # Path ended
-                if self.path_target:  # Player is going out of the room
+                if self.path_target == 0:
+                    self.world.cur_screen.players.remove(self)
+                elif self.path_target:  # Player is going out of the room
                     from Client.screens.Loading import Loading
                     self.world.cur_screen = Loading(self.world, self.world.cur_screen.screen_id, self.path_target)
                     self.path_target = None
