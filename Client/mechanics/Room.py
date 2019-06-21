@@ -62,15 +62,19 @@ class Room(Screen):
                 for j in self.players:
                     if i['headers']['username'] == j.username:
                         pos = [int(i['data'].split(' ')[0]) + j.width / 2, int(i['data'].split(' ')[1]) + j.height / 2]
-                        path = search_path(self.world, (j.pos[0] + j.width / 2, j.pos[1] + j.height / 2), pos)
+                        path = search_path(self.world, (j.pos[0] + j.width / 2, j.pos[1] + j.height), pos)
                         j.walking_path = path
+                        is_found = False
                         for k in self.out:
                             if k.check_collision(pos):
                                 if k.surface.get_at([pos[0] - k.pos[0], pos[1] - k.pos[1]]).a != 0:
+                                    is_found = True
                                     j.path_target = 0
                                     break
-                        update.remove(i)
+                        if not is_found:
+                            j.path_target = None
                         break
+                update.remove(i)
             elif i['code'] == 'CONNECT':
                 info = self.world.client.player_info(i['headers']['username'])
                 self.players.append(Player(self.world, info))
@@ -182,6 +186,7 @@ class Room(Screen):
                 update.remove(i)
             elif i['code'] == 'MAKE TRADE':
                 self.world.cur_player.update_mission(jenny_missions[1][0][0], False)
+                print i['headers']['user1'] + ': ' + i['headers']['items1'] + ' ' + i['headers']['user2'] + ': ' + i['headers']['items2']
                 for j in self.players:
                     if i['headers']['user1'] == j.username:
                         for k in j.items:
@@ -190,7 +195,6 @@ class Room(Screen):
                                     j.items.remove(k)
                                 else:
                                     k.amount -= 1
-
                         for k in i['headers']['items2'].split():
                             is_found = False
                             for l in j.items:
@@ -214,7 +218,6 @@ class Room(Screen):
                                     l.amount += 1
                             if not is_found:
                                 j.items.append(Item(self.world, self.world.client.item_info(k), j.pos, 1, False))
-
                 if self.world.cur_player.username in [i['headers']['user1'], i['headers']['user2']]:
                     self.world.cur_screen.self_info_menu = SelfInfoMenu(self.world)
                     self.trade_menu = TradeMenu(self.world)

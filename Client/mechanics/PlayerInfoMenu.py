@@ -32,7 +32,7 @@ class PlayerInfoMenu(NinePatch):
         self.arrow.change_visible(change)
         self.level.change_visible(change)
         self.trade_button.change_visible(change)
-        self.xo_button.change_visible()
+        self.xo_button.change_visible(change)
         self.x_button.change_visible(change)
 
     def change_clickable(self, is_clickable=None):
@@ -45,7 +45,7 @@ class PlayerInfoMenu(NinePatch):
         self.arrow.change_clickable(change)
         self.level.change_clickable(change)
         self.trade_button.change_clickable(change)
-        self.xo_button.change_clickable()
+        self.xo_button.change_clickable(change)
         self.x_button.change_clickable(change)
 
     def update_player(self, player):

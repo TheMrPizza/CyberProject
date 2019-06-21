@@ -92,6 +92,7 @@ class Client(object):
                     break
                 parts = lines[i].split(': ')
                 headers[parts[0]] = parts[1]
+            print 'Received ' + code
             self.updates.append({'code': code, 'headers': headers, 'data': data})
 
     @staticmethod
