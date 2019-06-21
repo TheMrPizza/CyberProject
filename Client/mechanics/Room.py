@@ -189,12 +189,14 @@ class Room(Screen):
                 print i['headers']['user1'] + ': ' + i['headers']['items1'] + ' ' + i['headers']['user2'] + ': ' + i['headers']['items2']
                 for j in self.players:
                     if i['headers']['user1'] == j.username:
-                        for k in j.items:
-                            if k.item_id in i['headers']['items1'].split():
-                                if k.amount == 1:
-                                    j.items.remove(k)
-                                else:
-                                    k.amount -= 1
+                        for k in i['headers']['items1'].split():
+                            for l in j.items:
+                                if l.item_id == k:
+                                    if l.amount == 1:
+                                        j.items.remove(l)
+                                    else:
+                                        l.amount -= 1
+                                    break
                         for k in i['headers']['items2'].split():
                             is_found = False
                             for l in j.items:
@@ -204,12 +206,14 @@ class Room(Screen):
                             if not is_found:
                                 j.items.append(Item(self.world, self.world.client.item_info(k), j.pos, 1, False))
                     elif i['headers']['user2'] == j.username:
-                        for k in j.items:
-                            if k.item_id in i['headers']['items2'].split():
-                                if k.amount == 1:
-                                    j.items.remove(k)
-                                else:
-                                    k.amount -= 1
+                        for k in i['headers']['items2'].split():
+                            for l in j.items:
+                                if l.item_id == k:
+                                    if l.amount == 1:
+                                        j.items.remove(l)
+                                    else:
+                                        l.amount -= 1
+                                    break
                         for k in i['headers']['items1'].split():
                             is_found = False
                             for l in j.items:
