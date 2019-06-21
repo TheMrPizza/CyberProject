@@ -186,7 +186,6 @@ class Room(Screen):
                 update.remove(i)
             elif i['code'] == 'MAKE TRADE':
                 self.world.cur_player.update_mission(jenny_missions[1][0][0], False)
-                print i['headers']['user1'] + ': ' + i['headers']['items1'] + ' ' + i['headers']['user2'] + ': ' + i['headers']['items2']
                 for j in self.players:
                     if i['headers']['user1'] == j.username:
                         for k in i['headers']['items1'].split():
